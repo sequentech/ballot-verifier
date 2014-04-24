@@ -1,0 +1,15 @@
+To start the openrisc simulator with linux, you need two terminals, one to start the sim and another to connect to it through telnet.
+
+Open terminal number 1 and execute:
+
+$ cd openrisc/or1ksim
+$ sudo ./brstart.sh openrisc openrisc br0 eth0 tap0
+
+Now open terminal number 2:
+
+$ cd openrisc/linux
+$ or32-elf-sim -f arch/openksim.cfg vmlinux
+
+Once linux boots, go back to terminal 1 to connect to the machine through telnet (it will ask you for a user, just enter root):
+
+$ telnet 10.0.2.16
