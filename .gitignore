@@ -19,7 +19,17 @@
 *.exe
 *.out
 *.app
-or1ksim/
 *~
 
+#other files and folders
 log
+or1ksim/
+linux/
+build-gcc/
+uClibc-or1k/
+build-or1k-src/
+bld-or1k-gcc/
+bld-or1k-src/
+or1k-gcc/
+or1k-src/
+
