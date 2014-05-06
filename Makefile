@@ -135,7 +135,9 @@ linux:
 	cd $(INSTALLDIR) && { git clone git://github.com/openrisc/or1k-src.git; true; }
 	sed -i "s/elf32-or32/elf32-or1k/g" $(INSTALLDIR)/linux/arch/openrisc/kernel/vmlinux.lds.S
 	cd $(INSTALLDIR)/linux && $(MAKE) ARCH=openrisc defconfig
-	cd $(INSTALLDIR)/linux && $(MAKE) menuconfig
+	#cd $(INSTALLDIR)/linux && $(MAKE) menuconfig
+	grep -Fxq "CONFIG_CROSS_COMPILE=\"or32-linux-\"" $(INSTALLDIR)/linux/.config &&  \
+		sed -i "s/CONFIG_CROSS_COMPILE=\"or32-linux-\"/CONFIG_CROSS_COMPILE=\"or1k-elf-\"/g" $(INSTALLDIR)/linux/.config
 	cd $(INSTALLDIR)/linux && $(MAKE) CROSS_COMPILER=or1k-elf-
 
 runlinux:
