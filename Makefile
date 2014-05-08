@@ -136,14 +136,32 @@ linux:
 	sed -i "s/elf32-or32/elf32-or1k/g" $(INSTALLDIR)/linux/arch/openrisc/kernel/vmlinux.lds.S
 	cd $(INSTALLDIR)/linux && $(MAKE) ARCH=openrisc defconfig
 	#cd $(INSTALLDIR)/linux && $(MAKE) menuconfig
-	grep -Fxq "CONFIG_CROSS_COMPILE=\"or32-linux-\"" $(INSTALLDIR)/linux/.config &&  \
-		sed -i "s/CONFIG_CROSS_COMPILE=\"or32-linux-\"/CONFIG_CROSS_COMPILE=\"or1k-elf-\"/g" $(INSTALLDIR)/linux/.config
+	grep -Fq "CONFIG_CROSS_COMPILE=\"or32-linux-\"" $(INSTALLDIR)/linux/.config &&  \
+		sed -i "s/CONFIG_CROSS_COMPILE=\"or32-linux-\"/CONFIG_CROSS_COMPILE=\"or1k-elf-\"/g" $(INSTALLDIR)/linux/.config || true;
+	grep -Fq "ifconfig eth0 192.168.1.100 &" $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/etc/init.d/rcS &&  \
+		sed -i "s/ifconfig eth0 192.168.1.100 \&/ifconfig eth0 10.0.2.16 netmask 255.255.255.0 \&/g" \
+			$(INSTALLDIR)/linux/arch/openrisc/support/initramfs/etc/init.d/rcS || true;
 	cd $(INSTALLDIR)/linux && $(MAKE) CROSS_COMPILER=or1k-elf-
 
 runlinux:
+	type openvpn >/dev/null 2>&1 || { echo >&2 "Fail! openvpn not found, now installing  openvpn..."; sudo apt-get install openvpn; }
+	type brctl >/dev/null 2>&1 || { echo >&2 "Fail! bridge-utils not found, now installing  bridge-utils..."; \
+		sudo apt-get install bridge-utils; }
+	ifconfig | grep -Fq "br0" || { \
+		cd $(INSTALLDIR)/or1ksim && sudo ./brstart.sh openrisc openrisc br0 eth0 tap0; \
+	}
 	cd $(INSTALLDIR)/linux && or32-elf-sim -f arch/openrisc/or1ksim.cfg vmlinux
 
-.PHONY: clean or1ksim log uclibc linux runlinux
+tapdown:
+	sudo ./brend.sh br0 eth0 tap0
+	
+
+pruebas:
+	false || { echo >&2 "Fail! bridge-utils not found, now installing  bridge-utils..."; \
+		sudo apt-get install bridge-utils; }
+
+
+.PHONY: clean or1ksim log uclibc linux runlinux pruebas tapdown
 
 clean:
 	#clean 
