@@ -2,8 +2,10 @@ SHELL := /bin/bash
 INSTALLDIR := $(CURDIR)
 LOGPATH := $(CURDIR)/log
 SYSROOT := /opt/or1k-toolchain/or1k-linux-uclibc/sys-root
+LINUX_COMPILER := or1k-linux-uclibc-g++
+METAL_COMPILER := or1k-elf-g++
 
-all: log or1ksim newlib uclibc linux
+all: log or1ksim newlib uclibc agora-airgap linux
 log:
 	[ -f $(LOGPATH) ] && { echo "" > $(LOGPATH); } || { touch $(LOGPATH); }
 	echo "log file created" >> $(LOGPATH)
@@ -127,6 +129,16 @@ uclibc:
 	cd $(INSTALLDIR)/build-gcc && $(MAKE)
 	cd $(INSTALLDIR)/build-gcc && $(MAKE) install
 
+agora-airgap:
+	@echo 'Building target: $@'
+	@echo 'Invoking: GCC C++ Linker'
+	#g++  -o "has.cpp" $(OBJS) $(USER_OBJS) $(LIBS)
+	cd $(INSTALLDIR)/src && $(LINUX_COMPILER) -static -o agora-airgap agora-airgap.cpp
+	@echo 'Finished building target: $@'
+	[ -d $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local ] || \
+		mkdir $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local 
+	cp $(INSTALLDIR)/src/agora-airgap $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local/
+	 
 linux:
 	[ -f $(LOGPATH) ] || { touch $(LOGPATH); }
 	#linux
@@ -164,7 +176,7 @@ pruebas:
 		sudo apt-get install bridge-utils; }
 
 
-.PHONY: clean or1ksim log uclibc linux runlinux pruebas tapdown
+.PHONY: clean or1ksim log uclibc agora-airgap linux runlinux pruebas tapdown
 
 clean:
 	#clean 

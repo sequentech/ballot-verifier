@@ -32,4 +32,5 @@ bld-or1k-gcc/
 bld-or1k-src/
 or1k-gcc/
 or1k-src/
+src/agora-airgap
 
