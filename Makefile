@@ -1,5 +1,4 @@
 SHELL := /bin/bash
-myvar := "jiji"
 INSTALLDIR := $(CURDIR)
 LOGPATH := $(CURDIR)/log
 SYSROOT := /opt/or1k-toolchain/or1k-linux-uclibc/sys-root
@@ -150,10 +149,14 @@ runlinux:
 	ifconfig | grep -Fq "br0" || { \
 		cd $(INSTALLDIR)/or1ksim && sudo ./brstart.sh openrisc openrisc br0 eth0 tap0; \
 	}
-	cd $(INSTALLDIR)/linux && or32-elf-sim -f arch/openrisc/or1ksim.cfg vmlinux
+	cd $(INSTALLDIR)/linux && or32-elf-sim -f arch/openrisc/or1ksim.cfg vmlinux 
+	#{ sleep 7 && echo "Now connect to openrisc using the following command (user: root) telnet 10.0.2.16"; }
 
 tapdown:
-	sudo ./brend.sh br0 eth0 tap0
+	ifconfig | grep -Fq "br0" && { cd $(INSTALLDIR)/or1ksim && sudo ./brend.sh br0 eth0 tap0; } || true;
+	sudo ifconfig eth0 down
+	sleep 6	
+	sudo ifconfig eth0 up 
 	
 
 pruebas:
