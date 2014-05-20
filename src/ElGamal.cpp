@@ -9,8 +9,60 @@
 
 
 #include "ElGamal.h"
+#include "sha2.h"
+#include "Random.h"
 
-ElGamal::Plaintext::Plaintext(mpz_t m, PublicKey pk, bool encode_m)
+ElGamal::PublicKey::PublicKey(const mpz_t pp, const mpz_t qq, const mpz_t gg, const mpz_t yy)
+{
+	mpz_init_set(p, pp);
+	mpz_init_set(q, qq);
+	mpz_init_set(g, gg);
+	mpz_init_set(y, yy);
+ }
+ElGamal::PublicKey::PublicKey(const ElGamal::PublicKey &pk)
+{
+
+	mpz_init_set(p, pk.p);
+	mpz_init_set(q, pk.q);
+	mpz_init_set(g, pk.g);
+	mpz_init_set(y, pk.y);
+}
+ElGamal::PublicKey::PublicKey()
+{
+
+	mpz_init(p);
+	mpz_init(q);
+	mpz_init(g);
+	mpz_init(y);
+}
+ElGamal::PublicKey ElGamal::PublicKey::fromJSONObject(const string pk_json)
+{
+	//TODO:
+	ElGamal::PublicKey p;
+	return p;
+}
+
+ElGamal::Ciphertext::Ciphertext()
+{
+	mpz_init(alpha);
+	mpz_init(beta);
+}
+ElGamal::Ciphertext::Ciphertext(const mpz_t alpha, const mpz_t beta, const PublicKey pk)
+{
+	mpz_init_set(this->alpha, alpha);
+	mpz_init_set(this->beta, beta);
+	this->pk = PublicKey(pk);
+}
+string ElGamal::Ciphertext::toString()
+{
+	string s("");
+	s +=  mpz_get_str(NULL, 10, alpha);
+	s += ", ";
+	s +=  mpz_get_str(NULL, 10, beta);
+	return s;
+}
+
+ElGamal::Plaintext::Plaintext(const mpz_t m, PublicKey pk, const bool encode_m)
 {
 	mpz_t zero;
 	mpz_t one;
@@ -64,19 +116,50 @@ void ElGamal::Plaintext::getPlaintext(mpz_t res) const
 	mpz_sub(y, y, one);
 	mpz_init_set(res, y);
 }
+ElGamal::PlaintextCommitment::PlaintextCommitment()
+{
+	mpz_init(a);
+	mpz_init(alpha);
+}
+ElGamal::PlaintextCommitment::PlaintextCommitment(const mpz_t alpha, const mpz_t a)
+{
+	mpz_init_set(this->a, a);
+	mpz_init_set(this->alpha, alpha);
+}
 
-/*if (plaintext.getM().equals(BigInt.ZERO))
-	    throw "Can't encrypt 0 with El Gamal"
+// generate a proof of knowledge of the plaintext (schnorr protocol)
+// http://courses.csail.mit.edu/6.897/spring04/L19.pdf
+ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t alpha, const mpz_t randomness, const Challenge_Generator challenge_generator)
+{
 
+	mpz_t w;
+	// generate random w
+	Random::getRandomInteger(w, pk.q);
+/*
+  proveKnowledge: function(alpha, randomness, challenge_generator) {
+	// generate random w
+	var w = Random.getRandomInteger(this.pk.q);
 
-	  if (!r)
-	    r = Random.getRandomInteger(pk.q);
+	// compute first part of commitment = g^w for random w.
+	var a = this.pk.g.modPow(w, this.pk.p);
 
-	  var alpha = pk.g.modPow(r, pk.p);
-	  var beta = (pk.y.modPow(r, pk.p)).multiply(plaintext.m).mod(pk.p);
+	var commitment = new ElGamal.PlaintextCommitment(alpha, a);
 
-	  return new ElGamal.Ciphertext(alpha, beta, pk);
-	  */
+	// get challenge
+	var challenge = challenge_generator(commitment);
+
+	// compute response = w +  randomness * challenge
+	var response = w.add(randomness.multiply(challenge)).mod(this.pk.q);
+
+	return new ElGamal.DLogProof(commitment, challenge, response);
+  }*/
+}
+void ElGamal::Fiatshamir_dlog_challenge_generator::generator(mpz_t out, const ElGamal::PlaintextCommitment commitment)
+{
+	mpz_init_set_str(out, hex_sha256(commitment.alpha, commitment.a).c_str(), 16);
+	//return new BigInt(hex_sha256(commitment.toString()), 16);
+}
+
 
 ElGamal::Ciphertext ElGamal::encrypt(const PublicKey pk, const Plaintext plaintext, const mpz_t r)
 {
@@ -95,10 +178,7 @@ ElGamal::Ciphertext ElGamal::encrypt(const PublicKey pk, const Plaintext plainte
 		mpz_t random;
 		if( 0 == mpz_cmp(r, zero) )
 		{
-			gmp_randstate_t state;
-			gmp_randinit_mt(state); //is this random enough? does it use the random source of linux kernel?
-			mpz_init(random);
-			mpz_urandomm(random, state, pk.q);
+			Random::getRandomInteger(random, pk.q);
 		}
 		else
 		{
@@ -118,13 +198,17 @@ ElGamal::Ciphertext ElGamal::encrypt(const PublicKey pk, const Plaintext plainte
 }
 
 
+ElGamal::DLogProof::DLogProof()
+{
+	mpz_init(challenge);
+	mpz_init(response);
+}
 
-
-
-
-
-
-
-
+ElGamal::DLogProof::DLogProof(ElGamal::PlaintextCommitment commitment , mpz_t challenge, mpz_t response)
+{
+	this->commitment = commitment;
+	mpz_init_set(this->challenge, challenge);
+	mpz_init_set(this->response, response);
+}
 
 

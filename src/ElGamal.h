@@ -11,83 +11,77 @@
 
 #include <gmp.h>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
 class ElGamal
 {
 public:
+
+	class PlaintextCommitment;
+	class DLogProof;
 	class PublicKey
 	{
 	public:
 		mpz_t p, q, g, y;
-		PublicKey(const mpz_t pp, const mpz_t qq, const mpz_t gg, const mpz_t yy)
-		{
-			mpz_init_set(p, pp);
-			mpz_init_set(q, qq);
-			mpz_init_set(g, gg);
-			mpz_init_set(y, yy);
-		 }
-		PublicKey(const ElGamal::PublicKey &pk)
-		{
-
-			mpz_init_set(p, pk.p);
-			mpz_init_set(q, pk.q);
-			mpz_init_set(g, pk.g);
-			mpz_init_set(y, pk.y);
-		}
-		PublicKey()
-		{
-
-			mpz_init(p);
-			mpz_init(q);
-			mpz_init(g);
-			mpz_init(y);
-		}
-		static PublicKey fromJSONObject(string pk_json)
-		{
-			//TODO:
-			PublicKey p;
-			return p;
-		}
+		PublicKey(const mpz_t pp, const mpz_t qq, const mpz_t gg, const mpz_t yy);
+		PublicKey(const ElGamal::PublicKey &pk);
+		PublicKey();
+		static PublicKey fromJSONObject(const string pk_json);
 	};
+
+	class Challenge_Generator
+	{
+	public:
+		void generator(mpz_t out, const ElGamal::PlaintextCommitment commitment);
+	};
+
+	class Fiatshamir_dlog_challenge_generator: public Challenge_Generator
+	{
+	public:
+		virtual void generator(mpz_t out, const ElGamal::PlaintextCommitment commitment);
+	};
+
 
 	class Plaintext
 	{
 	public:
 		PublicKey pk;
-		Plaintext(mpz_t m, PublicKey pk, bool encode_m);
+		Plaintext(const mpz_t m, const PublicKey pk, const bool encode_m);
 		void getPlaintext(mpz_t res) const;
 		void getM(mpz_t res) const;
+		ElGamal::DLogProof proveKnowledge(const mpz_t alpha, const mpz_t randomness, const Challenge_Generator challenge_generator);
 	private:
 		mpz_t m;
+	};
 
+	class PlaintextCommitment
+	{
+	public:
+		mpz_t a, alpha;
+		PlaintextCommitment();
+		PlaintextCommitment(const mpz_t alpha, const mpz_t a);
+	};
+
+	class DLogProof
+	{
+		ElGamal::PlaintextCommitment commitment;
+		mpz_t challenge,response;
+	public:
+		DLogProof();
+		DLogProof(ElGamal::PlaintextCommitment commitment , mpz_t challenge, mpz_t response);
 	};
 
 
-	class Ciphertext{
+	class Ciphertext
+	{
 	public:
 			PublicKey pk;
 			mpz_t alpha, beta;
-			Ciphertext()
-			{
-				mpz_init(alpha);
-				mpz_init(beta);
-			}
-			Ciphertext(mpz_t alpha, mpz_t beta, PublicKey pk)
-			{
-				mpz_init_set(this->alpha, alpha);
-				mpz_init_set(this->beta, beta);
-				this->pk = PublicKey(pk);
-			}
-			string toString()
-			{
-				string s("");
-				s +=  mpz_get_str(NULL, 10, alpha);
-				s += ", ";
-				s +=  mpz_get_str(NULL, 10, beta);
-				return s;
-			}
+			Ciphertext();
+			Ciphertext(const mpz_t alpha, const mpz_t beta, const PublicKey pk);
+			string toString();
 
 	};
 

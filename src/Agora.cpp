@@ -9,6 +9,7 @@
 
 
 #include "Agora.h"
+#include "Random.h"
 
 
 /*
@@ -39,6 +40,7 @@
             response: json_proof.response,
             challenge: json_proof.challenge
         };
+        return enc_answer;
  */
 
 Agora::encrypted_answer Agora::encryptAnswer(string pk_json, mpz_t encoded_answer, string randomness)
@@ -57,16 +59,16 @@ Agora::encrypted_answer Agora::encryptAnswer(string pk_json, mpz_t encoded_answe
 	ElGamal::Plaintext plaintext = ElGamal::Plaintext(encoded_answer, pk, true);
 	mpz_t random;
 	mpz_t zero;
-	mpz_init_set_str(random, "0", 10);
-	mpz_init_set_str(zero, "0", 10);
+	mpz_init(random);
+	mpz_init(zero);
 	//this conditional checks whether it's a (valid) number, as mpz_set_str
 	//returns 0 only if randomness is a valid number in base 10
 	if (0 != mpz_set_str(random,randomness.c_str(), 10))
 	{
-		gmp_randstate_t state;
-		gmp_randinit_mt(state); //is this random enough? does it use the random source of linux kernel?
-		mpz_urandomm(random, state, pk.q);
+		Random::getRandomInteger(random, pk.q);
 	}
-	ElGamal::Ciphertext ct = ElGamal::encrypt(pk, plaintext, random);
+	ElGamal::Ciphertext ctext = ElGamal::encrypt(pk, plaintext, random);
+	ElGamal::Fiatshamir_dlog_challenge_generator generator;
+	ElGamal::DLogProof proof = plaintext.proveKnowledge(ctext.alpha, random, generator);
 	return a;
 }

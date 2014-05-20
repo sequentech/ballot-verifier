@@ -15,9 +15,11 @@
 #include "ElGamal.h"
 
 
-class Agora{
+class Agora
+{
 public:
-	typedef struct {
+	typedef struct
+	{
 		int a;
 	}encrypted_answer;
 	static encrypted_answer encryptAnswer(string pk_json, mpz_t encoded_answer, string randomness);
