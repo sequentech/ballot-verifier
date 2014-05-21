@@ -4,6 +4,7 @@ LOGPATH := $(CURDIR)/log
 SYSROOT := /opt/or1k-toolchain/or1k-linux-uclibc/sys-root
 LINUX_COMPILER := or1k-linux-uclibc-g++
 METAL_COMPILER := or1k-elf-g++
+X86_COMPILER := g++
 
 all: log or1ksim newlib uclibc agora-airgap linux
 log:
@@ -138,6 +139,16 @@ agora-airgap:
 	[ -d $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local ] || \
 		mkdir $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local 
 	cp $(INSTALLDIR)/src/agora-airgap $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local/
+
+agora-airgap-x86:
+	@echo 'Building target: $@'
+	[ -d $(INSTALLDIR)/Debug ] || mkdir $(INSTALLDIR)/Debug 
+	cd $(INSTALLDIR)/Debug && $(X86_COMPILER) -c ../src/sha2.cpp ../src/Random.cpp ../src/ElGamal.cpp \
+		../src/Agora.cpp ../src/agora-airgap.cpp
+	@echo 'Invoking: GCC C++ Linker'
+	#g++  -o "has.cpp" $(OBJS) $(USER_OBJS) $(LIBS)
+	cd $(INSTALLDIR)/Debug && $(X86_COMPILER) -o "agora-airgap" sha2.o Random.o ElGamal.o Agora.o agora-airgap.o -lgmp
+	@echo 'Finished building target: $@'
 	 
 linux:
 	[ -f $(LOGPATH) ] || { touch $(LOGPATH); }
