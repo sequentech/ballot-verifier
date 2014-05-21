@@ -21,26 +21,27 @@ public:
 
 	class PlaintextCommitment;
 	class DLogProof;
+	class Challenge_Generator;
 	class PublicKey
 	{
 	public:
 		mpz_t p, q, g, y;
-		PublicKey(const mpz_t pp, const mpz_t qq, const mpz_t gg, const mpz_t yy);
+		PublicKey(const mpz_t &pp, const mpz_t &qq, const mpz_t &gg, const mpz_t &yy);
 		PublicKey(const ElGamal::PublicKey &pk);
 		PublicKey();
-		static PublicKey fromJSONObject(const string pk_json);
+		static PublicKey fromJSONObject(const string &pk_json);
 	};
 
 	class Challenge_Generator
 	{
 	public:
-		void generator(mpz_t out, const ElGamal::PlaintextCommitment commitment);
+		virtual void generator(mpz_t &out, const ElGamal::PlaintextCommitment &commitment) const{}
 	};
 
 	class Fiatshamir_dlog_challenge_generator: public Challenge_Generator
 	{
 	public:
-		virtual void generator(mpz_t out, const ElGamal::PlaintextCommitment commitment);
+		void generator(mpz_t &out, const ElGamal::PlaintextCommitment &commitment) const;
 	};
 
 
@@ -48,10 +49,10 @@ public:
 	{
 	public:
 		PublicKey pk;
-		Plaintext(const mpz_t m, const PublicKey pk, const bool encode_m);
-		void getPlaintext(mpz_t res) const;
-		void getM(mpz_t res) const;
-		ElGamal::DLogProof proveKnowledge(const mpz_t alpha, const mpz_t randomness, const Challenge_Generator challenge_generator);
+		Plaintext(const mpz_t &m, const PublicKey &pk, const bool &encode_m);
+		void getPlaintext(mpz_t &res) const;
+		void getM(mpz_t &res) const;
+		ElGamal::DLogProof proveKnowledge(const mpz_t &alpha, const mpz_t &randomness, const Challenge_Generator &challenge_generator);
 	private:
 		mpz_t m;
 	};
@@ -61,16 +62,16 @@ public:
 	public:
 		mpz_t a, alpha;
 		PlaintextCommitment();
-		PlaintextCommitment(const mpz_t alpha, const mpz_t a);
+		PlaintextCommitment(const mpz_t &alpha, const mpz_t &a);
 	};
 
 	class DLogProof
 	{
+	public:
 		ElGamal::PlaintextCommitment commitment;
 		mpz_t challenge,response;
-	public:
 		DLogProof();
-		DLogProof(ElGamal::PlaintextCommitment commitment , mpz_t challenge, mpz_t response);
+		DLogProof(const ElGamal::PlaintextCommitment &commitment , const mpz_t &challenge, const mpz_t &response);
 	};
 
 
@@ -80,12 +81,12 @@ public:
 			PublicKey pk;
 			mpz_t alpha, beta;
 			Ciphertext();
-			Ciphertext(const mpz_t alpha, const mpz_t beta, const PublicKey pk);
+			Ciphertext(const mpz_t &alpha, const mpz_t &beta, const PublicKey &pk);
 			string toString();
 
 	};
 
-	static ElGamal::Ciphertext encrypt(const PublicKey pk, const Plaintext plaintext, const mpz_t r);
+	static ElGamal::Ciphertext encrypt(const PublicKey &pk, const Plaintext &plaintext, const mpz_t &r);
 };
 
 

@@ -12,7 +12,7 @@
 #include "sha2.h"
 #include "Random.h"
 
-ElGamal::PublicKey::PublicKey(const mpz_t pp, const mpz_t qq, const mpz_t gg, const mpz_t yy)
+ElGamal::PublicKey::PublicKey(const mpz_t &pp, const mpz_t &qq, const mpz_t &gg, const mpz_t &yy)
 {
 	mpz_init_set(p, pp);
 	mpz_init_set(q, qq);
@@ -35,7 +35,7 @@ ElGamal::PublicKey::PublicKey()
 	mpz_init(g);
 	mpz_init(y);
 }
-ElGamal::PublicKey ElGamal::PublicKey::fromJSONObject(const string pk_json)
+ElGamal::PublicKey ElGamal::PublicKey::fromJSONObject(const string &pk_json)
 {
 	//TODO:
 	ElGamal::PublicKey p;
@@ -47,7 +47,7 @@ ElGamal::Ciphertext::Ciphertext()
 	mpz_init(alpha);
 	mpz_init(beta);
 }
-ElGamal::Ciphertext::Ciphertext(const mpz_t alpha, const mpz_t beta, const PublicKey pk)
+ElGamal::Ciphertext::Ciphertext(const mpz_t &alpha, const mpz_t &beta, const PublicKey &pk)
 {
 	mpz_init_set(this->alpha, alpha);
 	mpz_init_set(this->beta, beta);
@@ -62,7 +62,7 @@ string ElGamal::Ciphertext::toString()
 	return s;
 }
 
-ElGamal::Plaintext::Plaintext(const mpz_t m, PublicKey pk, const bool encode_m)
+ElGamal::Plaintext::Plaintext(const mpz_t &m, const PublicKey &pk, const bool &encode_m)
 {
 	mpz_t zero;
 	mpz_t one;
@@ -94,11 +94,11 @@ ElGamal::Plaintext::Plaintext(const mpz_t m, PublicKey pk, const bool encode_m)
 		}
 	}
 }
-void ElGamal::Plaintext::getM(mpz_t res) const
+void ElGamal::Plaintext::getM(mpz_t &res) const
 {
 	mpz_init_set(res, m);
 }
-void ElGamal::Plaintext::getPlaintext(mpz_t res) const
+void ElGamal::Plaintext::getPlaintext(mpz_t &res) const
 {
 	mpz_t y;
 	mpz_t one;
@@ -121,7 +121,7 @@ ElGamal::PlaintextCommitment::PlaintextCommitment()
 	mpz_init(a);
 	mpz_init(alpha);
 }
-ElGamal::PlaintextCommitment::PlaintextCommitment(const mpz_t alpha, const mpz_t a)
+ElGamal::PlaintextCommitment::PlaintextCommitment(const mpz_t &alpha, const mpz_t &a)
 {
 	mpz_init_set(this->a, a);
 	mpz_init_set(this->alpha, alpha);
@@ -129,39 +129,45 @@ ElGamal::PlaintextCommitment::PlaintextCommitment(const mpz_t alpha, const mpz_t
 
 // generate a proof of knowledge of the plaintext (schnorr protocol)
 // http://courses.csail.mit.edu/6.897/spring04/L19.pdf
-ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t alpha, const mpz_t randomness, const Challenge_Generator challenge_generator)
+ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t &alpha, const mpz_t &randomness,
+		const Challenge_Generator &challenge_generator)
 {
 
 	mpz_t w;
 	// generate random w
 	Random::getRandomInteger(w, pk.q);
-/*
-  proveKnowledge: function(alpha, randomness, challenge_generator) {
-	// generate random w
-	var w = Random.getRandomInteger(this.pk.q);
 
+	mpz_t a;
+	mpz_init(a);
 	// compute first part of commitment = g^w for random w.
-	var a = this.pk.g.modPow(w, this.pk.p);
+	mpz_powm(a, pk.g, w, pk.p);
 
-	var commitment = new ElGamal.PlaintextCommitment(alpha, a);
+	ElGamal::PlaintextCommitment commitment = ElGamal::PlaintextCommitment(alpha, a);
 
+	mpz_t challenge;
+	mpz_init(challenge);
 	// get challenge
-	var challenge = challenge_generator(commitment);
+	challenge_generator.generator(challenge, commitment);
 
-	// compute response = w +  randomness * challenge
-	var response = w.add(randomness.multiply(challenge)).mod(this.pk.q);
+	// compute response = ( w + randomness * challenge ) mod pk.q
+	mpz_t response;
+	mpz_init(response);
+	mpz_mul(response, randomness, challenge);
+	mpz_add(response, response, w);
+	mpz_mod(response, response, pk.q);
 
-	return new ElGamal.DLogProof(commitment, challenge, response);
-  }*/
+	ElGamal::DLogProof out = ElGamal::DLogProof(commitment, challenge, response);
+	return out;
+
 }
-void ElGamal::Fiatshamir_dlog_challenge_generator::generator(mpz_t out, const ElGamal::PlaintextCommitment commitment)
+void ElGamal::Fiatshamir_dlog_challenge_generator::generator(mpz_t &out, const ElGamal::PlaintextCommitment &commitment) const
 {
 	mpz_init_set_str(out, hex_sha256(commitment.alpha, commitment.a).c_str(), 16);
 	//return new BigInt(hex_sha256(commitment.toString()), 16);
 }
 
 
-ElGamal::Ciphertext ElGamal::encrypt(const PublicKey pk, const Plaintext plaintext, const mpz_t r)
+ElGamal::Ciphertext ElGamal::encrypt(const PublicKey &pk, const Plaintext &plaintext, const mpz_t &r)
 {
 	mpz_t zero, m;
 	mpz_init_set_str(zero, "0", 10);
@@ -204,7 +210,7 @@ ElGamal::DLogProof::DLogProof()
 	mpz_init(response);
 }
 
-ElGamal::DLogProof::DLogProof(ElGamal::PlaintextCommitment commitment , mpz_t challenge, mpz_t response)
+ElGamal::DLogProof::DLogProof(const ElGamal::PlaintextCommitment &commitment , const mpz_t &challenge, const mpz_t &response)
 {
 	this->commitment = commitment;
 	mpz_init_set(this->challenge, challenge);

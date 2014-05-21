@@ -18,11 +18,17 @@
 class Agora
 {
 public:
-	typedef struct
+	class Encrypted_answer
 	{
-		int a;
-	}encrypted_answer;
-	static encrypted_answer encryptAnswer(string pk_json, mpz_t encoded_answer, string randomness);
+	public:
+		mpz_t alpha, beta;
+		ElGamal::PlaintextCommitment commitment;
+		mpz_t challenge,response;
+		Encrypted_answer();
+		Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const ElGamal::PlaintextCommitment &commitment,
+				const mpz_t &challenge,const mpz_t &response);
+	};
+	static Encrypted_answer encryptAnswer(const string &pk_json, const mpz_t &encoded_answer, const string &randomness);
 };
 
 

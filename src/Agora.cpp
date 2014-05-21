@@ -11,39 +11,25 @@
 #include "Agora.h"
 #include "Random.h"
 
+Agora::Encrypted_answer::Encrypted_answer()
+{
+	mpz_init(alpha);
+	mpz_init(beta);
+	mpz_init(challenge);
+	mpz_init(response);
+}
 
-/*
- * Agora.encryptAnswer = function(pk_json, encoded_answer, randomness) {
-        **
-         * Here we not only just encrypt the answer but also provide a
-         * verifiable Proof of Knowledge (PoK) of the plaintext, using the
-         * Schnorr Protocol with Fiat-Shamir (which is a method of
-         * converting an interactive PoK into non interactive using a hash
-         * that substitutes the random oracle). We use sha256 for hashing.
-         *
-        var pk = ElGamal.PublicKey.fromJSONObject(pk_json);
-        var plaintext = new
-        ElGamal.Plaintext(encoded_answer, pk, true);
-        if (!randomness) {
-          randomness = Random.getRandomInteger(pk.q);
-        } else {
-          randomness = BigInt.fromJSONObject(randomness);
-        }
-        var ctext = ElGamal.encrypt(pk, plaintext, randomness);
-        var proof = plaintext.proveKnowledge(ctext.alpha, randomness, ElGamal.fiatshamir_dlog_challenge_generator);
-        var ciphertext =  ctext.toJSONObject();
-        var json_proof = proof.toJSONObject();
-        var enc_answer = {
-            alpha: ciphertext.alpha,
-            beta: ciphertext.beta,
-            commitment: json_proof.commitment,
-            response: json_proof.response,
-            challenge: json_proof.challenge
-        };
-        return enc_answer;
- */
+Agora::Encrypted_answer::Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const ElGamal::PlaintextCommitment &commitment,
+				const mpz_t &challenge,const mpz_t &response)
+{
+	this->commitment = commitment;
+	mpz_init_set(this->alpha, alpha);
+	mpz_init_set(this->beta, beta);
+	mpz_init_set(this->challenge, challenge);
+	mpz_init_set(this->response, response);
+}
 
-Agora::encrypted_answer Agora::encryptAnswer(string pk_json, mpz_t encoded_answer, string randomness)
+Agora::Encrypted_answer Agora::encryptAnswer(const string &pk_json, const mpz_t &encoded_answer, const string &randomness)
 {
 	/**
 	 * Here we not only just encrypt the answer but also provide a
@@ -55,8 +41,9 @@ Agora::encrypted_answer Agora::encryptAnswer(string pk_json, mpz_t encoded_answe
 	//var pk = ElGamal.PublicKey.fromJSONObject(pk_json);
 	ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json);
 	//var plaintext = new    ElGamal.Plaintext(encoded_answer, pk, true);
-	Agora::encrypted_answer a;
-	ElGamal::Plaintext plaintext = ElGamal::Plaintext(encoded_answer, pk, true);
+	Agora::Encrypted_answer answer;
+	bool b = true;
+	ElGamal::Plaintext plaintext = ElGamal::Plaintext(encoded_answer, pk, b);
 	mpz_t random;
 	mpz_t zero;
 	mpz_init(random);
@@ -67,8 +54,9 @@ Agora::encrypted_answer Agora::encryptAnswer(string pk_json, mpz_t encoded_answe
 	{
 		Random::getRandomInteger(random, pk.q);
 	}
-	ElGamal::Ciphertext ctext = ElGamal::encrypt(pk, plaintext, random);
+	ElGamal::Ciphertext ciphertext = ElGamal::encrypt(pk, plaintext, random);
 	ElGamal::Fiatshamir_dlog_challenge_generator generator;
-	ElGamal::DLogProof proof = plaintext.proveKnowledge(ctext.alpha, random, generator);
-	return a;
+	ElGamal::DLogProof proof = plaintext.proveKnowledge(ciphertext.alpha, random, generator);
+	answer = Agora::Encrypted_answer(ciphertext.alpha, ciphertext.beta, proof.commitment, proof.response, proof.challenge);
+	return answer;
 }
