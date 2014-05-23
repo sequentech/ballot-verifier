@@ -9,7 +9,7 @@
 
 
 #include "ElGamal.h"
-#include "sha2.h"
+#include "sha256.h"
 #include "Random.h"
 
 ElGamal::PublicKey::PublicKey(const mpz_t &pp, const mpz_t &qq, const mpz_t &gg, const mpz_t &yy)
@@ -127,6 +127,12 @@ ElGamal::PlaintextCommitment::PlaintextCommitment(const mpz_t &alpha, const mpz_
 	mpz_init_set(this->alpha, alpha);
 }
 
+string ElGamal::PlaintextCommitment::toString() const{
+	string salpha( mpz_get_str(NULL, 10, alpha)), sa(mpz_get_str(NULL, 10, a));
+	string out = salpha + "/" + sa;
+	return out;
+}
+
 // generate a proof of knowledge of the plaintext (schnorr protocol)
 // http://courses.csail.mit.edu/6.897/spring04/L19.pdf
 ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t &alpha, const mpz_t &randomness,
@@ -162,7 +168,7 @@ ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t &alpha, const 
 }
 void ElGamal::Fiatshamir_dlog_challenge_generator::generator(mpz_t &out, const ElGamal::PlaintextCommitment &commitment) const
 {
-	mpz_init_set_str(out, hex_sha256(commitment.alpha, commitment.a).c_str(), 16);
+	mpz_init_set_str(out, hex_sha256(commitment.toString()).c_str(), 16);
 	//return new BigInt(hex_sha256(commitment.toString()), 16);
 }
 

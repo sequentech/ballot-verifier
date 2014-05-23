@@ -63,6 +63,7 @@ public:
 		mpz_t a, alpha;
 		PlaintextCommitment();
 		PlaintextCommitment(const mpz_t &alpha, const mpz_t &a);
+		string toString() const;
 	};
 
 	class DLogProof
