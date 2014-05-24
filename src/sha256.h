@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <string>
+#include "Random.h"
 using namespace std;
 
 /****************************** MACROS ******************************/

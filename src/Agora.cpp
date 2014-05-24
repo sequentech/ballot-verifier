@@ -9,7 +9,6 @@
 
 
 #include "Agora.h"
-#include "Random.h"
 
 Agora::Encrypted_answer::Encrypted_answer()
 {
@@ -29,8 +28,7 @@ Agora::Encrypted_answer::Encrypted_answer(const mpz_t &alpha, const mpz_t &beta,
 	mpz_init_set(this->response, response);
 }
 
-Agora::Encrypted_answer Agora::encryptAnswer(const string &pk_json, const mpz_t &encoded_answer, const string &randomness)
-{
+Agora::Encrypted_answer Agora::encryptAnswer(const ElGamal::PublicKey &pk, const mpz_t &encoded_answer, const mpz_t &randomness) {
 	/**
 	 * Here we not only just encrypt the answer but also provide a
 	 * verifiable Proof of Knowledge (PoK) of the plaintext, using the
@@ -38,21 +36,17 @@ Agora::Encrypted_answer Agora::encryptAnswer(const string &pk_json, const mpz_t 
 	 * converting an interactive PoK into non interactive using a hash
 	 * that substitutes the random oracle). We use sha256 for hashing.
 	 */
-	//var pk = ElGamal.PublicKey.fromJSONObject(pk_json);
-	ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json);
-	//var plaintext = new    ElGamal.Plaintext(encoded_answer, pk, true);
 	Agora::Encrypted_answer answer;
 	bool b = true;
 	ElGamal::Plaintext plaintext = ElGamal::Plaintext(encoded_answer, pk, b);
-	mpz_t random;
-	mpz_t zero;
-	mpz_init(random);
+	mpz_t zero, random;
 	mpz_init(zero);
-	//this conditional checks whether it's a (valid) number, as mpz_set_str
-	//returns 0 only if randomness is a valid number in base 10
-	if (0 != mpz_set_str(random,randomness.c_str(), 10))
-	{
+	mpz_init(random);
+	//returns 0 only if randomn == 0
+	if (0 == mpz_cmp(randomness,zero)) 	{
 		Random::getRandomInteger(random, pk.q);
+	} else {
+		mpz_set(random, randomness);
 	}
 	ElGamal::Ciphertext ciphertext = ElGamal::encrypt(pk, plaintext, random);
 	ElGamal::Fiatshamir_dlog_challenge_generator generator;

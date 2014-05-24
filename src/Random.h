@@ -15,10 +15,13 @@
 
 class Random
 {
+private:
+	static gmp_randstate_t state;
+	static bool initiated;
 public:
-	static void getRandomInteger(mpz_t out, const mpz_t max);
+	static void initState();
+	static void getRandomInteger(mpz_t &out, const mpz_t &max);
 };
-
 
 
 

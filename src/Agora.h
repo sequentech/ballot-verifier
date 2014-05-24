@@ -28,7 +28,7 @@ public:
 		Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const ElGamal::PlaintextCommitment &commitment,
 				const mpz_t &challenge,const mpz_t &response);
 	};
-	static Encrypted_answer encryptAnswer(const string &pk_json, const mpz_t &encoded_answer, const string &randomness);
+	static Encrypted_answer encryptAnswer(const ElGamal::PublicKey &pk, const mpz_t &encoded_answer, const mpz_t &random);
 };
 
 
