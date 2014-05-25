@@ -68,7 +68,7 @@ public:
 		Plaintext(const mpz_t &m, const PublicKey &pk, const bool &encode_m);
 		void getPlaintext(mpz_t &res) const;
 		void getM(mpz_t &res) const;
-		ElGamal::DLogProof proveKnowledge(const mpz_t &alpha, const mpz_t &randomness, const Challenge_Generator &challenge_generator);
+		ElGamal::DLogProof proveKnowledge(const mpz_t &alpha, const mpz_t &randomness, const Challenge_Generator &challenge_generator) const;
 	private:
 		mpz_t m;
 	};

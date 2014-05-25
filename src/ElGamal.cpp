@@ -153,7 +153,7 @@ string ElGamal::PlaintextCommitment::toString() const {
 // generate a proof of knowledge of the plaintext (schnorr protocol)
 // http://courses.csail.mit.edu/6.897/spring04/L19.pdf
 ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t &alpha, const mpz_t &randomness,
-		const Challenge_Generator &challenge_generator) {
+		const Challenge_Generator &challenge_generator) const{
 
 	mpz_t w;
 	// generate random w
