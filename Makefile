@@ -132,13 +132,17 @@ uclibc:
 
 agora-airgap:
 	@echo 'Building target: $@'
+  	[ -d $(INSTALLDIR)/Debug ] || mkdir $(INSTALLDIR)/Debug 
+	cd $(INSTALLDIR)/Debug && $(LINUX_COMPILER) -c ../src/sha2.cpp ../src/Random.cpp ../src/ElGamal.cpp \
+		../src/Agora.cpp ../src/agora-airgap.cpp
 	@echo 'Invoking: GCC C++ Linker'
 	#g++  -o "has.cpp" $(OBJS) $(USER_OBJS) $(LIBS)
-	cd $(INSTALLDIR)/src && $(LINUX_COMPILER) -static -o agora-airgap agora-airgap.cpp
+  	#This won't work yet because you have to use the cross-compiled version of gmp!!
+  	cd $(INSTALLDIR)/Debug && $(LINUX_COMPILER) -static -o "agora-airgap" sha2.o Random.o ElGamal.o Agora.o agora-airgap.o -lgmp
 	@echo 'Finished building target: $@'
 	[ -d $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local ] || \
 		mkdir $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local 
-	cp $(INSTALLDIR)/src/agora-airgap $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local/
+	cp $(INSTALLDIR)/Debug/agora-airgap $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local/
 
 agora-airgap-x86:
 	@echo 'Building target: $@'
