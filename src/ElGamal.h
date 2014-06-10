@@ -101,6 +101,7 @@ public:
 	};
 
 	static ElGamal::Ciphertext encrypt(const PublicKey &pk, const Plaintext &plaintext, const mpz_t &r);
+  	static ElGamal::Plaintext decrypt(const SecretKey &sk, const Ciphertext &ciphertext);
 };
 
 
