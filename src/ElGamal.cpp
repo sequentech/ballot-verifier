@@ -221,6 +221,17 @@ ElGamal::Ciphertext ElGamal::encrypt(const PublicKey &pk, const Plaintext &plain
 	}
 }
 
+ElGamal::Plaintext ElGamal::decrypt(const SecretKey &sk, const Ciphertext &ciphertext) {
+  mpz_t u, m;
+  mpz_init_set_str(u, "0", 10);
+  mpz_init_set_str(m, "0", 10);
+  mpz_powm(u, ciphertext.alpha, sk.x, sk.pk.p); //u = (alpha^x) mod p
+  mpz_invert(u, u, sk.pk.p); // u = u^(-1) ; that means u <-- x, where u*x = 1 (mod p)
+  mpz_mul(m, u, ciphertext.beta);
+  mpz_mod(m, m, sk.pk.p);    // the decrypted message is m = (u^-1)*beta (mod p)
+  return ElGamal::Plaintext(m, sk.pk, false);
+}
+
 ElGamal::DLogProof::DLogProof() {
 	mpz_init(challenge);
 	mpz_init(response);
