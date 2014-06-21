@@ -2,7 +2,7 @@
  * Agora.cpp
  *
  *  Created on: May 18, 2014
- *      Author: FÃ©lix Robles felrobelv at gmail dot com
+ *      Author: Félix Robles felrobelv at gmail dot com
  * Loosely based on Agora Voting:
  * https://github.com/agoraciudadana/agora-ciudadana/blob/security/agora_site/static/js/agora/views/voting_booth.js
  */
@@ -42,10 +42,13 @@ Agora::Encrypted_answer Agora::encryptAnswer(const ElGamal::PublicKey &pk, const
 	mpz_t zero, random;
 	mpz_init(zero);
 	mpz_init(random);
-	//returns 0 only if randomn == 0
+	//returns 0 only if randomness == 0
 	if (0 == mpz_cmp(randomness,zero)) 	{
 		Random::getRandomInteger(random, pk.q);
-	} else {
+	} else if (mpz_cmp(randomness,pk.q) > 0 ) { //randomness is too big
+		mpz_mod(random, randomness, pk.q);
+	}
+	else {
 		mpz_set(random, randomness);
 	}
 	ElGamal::Ciphertext ciphertext = ElGamal::encrypt(pk, plaintext, random);

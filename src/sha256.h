@@ -1,6 +1,6 @@
 /*********************************************************************
 * Filename:   sha256.h
-* Authors:     Brad Conte (brad AT bradconte.com), FÃ©lix Robles
+* Authors:     Brad Conte (brad AT bradconte.com), Félix Robles
 * Disclaimer: This code is presented "as is" without any guarantees.
 * Details:    Defines the API for the corresponding SHA1 implementation.
 *********************************************************************/

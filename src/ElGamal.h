@@ -2,7 +2,7 @@
  * ElGamal.h
  *
  *  Created on: May 18, 2014
- *      Author: FÃ©lix Robles felrobelv at gmail dot com
+ *      Author: Félix Robles felrobelv at gmail dot com
  * Loosely based on Ben Adida's jscrypto:
  * https://github.com/benadida/jscrypto/blob/master/elgamal.js
  */
@@ -42,7 +42,6 @@ public:
 		PublicKey(const mpz_t &p, const mpz_t &q, const mpz_t &g, const mpz_t &y);
 		PublicKey(const ElGamal::PublicKey &pk);
 		PublicKey();
-		static PublicKey fromJSONObject(const string &pk_json);
 	};
 
 	class SecretKey {
@@ -101,6 +100,7 @@ public:
 	};
 
 	static ElGamal::Ciphertext encrypt(const PublicKey &pk, const Plaintext &plaintext, const mpz_t &r);
+  	static ElGamal::Plaintext decrypt(const SecretKey &sk, const Ciphertext &ciphertext);
 };
 
 

@@ -2,7 +2,7 @@
  * Random.h
  *
  *  Created on: May 26, 2014
- *      Author: FÃ©lix Robles felrobelv at gmail dot com
+ *      Author: Félix Robles felrobelv at gmail dot com
  * Loosely based on Ben Adida's jscrypto:
  * https://github.com/benadida/jscrypto/blob/master/elgamal.js
  */
@@ -16,10 +16,11 @@
 class Random
 {
 private:
+	Random(){}
 	static gmp_randstate_t state;
 	static bool initiated;
-public:
 	static void initState();
+public:
 	static void getRandomInteger(mpz_t &out, const mpz_t &max);
 };
 

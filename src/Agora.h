@@ -2,7 +2,7 @@
  * Agora.h
  *
  *  Created on: May 18, 2014
- *      Author: FÃ©lix Robles felrobelv at gmail dot com
+ *      Author: Félix Robles felrobelv at gmail dot com
  * Loosely based on Agora Voting:
  * https://github.com/agoraciudadana/agora-ciudadana/blob/security/agora_site/static/js/agora/views/voting_booth.js
  */

@@ -2,11 +2,10 @@
  * ElGamal.cpp
  *
  *  Created on: May 18, 2014
- *      Author: FÃ©lix Robles felrobelv at gmail dot com
+ *      Author: Félix Robles felrobelv at gmail dot com
  * Loosely based on Ben Adida's jscrypto:
  * https://github.com/benadida/jscrypto/blob/master/elgamal.js
  */
-
 
 #include "ElGamal.h"
 
@@ -61,21 +60,18 @@ ElGamal::PublicKey::PublicKey() {
 	mpz_init(g);
 	mpz_init(y);
 }
-ElGamal::PublicKey ElGamal::PublicKey::fromJSONObject(const string &pk_json) {
-	//TODO:
-	ElGamal::PublicKey p;
-	return p;
-}
 
 ElGamal::Ciphertext::Ciphertext() {
 	mpz_init(alpha);
 	mpz_init(beta);
 }
+
 ElGamal::Ciphertext::Ciphertext(const mpz_t &alpha, const mpz_t &beta, const PublicKey &pk) {
 	mpz_init_set(this->alpha, alpha);
 	mpz_init_set(this->beta, beta);
 	this->pk = PublicKey(pk);
 }
+
 string ElGamal::Ciphertext::toString() {
 	string s("");
 	s +=  mpz_get_str(NULL, 10, alpha);
@@ -185,7 +181,6 @@ ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t &alpha, const 
 
 void ElGamal::Fiatshamir_dlog_challenge_generator::generator(mpz_t &out, const ElGamal::PlaintextCommitment &commitment) const {
 	mpz_init_set_str(out, hex_sha256(commitment.toString()).c_str(), 16);
-	//return new BigInt(hex_sha256(commitment.toString()), 16);
 }
 
 
@@ -195,7 +190,6 @@ ElGamal::Ciphertext ElGamal::encrypt(const PublicKey &pk, const Plaintext &plain
 	mpz_init_set_str(m, "0", 10);
 	plaintext.getM(m);
 	if( 0 == mpz_cmp(m, zero) ) {
-		//ElGamal::Ciphertext ct;
 		return ElGamal::Ciphertext(zero, zero, pk);
 	}
 	else {
@@ -219,6 +213,17 @@ ElGamal::Ciphertext ElGamal::encrypt(const PublicKey &pk, const Plaintext &plain
 		mpz_mod(beta, beta, pk.p); // beta = ( (y^random) M  ) mod p
 		return ElGamal::Ciphertext(alpha, beta, pk);
 	}
+}
+
+ElGamal::Plaintext ElGamal::decrypt(const SecretKey &sk, const Ciphertext &ciphertext) {
+  mpz_t u, m;
+  mpz_init_set_str(u, "0", 10);
+  mpz_init_set_str(m, "0", 10);
+  mpz_powm(u, ciphertext.alpha, sk.x, sk.pk.p); //u = (alpha^x) mod p
+  mpz_invert(u, u, sk.pk.p); // u = u^(-1) ; that means u <-- x, where u*x = 1 (mod p)
+  mpz_mul(m, u, ciphertext.beta);
+  mpz_mod(m, m, sk.pk.p);    // the decrypted message is m = (u^-1)*beta (mod p)
+  return ElGamal::Plaintext(m, sk.pk, false);
 }
 
 ElGamal::DLogProof::DLogProof() {
