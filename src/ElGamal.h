@@ -2,7 +2,7 @@
  * ElGamal.h
  *
  *  Created on: May 18, 2014
- *      Author: Félix Robles felrobelv at gmail dot com
+ *      Author: Fï¿½lix Robles felrobelv at gmail dot com
  * Loosely based on Ben Adida's jscrypto:
  * https://github.com/benadida/jscrypto/blob/master/elgamal.js
  */
