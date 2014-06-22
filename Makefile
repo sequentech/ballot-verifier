@@ -166,14 +166,15 @@ gmock:
 	cp ${GTEST_DIR}/lib/.libs/*.a ${GTEST_DIR}/lib
 
 agora-airgap-tests:
+	[ -f /usr/lib/libcryptopp.so ] || sudo apt-get install libcrypto++
 	@echo 'Building target: $@'
 	[ -d $(INSTALLDIR)/Debug ] || mkdir $(INSTALLDIR)/Debug 
 	cd $(INSTALLDIR)/Debug && $(X86_COMPILER) -pthread -isystem ${GTEST_DIR}/include -isystem ${GMOCK_DIR}/include \
-		-c ../src/sha256.cpp ../src/Random.cpp ../src/ElGamal.cpp ../src/Agora.cpp ../src/tests-main.cpp
+		-c ../src/sha256.cpp ../src/Random.cpp ../src/ElGamal.cpp ../src/Agora.cpp ../src/unit-tests.cpp ../src/tests-main.cpp
 	@echo 'Invoking: GCC C++ Linker'
 	#g++  -o "has.cpp" $(OBJS) $(USER_OBJS) $(LIBS)
-	cd $(INSTALLDIR)/Debug && $(X86_COMPILER) -pthread -o "agora-airgap-tests" sha256.o Random.o ElGamal.o Agora.o tests-main.o -lgmp \
-		-L${GMOCK_DIR}/lib -L${GTEST_DIR}/lib -lgmock -lgtest
+	cd $(INSTALLDIR)/Debug && $(X86_COMPILER) -pthread -o "agora-airgap-tests" sha256.o Random.o ElGamal.o Agora.o unit-tests.o \
+	tests-main.o  -L${GMOCK_DIR}/lib -L${GTEST_DIR}/lib -lgmock -lgtest -lgmp -lcryptopp
 	@echo 'Finished building target: $@'
 	cd $(INSTALLDIR)/Debug && ./agora-airgap-tests
 
