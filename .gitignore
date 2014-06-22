@@ -25,6 +25,7 @@
 log
 or1ksim/
 linux/
+gmock/
 build-gcc/
 uClibc-or1k/
 build-or1k-src/

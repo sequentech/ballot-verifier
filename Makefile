@@ -5,8 +5,11 @@ SYSROOT := /opt/or1k-toolchain/or1k-linux-uclibc/sys-root
 LINUX_COMPILER := or1k-linux-uclibc-g++
 METAL_COMPILER := or1k-elf-g++
 X86_COMPILER := g++
+GMOCK_DIR := $(INSTALLDIR)/gmock/gmock-1.7.0
+GTEST_DIR := $(GMOCK_DIR)/gtest
 
 all: log or1ksim newlib uclibc agora-airgap linux
+tests: gmock agora-airgap-tests
 log:
 	[ -f $(LOGPATH) ] && { echo "" > $(LOGPATH); } || { touch $(LOGPATH); }
 	echo "log file created" >> $(LOGPATH)
@@ -144,6 +147,36 @@ agora-airgap:
 		mkdir $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local 
 	cp $(INSTALLDIR)/Debug/agora-airgap $(INSTALLDIR)/linux/arch/openrisc/support/initramfs/usr/local/
 
+gmock:
+	[ -d $(INSTALLDIR)/gmock/gmock-1.7.0 ] && rm -rf $(INSTALLDIR)/gmock/gmock-1.7.0
+	[ -d $(INSTALLDIR)/gmock ] || mkdir $(INSTALLDIR)/gmock
+	[ -f $(INSTALLDIR)/gmock/gmock-1.7.0.zip ] || { cd $(INSTALLDIR)/gmock && \
+		wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip; }
+	cd $(INSTALLDIR)/gmock && unzip gmock-1.7.0.zip
+	cd $(INSTALLDIR)/gmock/gmock-1.7.0 && ./configure
+	cd $(INSTALLDIR)/gmock/gmock-1.7.0 && make
+	cd ${GMOCK_DIR} && g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
+		-isystem ${GMOCK_DIR}/include -I${GMOCK_DIR} \
+		-pthread -c ${GTEST_DIR}/src/gtest-all.cc
+	cd ${GMOCK_DIR} && g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
+		-isystem ${GMOCK_DIR}/include -I${GMOCK_DIR} \
+		-pthread -c ${GMOCK_DIR}/src/gmock-all.cc
+	cd ${GMOCK_DIR} && ar -rv libgmock.a gtest-all.o gmock-all.o
+	cp ${GMOCK_DIR}/*.a ${GMOCK_DIR}/lib
+	cp ${GTEST_DIR}/lib/.libs/*.a ${GTEST_DIR}/lib
+
+agora-airgap-tests:
+	@echo 'Building target: $@'
+	[ -d $(INSTALLDIR)/Debug ] || mkdir $(INSTALLDIR)/Debug 
+	cd $(INSTALLDIR)/Debug && $(X86_COMPILER) -pthread -isystem ${GTEST_DIR}/include -isystem ${GMOCK_DIR}/include \
+		-c ../src/sha256.cpp ../src/Random.cpp ../src/ElGamal.cpp ../src/Agora.cpp ../src/tests-main.cpp
+	@echo 'Invoking: GCC C++ Linker'
+	#g++  -o "has.cpp" $(OBJS) $(USER_OBJS) $(LIBS)
+	cd $(INSTALLDIR)/Debug && $(X86_COMPILER) -pthread -o "agora-airgap-tests" sha256.o Random.o ElGamal.o Agora.o tests-main.o -lgmp \
+		-L${GMOCK_DIR}/lib -L${GTEST_DIR}/lib -lgmock -lgtest
+	@echo 'Finished building target: $@'
+	cd $(INSTALLDIR)/Debug && ./agora-airgap-tests
+
 agora-airgap-x86:
 	@echo 'Building target: $@'
 	[ -d $(INSTALLDIR)/Debug ] || mkdir $(INSTALLDIR)/Debug 
@@ -191,7 +224,7 @@ pruebas:
 		sudo apt-get install bridge-utils; }
 
 
-.PHONY: clean or1ksim log uclibc agora-airgap linux runlinux pruebas tapdown
+.PHONY: clean or1ksim log uclibc agora-airgap linux runlinux pruebas tapdown agora-airgap-x86 gmock agora-airgap-tests tests
 
 clean:
 	#clean 
@@ -205,3 +238,4 @@ clean:
 	[ -d $(INSTALLDIR)/or1ksim ] && rm -rf $(INSTALLDIR)/or1ksim
 	[ -d $(INSTALLDIR)/or1k-gcc ] && rm -rf $(INSTALLDIR)/or1k-gcc
 	[ -d $(INSTALLDIR)/or1k-src ] && rm -rf $(INSTALLDIR)/or1k-src
+	[ -d $(INSTALLDIR)/gmock ] && rm -rf $(INSTALLDIR)/gmock
