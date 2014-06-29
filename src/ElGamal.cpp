@@ -152,6 +152,8 @@ ElGamal::DLogProof ElGamal::Plaintext::proveKnowledge(const mpz_t &alpha, const 
 		const Challenge_Generator &challenge_generator) const{
 
 	mpz_t w;
+
+	mpz_init(w);
 	// generate random w
 	Random::getRandomInteger(w, pk.q);
 
@@ -202,11 +204,11 @@ ElGamal::Ciphertext ElGamal::encrypt(const PublicKey &pk, const Plaintext &plain
 		else {
 			mpz_set(random, r);
 		}
-		mpz_t alpha, beta, m;
+		mpz_t alpha, beta;
 		mpz_init(alpha);
 		mpz_init(beta);
-		mpz_init(m);
-		plaintext.getM(m);
+		
+		//plaintext.getM(m);
 		mpz_powm(alpha, pk.g, random, pk.p); // alpha = (g^random) mod p
 		mpz_powm(beta, pk.y, random, pk.p);
 		mpz_mul(beta, beta, m);

@@ -39,6 +39,9 @@ Agora::Encrypted_answer Agora::encryptAnswer(const ElGamal::PublicKey &pk, const
 	Agora::Encrypted_answer answer;
 	bool b = true;
 	ElGamal::Plaintext plaintext = ElGamal::Plaintext(encoded_answer, pk, b);
+	mpz_t m;
+	mpz_init_set_str(m, "0", 10);
+	plaintext.getM(m);
 	mpz_t zero, random;
 	mpz_init(zero);
 	mpz_init(random);
