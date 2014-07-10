@@ -2,7 +2,7 @@
  * Agora.cpp
  *
  *  Created on: May 18, 2014
- *      Author: Félix Robles felrobelv at gmail dot com
+ *      Author: Fï¿½lix Robles felrobelv at gmail dot com
  * Loosely based on Agora Voting:
  * https://github.com/agoraciudadana/agora-ciudadana/blob/security/agora_site/static/js/agora/views/voting_booth.js
  */
@@ -56,4 +56,11 @@ Agora::Encrypted_answer Agora::encryptAnswer(const ElGamal::PublicKey &pk, const
 	ElGamal::DLogProof proof = plaintext.proveKnowledge(ciphertext.alpha, random, generator);
 	answer = Agora::Encrypted_answer(ciphertext.alpha, ciphertext.beta, proof.commitment, proof.response, proof.challenge);
 	return answer;
+}
+
+
+ElGamal::Plaintext Agora::decryptAnswer(const SecretKey &sk, const Encrypted_answer & encryptedanswer) {
+  ElGamal::Ciphertext ciphertext(encryptedanswer.alpha, encryptedanswer.beta, sk.pk);
+  ElGamal::Plaintext cleartext = ElGamal::decrypt(sk, ciphertext);
+  return cleartext;
 }
