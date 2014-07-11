@@ -18,18 +18,17 @@
 class Agora
 {
 public:
-	class Encrypted_answer //TODO: merge with ElGamal::Ciphertext?
+	class Encrypted_answer: public ElGamal::Ciphertext  
 	{
 	public:
-		mpz_t alpha, beta;
 		ElGamal::PlaintextCommitment commitment;
 		mpz_t challenge,response;
 		Encrypted_answer();
-		Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const ElGamal::PlaintextCommitment &commitment,
-				const mpz_t &challenge,const mpz_t &response);
+		Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const PublicKey &pk,
+      const ElGamal::PlaintextCommitment &commitment,	const mpz_t &challenge, const mpz_t &response);
 	};
 	static Encrypted_answer encryptAnswer(const ElGamal::PublicKey &pk, const mpz_t &encoded_answer, const mpz_t &random);
-	static ElGamal::Plaintext decryptAnswer(const SecretKey &sk, const Encrypted_answer & ea);
+  static ElGamal::Plaintext decryptAnswer(const SecretKey &sk, const Encrypted_answer & ea);
 };
 
 
