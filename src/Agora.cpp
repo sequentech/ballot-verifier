@@ -11,23 +11,20 @@
 #include "Agora.h"
 
 Agora::Encrypted_answer::Encrypted_answer()
+: ElGamal::Ciphertext()
 {
-	mpz_init(alpha);
-	mpz_init(beta);
 	mpz_init(challenge);
 	mpz_init(response);
 }
 
-Agora::Encrypted_answer::Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const ElGamal::PlaintextCommitment &commitment,
-				const mpz_t &challenge,const mpz_t &response)
+Agora::Encrypted_answer::Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const PublicKey &pk, const ElGamal::PlaintextCommitment &commitment,
+				const mpz_t &challenge,const mpz_t &response):
+        ElGamal::Ciphertext(alpha, beta, pk)
 {
 	this->commitment = commitment;
-	mpz_init_set(this->alpha, alpha);
-	mpz_init_set(this->beta, beta);
 	mpz_init_set(this->challenge, challenge);
 	mpz_init_set(this->response, response);
 }
-
 Agora::Encrypted_answer Agora::encryptAnswer(const ElGamal::PublicKey &pk, const mpz_t &encoded_answer, const mpz_t &randomness) {
 	/**
 	 * Here we not only just encrypt the answer but also provide a
