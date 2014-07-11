@@ -57,7 +57,6 @@ Agora::Encrypted_answer Agora::encryptAnswer(const ElGamal::PublicKey &pk, const
 
 
 ElGamal::Plaintext Agora::decryptAnswer(const SecretKey &sk, const Encrypted_answer & encryptedanswer) {
-  ElGamal::Ciphertext ciphertext(encryptedanswer.alpha, encryptedanswer.beta, sk.pk);
-  ElGamal::Plaintext cleartext = ElGamal::decrypt(sk, ciphertext);
+  ElGamal::Plaintext cleartext = ElGamal::decrypt(sk, encryptedanswer);
   return cleartext;
 }
