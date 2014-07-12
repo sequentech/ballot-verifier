@@ -36,8 +36,7 @@ TEST(ElGamalIntegrationTest, SmallEncryptDecryptIntegration) {
 	//beta = ( U M  ) mod p = ( 508 * 134) mod 1019 = 818
 	Agora::Encrypted_answer coded_m = Agora::encryptAnswer(pk, m, rand);
 
-	ElGamal::Ciphertext ctext(coded_m.alpha, coded_m.beta, pk);
-	ElGamal::Plaintext ptext = ElGamal::decrypt(sk, ctext);
+	ElGamal::Plaintext ptext = Agora::decryptAnswer(sk, coded_m);
 	ptext.getM(m);
 	sm = string(mpz_get_str(NULL, 10, m));
 	EXPECT_EQ(0, sm.compare("134"));

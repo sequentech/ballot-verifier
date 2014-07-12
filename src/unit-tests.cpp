@@ -75,8 +75,7 @@ TEST(ElGamalUnitTest, SmallMessageDecryption) {
 	//M = (U^-1) t  mod p = (339 * 818) mod 1019 = 134
 }
 
-
-TEST(ElGamalUnitTest, SmallMessageEncryption) {
+TEST(AgoraUnitTest, SmallMessageEncryption) {
 	
 	mpz_t p, q, g, y, x, m, rand;
 	string alpha, beta;
@@ -103,6 +102,6 @@ TEST(ElGamalUnitTest, SmallMessageEncryption) {
 	beta = mpz_get_str(NULL, 10, coded_m.beta);
 	EXPECT_EQ(0, alpha.compare("81"));
 	EXPECT_EQ(0, beta.compare("818"));
-
 }
+
 

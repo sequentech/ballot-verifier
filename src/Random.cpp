@@ -55,8 +55,6 @@ void Random::initState() {
 		CryptReleaseContext(hProvider, 0);
 		return;
 	}
-	std::cout << "random here: " << sizeof(unsigned long int) << "\n";
-	
 	for (DWORD i = 0; i < dwLength; ++i) {
 		myRandomInteger = (myRandomInteger << 8) | pbBuffer[i];
 	}
@@ -69,10 +67,7 @@ void Random::initState() {
 	gmp_randinit_default(state);
 	gmp_randseed(state, uu);
 	cout << "uu: "<< mpz_get_str(NULL, 10, uu) << endl;
-
-
-#endif
-	
+#endif	
 }
 
 void Random::getRandomInteger(mpz_t &out, const mpz_t &max) {
