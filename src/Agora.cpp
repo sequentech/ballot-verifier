@@ -17,8 +17,7 @@ Agora::Encrypted_answer::Encrypted_answer()
 	mpz_init(response);
 }
 
-Agora::Encrypted_answer::Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const PublicKey &pk, const ElGamal::PlaintextCommitment &commitment,
-				const mpz_t &challenge,const mpz_t &response):
+Agora::Encrypted_answer::Encrypted_answer(const mpz_t &alpha, const mpz_t &beta, const ElGamal::PublicKey &pk, const ElGamal::PlaintextCommitment &commitment, const mpz_t &challenge,const mpz_t &response):
         ElGamal::Ciphertext(alpha, beta, pk)
 {
 	this->commitment = commitment;
@@ -51,12 +50,12 @@ Agora::Encrypted_answer Agora::encryptAnswer(const ElGamal::PublicKey &pk, const
 	ElGamal::Ciphertext ciphertext = ElGamal::encrypt(pk, plaintext, random);
 	ElGamal::Fiatshamir_dlog_challenge_generator generator;
 	ElGamal::DLogProof proof = plaintext.proveKnowledge(ciphertext.alpha, random, generator);
-	answer = Agora::Encrypted_answer(ciphertext.alpha, ciphertext.beta, proof.commitment, proof.response, proof.challenge);
+	answer = Agora::Encrypted_answer(ciphertext.alpha, ciphertext.beta, pk, proof.commitment, proof.response, proof.challenge);
 	return answer;
 }
 
 
-ElGamal::Plaintext Agora::decryptAnswer(const SecretKey &sk, const Encrypted_answer & encryptedanswer) {
+ElGamal::Plaintext Agora::decryptAnswer(const ElGamal::SecretKey &sk, const Encrypted_answer & encryptedanswer) {
   ElGamal::Plaintext cleartext = ElGamal::decrypt(sk, encryptedanswer);
   return cleartext;
 }
