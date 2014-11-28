@@ -10,18 +10,21 @@
 #ifndef RANDOM_H_
 #define RANDOM_H_
 
-#include <gmp.h>
+#include <gmpxx.h>
 #include <string>
 
 class Random
 {
-private:
-	Random(){}
-	static gmp_randstate_t state;
-	static bool initiated;
-	static void initState();
+protected:
+	Random()
+	: state(gmp_randinit_default)
+	{ initState(); }
+	gmp_randclass state;
+	void initState();
+	static Random* singleton();
 public:
-	static void getRandomInteger(mpz_t &out, const mpz_t &max);
+	static mpz_class getRandomIntegerBits(const mpz_class &bits);
+	static mpz_class getRandomIntegerRange(const mpz_class &max);
 };
 
 

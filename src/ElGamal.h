@@ -2,108 +2,89 @@
  * ElGamal.h
  *
  *  Created on: May 18, 2014
- *      Author: F�lix Robles felrobelv at gmail dot com
- * Loosely based on Ben Adida's jscrypto:
- * https://github.com/benadida/jscrypto/blob/master/elgamal.js
+ *      Author: Félix Robles felrobelv at gmail dot com
+ * Based on George Danezis/Ben Adida/Eduardo Robles
+ * https://github.com/agoravoting/agora-api
  */
-#ifndef ELGAMAL_H_
-#define ELGAMAL_H_
+#ifndef ELGAMAL_H
+#define ELGAMAL_H
 
-#include <gmp.h>
-#include <string>
-#include <iostream>
+#include "common.h"
+#include <gmpxx.h>
 #include "sha256.h"
 
-using namespace std;
+using namespace rapidjson;
 
-class ElGamal
-{
+class ElGamal{
 public:
-
-	class PlaintextCommitment;
+	class ChallengeGenerator;
 	class DLogProof;
-	class Challenge_Generator;
-	class Params;
-	class SecretKey;
-	class PublicKey;
-
-	class Params {
+	
+	class PublicKey{
 	public:
-		mpz_t p, q, g;
-		Params();
-		Params(const mpz_t &p, const mpz_t &q, const mpz_t &g);
-		SecretKey generate();
+		PublicKey(const mpz_class & ap, const mpz_class & aq, const mpz_class & ag, const mpz_class & ay);
+		mpz_class p, q, g, y;
+		static PublicKey fromJSONObject(const Value & pk);
 	};
-
-
-	class PublicKey	{
+	
+	class Ciphertext{
 	public:
-		mpz_t p, q, g, y;
-		PublicKey(const mpz_t &p, const mpz_t &q, const mpz_t &g, const mpz_t &y);
-		PublicKey(const ElGamal::PublicKey &pk);
-		PublicKey();
+		mpz_class alpha, beta;
+		PublicKey pk;
+		Ciphertext(const mpz_class & aalpha, const mpz_class & abeta, const PublicKey & apk);
+		bool verifyPlaintextProof(const DLogProof & proof, const ChallengeGenerator & challenge_generator) const;
 	};
-
-	class SecretKey {
+	
+	
+	
+	class PlaintextCommitment
+	{
 	public:
-		mpz_t x;
-		ElGamal::PublicKey pk;
-		SecretKey(const mpz_t &x, const PublicKey &pk);
+		mpz_class alpha;
+		mpz_class a;
+		PlaintextCommitment(const mpz_class & alpha_, const mpz_class & a_)
+		: alpha(alpha_), a(a_)
+		{}
+		std::string toString() const;
+		std::string toJSON() const;
 	};
+	
 
-	class Challenge_Generator {
+	class DLogProof
+	{
 	public:
-		virtual void generator(mpz_t &out, const ElGamal::PlaintextCommitment &commitment) const{}
+		PlaintextCommitment commitment;
+		mpz_class challenge;
+		mpz_class response;
+		DLogProof(PlaintextCommitment commitment_, mpz_class challenge_, mpz_class response_);
 	};
-
-	class Fiatshamir_dlog_challenge_generator: public Challenge_Generator {
-	public:
-		void generator(mpz_t &out, const ElGamal::PlaintextCommitment &commitment) const;
-	};
-
-	class Plaintext	{
+	
+	
+	class Plaintext{
 	public:
 		PublicKey pk;
-		Plaintext(const mpz_t &m, const PublicKey &pk, const bool &encode_m);
-		void getPlaintext(mpz_t &res) const;
-		void getM(mpz_t &res) const;
-		ElGamal::DLogProof proveKnowledge(const mpz_t &alpha, const mpz_t &randomness, const Challenge_Generator &challenge_generator) const;
-	private:
-		mpz_t m;
+		mpz_class m;
+		Plaintext(const mpz_class & am, const PublicKey & apk, const bool & encode_m);
+		
+		DLogProof proveKnowledge(const mpz_class & alpha, const mpz_class & randomness,
+					 const ChallengeGenerator & challenge_generator);
+		
 	};
-
-	class PlaintextCommitment {
+	
+	class ChallengeGenerator
+	{
 	public:
-		mpz_t a, alpha;
-		PlaintextCommitment();
-		PlaintextCommitment(const mpz_t &alpha, const mpz_t &a);
-		string toString() const;
+		virtual mpz_class generator(const PlaintextCommitment & commitment) const = 0;
 	};
-
-	class DLogProof	{
+	
+	class Fiatshamir_dlog_challenge_generator : public ChallengeGenerator
+	{
 	public:
-		ElGamal::PlaintextCommitment commitment;
-		mpz_t challenge,response;
-		DLogProof();
-		DLogProof(const ElGamal::PlaintextCommitment &commitment , const mpz_t &challenge, const mpz_t &response);
+		Fiatshamir_dlog_challenge_generator(){}
+		 mpz_class generator(const PlaintextCommitment & commitment) const;
 	};
-
-
-	class Ciphertext {
-	public:
-			PublicKey pk;
-			mpz_t alpha, beta;
-			Ciphertext();
-			Ciphertext(const mpz_t &alpha, const mpz_t &beta, const PublicKey &pk);
-			string toString();
-
-	};
-
-	static ElGamal::Ciphertext encrypt(const PublicKey &pk, const Plaintext &plaintext, const mpz_t &r);
-  	static ElGamal::Plaintext decrypt(const SecretKey &sk, const Ciphertext &ciphertext);
+	
+	static Ciphertext encrypt(const PublicKey & pk, const Plaintext & plaintext, const mpz_class & r);
 };
 
-
-
-#endif /* ELGAMAL_H_ */
-
+#endif //ELGAMAL_H

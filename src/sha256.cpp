@@ -15,6 +15,9 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <stdio.h>
+#include <cstring>
+#include <sstream>
+#include <iomanip>
 #include "sha256.h"
 
 /****************************** MACROS ******************************/
@@ -44,26 +47,21 @@ static const WORD k[64] = {
 
 string hex_sha256(const string in)
 {
-	BYTE *text1 = new BYTE[in.length()+1];
-	memcpy(text1, in.c_str(), in.length() );
-	text1[in.length()] = '\0';
+	BYTE *cstr = new BYTE[in.length()];	
+	memcpy(cstr, in.c_str(), in.length() );
 	BYTE buf[SHA256_BLOCK_SIZE];
 	SHA256_CTX ctx;
 	sha256_init(&ctx);
-	sha256_update(&ctx, text1, in.length());
+	sha256_update( &ctx, cstr, in.length() );
 	sha256_final(&ctx, buf);
 	//TODO: This is just a placeholder for the real thing
-	string s("");
+	stringstream ss;
+	ss << hex << setfill('0');
 	for(int i = 0; i < SHA256_BLOCK_SIZE; i++) {
-		char abuffer [3];
-		abuffer[0] = abuffer[1] = 0;
-		abuffer[2] = '\0';
-		sprintf(abuffer, "%x", buf[i]);
-		s += string(abuffer);
+		ss << std::setw(2) << static_cast<unsigned>(buf[i]);
 	}
-	delete [] text1;
-	text1 = NULL;
-	return s;
+	delete [] cstr;
+	return ss.str();
 }
 
 void sha256_transform(SHA256_CTX *ctx, const BYTE data[])

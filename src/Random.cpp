@@ -8,7 +8,6 @@
  */
 
 #include "Random.h"
-#include <gmp.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
@@ -19,9 +18,6 @@ using namespace std;
 	#include <windows.h>
 	#include <Wincrypt.h>
 #endif
-
-bool Random::initiated = false;
-gmp_randstate_t  Random::state;
 
 void Random::initState() {
 #ifdef __unix__         
@@ -36,8 +32,7 @@ void Random::initState() {
 		randomDataLen += result;
 	}
 	close(randomData);
-	gmp_randinit_mt(state); //is this random enough? does it use the random source of linux kernel?
-	gmp_randseed_ui(state, myRandomInteger);
+	state.seed(myRandomInteger);
 #elif defined(_WIN32) || defined(WIN32) 
 
 	HCRYPTPROV hProvider = 0;
@@ -62,19 +57,26 @@ void Random::initState() {
 	if (!CryptReleaseContext(hProvider, 0)){
 		return;
 	}
-	mpz_t uu;
-	mpz_init_set_ui(uu, myRandomInteger);
-	gmp_randinit_default(state);
-	gmp_randseed(state, uu);
-	cout << "uu: "<< mpz_get_str(NULL, 10, uu) << endl;
+	state.seed(myRandomInteger);
+	//cout << "uu: "<< mpz_get_str(NULL, 10, uu) << endl;
 #endif	
 }
 
-void Random::getRandomInteger(mpz_t &out, const mpz_t &max) {
-	if(!initiated) {
-		initState();
-	}
-	mpz_urandomm(out, state, max);
+mpz_class Random::getRandomIntegerBits(const mpz_class &bits) {
+	Random* r = singleton();
+	return r->state.get_z_bits(bits);
+}
+
+
+mpz_class Random::getRandomIntegerRange(const mpz_class &bits) {
+	Random* r = singleton();
+	return r->state.get_z_range(bits);
+}
+
+Random* Random::singleton()
+{
+	static Random r;
+	return &r;
 }
 
 
