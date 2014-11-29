@@ -92,7 +92,7 @@ ElGamal::Ciphertext ElGamal::encrypt(const ElGamal::PublicKey & pk, const ElGama
 std::string ElGamal::PlaintextCommitment::toString() const
 {
 	std::stringstream ss;
-	ss << mpz_get_str(NULL, 10, alpha.get_mpz_t()) << "/" << mpz_get_str(NULL, 10, alpha.get_mpz_t());
+	ss << mpz_get_str(NULL, 10, alpha.get_mpz_t()) << "/" << mpz_get_str(NULL, 10, a.get_mpz_t());
 	return ss.str();
 }
 
