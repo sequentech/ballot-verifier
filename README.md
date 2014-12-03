@@ -14,8 +14,8 @@ You need to install gmp-devel gcc-c++ git premake4 libcurl-devel. Then download 
 
 And compile:
 
-  cd agora-airgap/src
-  make
+    cd agora-airgap/src
+    make
 
 and now you have your binary in x64/main
 
