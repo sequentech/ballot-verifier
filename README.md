@@ -1,8 +1,8 @@
 ### agora-airgap
 
-Set of Agora Voting tools for:
-- Verifying a ballot from the "cast or cancel" procedure is correct
-- Creating a ballot from an air gap computer (ideally on an OpenRISC open hardware arquitecture)
+Set of Agora Voting tools to:
+- Audit a ballot from the "cast or cancel" procedure
+- Create a ballot from an air gap computer (ideally on an OpenRISC open hardware arquitecture)
 
 # How to
 
