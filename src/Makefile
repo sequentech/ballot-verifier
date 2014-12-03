@@ -4,14 +4,14 @@ OUTPUT := x64
 INCSPATH := 
 LIBSPATH := 
 #LIBS := -lgmpxx -lgmp -ljson
-LIBS := -lgmpxx -lgmp 
+LIBS := -lgmpxx -lgmp -lcurl
 
 OBJS := sha256.o ElGamal.o Random.o encrypt.o
 
 all: build
 
 build: $(OUTPUT) $(OBJS)
-	$(CXX) -DNDEBUG $(OUTPUT)/*.o main.cpp -o $(OUTPUT)/main $(INCSPATH) $(LIBSPATH) $(LIBS)
+	$(CXX) -DNDEBUG -DDEBUG -g $(OUTPUT)/*.o main.cpp -o $(OUTPUT)/main $(INCSPATH) $(LIBSPATH) $(LIBS)
 
 .PHONY: build clean all run
 
@@ -19,7 +19,7 @@ clean:
 	rm -Rf $(OUTPUT)
 	
 %.o:  %.cpp
-	$(CXX) -DNDEBUG -c  $^ $(INCSPATH)
+	$(CXX) -DNDEBUG -DDEBUG -g -c  $^ $(INCSPATH)
 	mv $@ $(OUTPUT)
 	
 $(OUTPUT):

@@ -12,5 +12,6 @@
 #include <string>
 
 std::string encrypt(const std::string & pk_path, const std::string & votes_path);
+std::string audit(const std::string & auditable_ballot_path);
 
 #endif //ENCRYPT_H

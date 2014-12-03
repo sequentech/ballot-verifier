@@ -6,7 +6,10 @@
 using namespace rapidjson;
 
 
-int main() {
-	std::cout << encrypt("pk_1", "votes.json") << std::endl;
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cout << "You need to supply more arguments. Example:" << argv[0] << " <file_with_auditable_ballot.json>" << endl;
+  }
+	std::cout << audit(argv[1]) << std::endl;
 	return 0;
 }

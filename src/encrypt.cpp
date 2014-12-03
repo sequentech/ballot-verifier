@@ -10,16 +10,20 @@
 #include <sstream>
 #include <iostream>
 #include <ctime>
+#include <string>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
 
 #include <gmpxx.h>
+#include <curl/curl.h>
 #include "encrypt.h"
 #include "Random.h"
 #include "ElGamal.h"
-//#include "libjson.h"
 
 using namespace std;
 using namespace rapidjson;
-//using namespace libjson;
 
 string get_date()
 {
@@ -152,4 +156,151 @@ string encrypt(const string & pk_path, const string & votes_path)
 	
 	
 	return ret;
+}
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+  ((std::string*)userp)->append((char*)contents, size * nmemb);
+  return size * nmemb;
+}
+
+string download_url(const string& url)
+{
+
+  CURL *curl;
+  CURLcode res;
+  std::string read_buffer;
+
+  curl = curl_easy_init();
+  if(!curl) {
+      std::cout << "curl doesn't work" << std::endl;
+      exit(1);
+  }
+
+  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &read_buffer);
+  res = curl_easy_perform(curl);
+  if(res != CURLE_OK) {
+    fprintf(stderr, "curl_easy_perform() failed: %s\n",
+            curl_easy_strerror(res));
+  }
+
+  curl_easy_cleanup(curl);
+  return read_buffer;
+}
+
+
+string operator*(const string& s, unsigned int n) {
+    stringstream out;
+    while (n--)
+        out << s;
+    return out.str();
+}
+
+string to_string(int i) {
+  return static_cast<ostringstream*>( &(ostringstream() << i) )->str();
+}
+
+int to_int(string i) {
+  istringstream buffer(i);
+  int value;
+  buffer >> value;
+  return value;
+}
+
+string operator*(unsigned int n, const string& s) { return s * n; }
+
+vector<int> split_choices(string choices, const Value& question) {
+  SizeType size = question["answers"].Size();
+  int tabsize = to_string(size).length();
+  vector<int> choicesV;
+
+  choices = string("0")*(choices.length() % tabsize) + choices;
+  for(int i = 0; i < choices.length() / tabsize; i++) {
+    int choice = to_int(choices.substr(i*tabsize, tabsize));
+    choicesV.push_back(choice);
+  }
+
+  return choicesV;
+}
+
+const Value& find_value(const Value& arr, string field, string value) {
+  for (SizeType i = 0; i < arr.Size(); i++) {
+    const Value& el = arr[i];
+    if (el.IsObject() && el.HasMember(field.c_str()) && el[field.c_str()].GetString() == value) {
+      return el;
+    }
+    cout << el[field.c_str()].GetString() << " != " << value << endl;
+  }
+  cout << "value not found, exiting.." << endl;
+  exit(1);
+}
+
+bool check_answer(const Value& choice, const Value& question, const Value& pubkey) {
+  cout << "Q: " << question["question"].GetString() << endl;
+  vector<int> choices = split_choices(choice["plaintext"].GetString(), question);
+  cout << "User answers:" << endl;
+  for (int i = 0; i < choices.size(); i++) {
+    cout << " - " << find_value(question["answers"], "id", to_string(choices.at(i)))["value"].GetString();
+  }
+}
+
+string audit(const string& auditable_ballot_path)
+{
+  Document ballot, pubkeys, election;
+  cout << "> Reading auditable ballot" << endl;
+  ballot.Parse( readFile(auditable_ballot_path).c_str() );
+
+  if (!ballot.IsObject()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("election_url") || !ballot["election_url"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("choices") || !ballot["choices"].IsArray()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("choices") || !ballot["choices"].IsArray()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("pubkeys_url") || !ballot["pubkeys_url"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  string election_url = ballot["election_url"].GetString();
+  string pubkeys_url = ballot["pubkeys_url"].GetString();
+
+  string election_data = download_url(election_url);
+  std::cout << "> election data downloaded (hash: " + hex_sha256(election_data) + ")" << endl;
+  string pubkeys_data = download_url(pubkeys_url);
+  std::cout << "> public keys downloaded (hash: " + hex_sha256(pubkeys_data) + ")" << endl;
+
+  pubkeys.Parse( pubkeys_data.c_str() );
+  election.Parse( election_data.c_str() );
+
+  const Value& choices = ballot["choices"];
+  if (!pubkeys.IsArray() || pubkeys.Size() != ballot["choices"].Size()) {
+    cout << "!!! Invalid public keys format" << endl;
+    exit(1);
+  }
+
+  if (!election.HasMember("questions_data") || !election["questions_data"].IsArray() || election["questions_data"].Size() != choices.Size()) {
+    cout << "!!! Invalid election format" << endl;
+    exit(1);
+  }
+
+  for (SizeType i = 0; i < choices.Size(); i++) {
+    check_answer(choices[i], election["questions_data"][i], pubkeys[i]);
+  }
 }
