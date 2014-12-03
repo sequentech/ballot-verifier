@@ -2,7 +2,9 @@
  * Encrypt.cpp
  *
  *  Created on: November 19, 2014
- *      Author: Félix Robles felrobelv at gmail dot com
+ *      Authors: 
+ * 		Eduardo Robles edulix at gmail dot com
+ * 		Félix Robles felrobelv at gmail dot com
  * Based on Eduardo Robles's agora-api:
  * https://github.com/agoravoting/agora-api
  */
@@ -77,7 +79,6 @@ string encryptAnswer(const Document & pk_json, const mpz_class & plain_vote)
 		<< "\"response\":\""  << proof.response.get_str(10)	<< "\"," //
 		<< "\"challenge\":\""  << proof.challenge.get_str(10)	<< "\"}";//
 	
-	//cout << "\n------\n" << ss.str() << "\n------" << endl;
 	cout << "> Node: proof verified = " << (verified? "true" : "false") << endl;
 	
 	enc_answer.Parse(ss.str().c_str());

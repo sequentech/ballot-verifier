@@ -24,6 +24,7 @@
 #other files and folders
 log
 or1ksim/
+src/rapidjson
 linux/
 gmock/
 build-gcc/

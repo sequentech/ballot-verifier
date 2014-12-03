@@ -26,4 +26,8 @@ $(OUTPUT):
 	mkdir -p $@
 	
 run:
-	$(OUTPUT)/main
+	cd example && python -m SimpleHTTPServer & echo "$$!" > pid
+	sleep 1
+	$(OUTPUT)/main example/ballot.json || true
+	kill `cat pid`
+	rm pid

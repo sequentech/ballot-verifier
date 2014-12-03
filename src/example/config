@@ -1,0 +1,204 @@
+{
+    "id": 1110,
+    "pretty_name": "Votación de candidatos",
+    "description": "Selecciona los documentos político, ético y organizativo con los que Podemos",
+    "director": "wadobo-auth1",
+    "authorities": "openkratio-authority",
+    "extra": [],
+    "hash": "",
+    "is_recurring": false,
+    "layout": "pcandidates-election",
+    "questions_data": [
+        {
+            "a": "ballot/question",
+            "question_id": 0,
+            "description": "",
+            "layout": "pcandidates-election",
+            "max": 1,
+            "min": 0,
+            "num_seats": 1,
+            "question": "Secretaría General",
+            "question_slug": "secretario",
+            "randomize_answer_order": true,
+            "tally_type": "APPROVAL",
+            "answers": [
+                {
+                    "id": 1,
+                    "a": "ballot/answer",
+                    "category": "Equipo de Enfermeras",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 1,
+                    "urls": [],
+                    "value": "Fulanita de tal"
+                },
+                {
+                    "id": 2,
+                    "a": "ballot/answer",
+                    "category": "Claro que Podemos - Pablo Iglesias",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 2,
+                    "urls": [],
+                    "value": "Pablo Iglesias Turrión"
+                }
+            ]
+        },
+        {
+            "a": "ballot/question",
+            "description": "",
+            "layout": "pcandidates-election",
+            "max": 62,
+            "min": 0,
+            "num_seats": 62,
+            "question": "Consejo Ciudadano",
+            "question_slug": "consejo",
+            "randomize_answer_order": true,
+            "tally_type": "APPROVAL",
+            "answers": [
+                {
+                    "id": 1,
+                    "a": "ballot/answer",
+                    "category": "Equipo de Enfermeras",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 1,
+                    "urls": [],
+                    "value": "Fulanita de tal"
+                },
+                {
+                    "id": 2,
+                    "a": "ballot/answer",
+                    "category": "Equipo de Enfermeras",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 2,
+                    "urls": [],
+                    "value": "Menganito de cual"
+                },
+                {
+                    "id": 3,
+                    "a": "ballot/answer",
+                    "category": "Equipo de Enfermeras",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 3,
+                    "urls": [],
+                    "value": "Zutanito de no se donde"
+                },
+                {
+                    "id": 4,
+                    "a": "ballot/answer",
+                    "category": "Claro que Podemos - Pablo Iglesias",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 4,
+                    "urls": [],
+                    "value": "Íñigo Errejón"
+                },
+                {
+                    "id": 5,
+                    "a": "ballot/answer",
+                    "category": "Claro que Podemos - Pablo Iglesias",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 5,
+                    "urls": [],
+                    "value": "Íñigo Errejón"
+                }
+            ]
+        },
+ 
+        {
+            "a": "ballot/question",
+            "description": "",
+            "layout": "pcandidates-election",
+            "max": 62,
+            "min": 0,
+            "num_seats": 62,
+            "question": "Comité de Garantías",
+            "question_slug": "garantias",
+            "randomize_answer_order": true,
+            "tally_type": "APPROVAL",
+            "answers": [
+                {
+                    "id": 1,
+                    "a": "ballot/answer",
+                    "category": "Sumando Podemos",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 1,
+                    "urls": [],
+                    "value": "Pablo Echenique"
+                },
+                {
+                    "id": 2,
+                    "a": "ballot/answer",
+                    "category": "Sumando Podemos",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 2,
+                    "urls": [],
+                    "value": "Menganito de cual"
+                },
+                {
+                    "id": 3,
+                    "a": "ballot/answer",
+                    "category": "Equipo de Enfermeras",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 3,
+                    "urls": [],
+                    "value": "Zutanito de no se donde"
+                },
+                {
+                    "id": 4,
+                    "a": "ballot/answer",
+                    "category": "Claro que Podemos - Pablo Iglesias",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 4,
+                    "urls": [],
+                    "value": "Íñigo Errejón"
+                },
+                {
+                    "id": 5,
+                    "a": "ballot/answer",
+                    "category": "Claro que Podemos - Pablo Iglesias",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 5,
+                    "urls": [],
+                    "value": "Íñigo Errejón"
+                },
+                {
+                    "id": 5,
+                    "a": "ballot/answer",
+                    "category": "Equipo de Juristas",
+                    "details": "",
+                    "details_title": "",
+                    "media_url": "",
+                    "sort_order": 5,
+                    "urls": [],
+                    "value": "Íñigo Errejón"
+                }
+            ]
+        }
+    ],
+    "title": "votacion-de-candidatos",
+    "url": "http://podemos.info",
+    "voting_end_date": "2013-12-09T18:17:14.457000",
+    "voting_start_date": "2013-12-06T18:17:14.457000"
+}
