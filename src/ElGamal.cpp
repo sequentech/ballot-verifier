@@ -143,7 +143,7 @@ bool ElGamal::Ciphertext::verifyPlaintextProof(const ElGamal::DLogProof & proof,
 	challenge2 = challenge_generator.generator(proof.commitment);
 	if ( 0 != mpz_cmp( challenge2.get_mpz_t(), proof.challenge.get_mpz_t() ) )
 	{
-		cout << "\n\nFALSE 1\n" << endl;
+		cout << "!!! Error verifying plaintext proof" << endl;
 		return false;
 	}
 	mpz_powm( left.get_mpz_t(), pk.g.get_mpz_t(), proof.response.get_mpz_t(), pk.p.get_mpz_t() );

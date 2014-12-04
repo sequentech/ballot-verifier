@@ -59,9 +59,9 @@ string readFile(const string & path)
   return str;
 }
 
-string encryptAnswer(const Document & pk_json, const mpz_class & plain_vote)
+string encryptAnswer(const Value & pk_json, const mpz_class & plain_vote)
 {
-  ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json[0]);
+  ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json);
   ElGamal::Plaintext plaintext(plain_vote, pk, true);
   mpz_class randomness = Random::getRandomIntegerRange(pk.q);
   cout << "plaintext = " << plain_vote.get_str(16)  << ", randomness = " << randomness.get_str(16) << endl;
@@ -130,7 +130,7 @@ string encrypt(const string & pk_path, const string & votes_path)
     rand = Random::getRandomIntegerBits(bits);
     string date, answ;
     date = get_date();
-    answ = encryptAnswer(pk, plain_vote);
+    answ = encryptAnswer(pk[0], plain_vote);
     if(i != 0)
     {
       ssballot << ",\n";
@@ -238,7 +238,9 @@ const Value& find_value(const Value& arr, string field, string value) {
   exit(1);
 }
 
-bool check_answer(const Value& choice, const Value& question, const Value& pubkey) {
+//prints the options selected on the ballot from the plaintext
+bool print_answer(const Value& choice, const Value& question, const Value& pubkey) 
+{
   
   if(!question.HasMember("question") || !question["question"].IsString()){
     cout << "!!! Invalid ballot format" << endl;
@@ -260,6 +262,74 @@ bool check_answer(const Value& choice, const Value& question, const Value& pubke
   cout << "User answers:" << endl;
   for (int i = 0; i < choices.size(); i++) {
     cout << " - " << find_value( question["answers"], "id", to_string( choices.at(i) ) )["value"].GetString() << endl;
+  }
+}
+
+void check_encrypted_answer(const Value & choice, const Value & question, const Value & pubkey)
+{  
+  if(!choice.HasMember("alpha") || !choice["alpha"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  if(!choice.HasMember("beta") || !choice["beta"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  if(!choice.HasMember("plaintext") || ( !choice["plaintext"].IsString()  && !choice["plaintext"].IsInt() ) ){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  if(!choice.HasMember("randomness") || !choice["randomness"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  if(!pubkey.HasMember("q") || !pubkey["q"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  if(!pubkey.HasMember("p") || !pubkey["p"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  if(!pubkey.HasMember("g") || !pubkey["g"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  if(!pubkey.HasMember("y") || !pubkey["y"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  
+  mpz_class plain_vote;
+  if( choice["plaintext"].IsString() )
+  {
+    plain_vote = choice["plaintext"].GetString();
+  } 
+  else if( choice["plaintext"].IsInt() ) 
+  {
+    plain_vote = choice["plaintext"].GetInt();
+  } 
+  
+  mpz_class randomness;
+  randomness = choice["randomness"].GetString();
+  ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pubkey);
+  ElGamal::Plaintext plaintext(plain_vote, pk, true);
+  ElGamal::Ciphertext ctext = ElGamal::encrypt(pk, plaintext, randomness);
+  
+  mpz_class choiceAlpha, choiceBeta;
+  choiceAlpha = choice["alpha"].GetString();
+  choiceBeta = choice["beta"].GetString();
+ 
+  cout << "> Verifying encrypted question: " << question["question"].GetString() << endl;
+
+  if( 0 == mpz_cmp(choiceAlpha.get_mpz_t(), ctext.alpha.get_mpz_t())  
+    && 0 == mpz_cmp(choiceBeta.get_mpz_t(), ctext.beta.get_mpz_t())) 
+  {
+    cout << "> OK - Encrypted question verified" << endl;
+  }
+  else 
+  {
+    cout << "!!! INVALID - Encrypted question does not agree with plaintext vote" << endl;
   }
 }
 
@@ -317,9 +387,14 @@ string audit(const string& auditable_ballot_path)
     cout << "!!! Invalid election format" << endl;
     exit(1);
   }
+  cout << "> Please check that the showed options are the ones you chose:" << endl;
   for (SizeType i = 0; i < choices.Size(); i++) {
-    check_answer(choices[i], election["questions_data"][i], pubkeys[i]);
+    print_answer(choices[i], election["questions_data"][i], pubkeys[i]);
+  }
+  //check encrypted choices with plaintext
+  for (SizeType i = 0; i < choices.Size(); i++) {
+    check_encrypted_answer(choices[i], election["questions_data"][i], pubkeys[i]);
   }
   
-  return string("\naudit end\n");
+  return string("> --------------------\n> Audit PASSED");
 }
