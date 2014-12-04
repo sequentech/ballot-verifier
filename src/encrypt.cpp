@@ -149,13 +149,6 @@ string encrypt(const string & pk_path, const string & votes_path)
   ballots.Parse(ssballot.str().c_str() );
   cout << "\n------------------\n" << stringify(ballots)<< endl;
   
-  /*JSONNode n(JSON_ARRAY);
-  n.push_back(JSONNode("", ssballot.str() ));
-  
-  
-  cout << "\n------------------\n" << n.write_formatted() << endl;*/
-  
-  
   return ret;
 }
 
@@ -192,8 +185,9 @@ string download_url(const string& url)
   return read_buffer;
 }
 
-
-string operator*(const string& s, unsigned int n) {
+//repeat n times string s
+string repeat_string(const string& s, unsigned int n) 
+{
     stringstream out;
     while (n--)
         out << s;
@@ -214,13 +208,11 @@ int to_int(string i) {
   return value;
 }
 
-string operator*(unsigned int n, const string& s) { return s * n; }
-
 vector<int> split_choices(string choices, const Value& question) {
   SizeType size = question["answers"].Size();
   int tabsize = to_string(size).length();
   vector<int> choicesV;
-  choices = string("0")*(choices.length() % tabsize) + choices;
+  choices = repeat_string( string("0"),(choices.length() % tabsize) ) + choices;
   for(int i = 0; i < choices.length() / tabsize; i++) {
     int choice = to_int(choices.substr(i*tabsize, tabsize));
     choicesV.push_back(choice);
@@ -232,27 +224,13 @@ const Value& find_value(const Value& arr, string field, string value) {
   for (SizeType i = 0; i < arr.Size(); i++) {
     const Value& el = arr[i];
     if (el.IsObject() && el.HasMember(field.c_str())) {
-      if(el[field.c_str()].IsString() )
+      if(el[field.c_str()].IsString() && string(el[field.c_str()].GetString()).compare(value) == 0)
       {
-        if( string(el[field.c_str()].GetString()).compare(value) == 0 )
-        {  
           return el;
-        }
-        else
-        {  
-          //cout << string(el[field.c_str()].GetString()) << " != " << value << endl;
-        }
       }
-      else if ( el[field.c_str()].IsInt() )
+      else if ( el[field.c_str()].IsInt() && to_string( el[field.c_str()].GetInt()  ).compare(value) == 0 )
       {
-        if( to_string( el[field.c_str()].GetInt()  ).compare(value) == 0 )
-        {  
           return el;
-        }
-        else
-        {  
-          //cout << to_string( el[field.c_str()].GetInt()  ) << " != " << value << endl;
-        }
       }
     }
   }
@@ -323,7 +301,6 @@ string audit(const string& auditable_ballot_path)
   cout << "> election data downloaded (hash: " + hex_sha256(election_data) + ")" << endl;
   string pubkeys_data = download_url(pubkeys_url);
   cout << "> public keys downloaded (hash: " + hex_sha256(pubkeys_data) + ")" << endl;
-
   
   cout << "> parsing..."  << endl;
   

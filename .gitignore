@@ -25,6 +25,7 @@
 log
 or1ksim/
 src/rapidjson
+src/x64
 linux/
 gmock/
 build-gcc/
@@ -36,4 +37,4 @@ or1k-gcc/
 or1k-src/
 src/agora-airgap
 Debug/
-
+.directory
