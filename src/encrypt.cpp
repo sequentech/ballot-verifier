@@ -3,8 +3,8 @@
  *
  *  Created on: November 19, 2014
  *      Authors: 
- * 		Eduardo Robles edulix at gmail dot com
- * 		Félix Robles felrobelv at gmail dot com
+ *    Eduardo Robles edulix at gmail dot com
+ *    Félix Robles felrobelv at gmail dot com
  * Based on Eduardo Robles's agora-api:
  * https://github.com/agoravoting/agora-api
  */
@@ -29,134 +29,134 @@ using namespace rapidjson;
 
 string get_date()
 {
-	time_t now = time(0);
-	tm * gmtm = gmtime(&now);
-	stringstream ss; //"2014-11-24T19:47:13+00:00"
-	ss << (1900+gmtm->tm_year) << "-" << gmtm->tm_mon << "-" << gmtm->tm_mday << "T" <<
-		gmtm->tm_hour << ":" << gmtm->tm_min << ":" << gmtm->tm_sec << "+00:00";
-	return ss.str();
+  time_t now = time(0);
+  tm * gmtm = gmtime(&now);
+  stringstream ss; //"2014-11-24T19:47:13+00:00"
+  ss << (1900+gmtm->tm_year) << "-" << gmtm->tm_mon << "-" << gmtm->tm_mday << "T" <<
+    gmtm->tm_hour << ":" << gmtm->tm_min << ":" << gmtm->tm_sec << "+00:00";
+  return ss.str();
 }
 
 string stringify(const Document & d)
 {
-	StringBuffer buffer;
-	Writer<StringBuffer> writer(buffer);
-	d.Accept(writer);
-	return buffer.GetString();
+  StringBuffer buffer;
+  Writer<StringBuffer> writer(buffer);
+  d.Accept(writer);
+  return buffer.GetString();
 }
 
 string readFile(const string & path)
 {
-	ifstream t(path.c_str());
-	string str;
+  ifstream t(path.c_str());
+  string str;
 
-	t.seekg(0, std::ios::end);   
-	str.reserve(t.tellg());
-	t.seekg(0, std::ios::beg);
+  t.seekg(0, std::ios::end);   
+  str.reserve(t.tellg());
+  t.seekg(0, std::ios::beg);
 
-	str.assign( (std::istreambuf_iterator<char>(t)),
-			std::istreambuf_iterator<char>());
-	return str;
+  str.assign( (std::istreambuf_iterator<char>(t)),
+      std::istreambuf_iterator<char>());
+  return str;
 }
 
 string encryptAnswer(const Document & pk_json, const mpz_class & plain_vote)
 {
-	ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json[0]);
-	ElGamal::Plaintext plaintext(plain_vote, pk, true);
-	mpz_class randomness = Random::getRandomIntegerRange(pk.q);
-	cout << "plaintext = " << plain_vote.get_str(16)  << ", randomness = " << randomness.get_str(16) << endl;
-	ElGamal::Ciphertext ctext = ElGamal::encrypt(pk, plaintext, randomness);
-	ElGamal::Fiatshamir_dlog_challenge_generator fiatshamir_dlog_challenge_generator;
-	ElGamal::DLogProof proof = plaintext.proveKnowledge(ctext.alpha, randomness, fiatshamir_dlog_challenge_generator);
-	
-	bool verified = ctext.verifyPlaintextProof(proof, fiatshamir_dlog_challenge_generator);
-	
-	Document enc_answer;
-	stringstream ss;
-	ss	<< "{\"alpha\":\"" << ctext.alpha.get_str(10)		<< "\"," 
-		<< "\"beta\":\""  << ctext.beta.get_str(10)		<< "\"," 
-		<< "\"commitment\":"  << proof.commitment.toJSON()	<< "," //arr,t, s
-		<< "\"response\":\""  << proof.response.get_str(10)	<< "\"," //
-		<< "\"challenge\":\""  << proof.challenge.get_str(10)	<< "\"}";//
-	
-	cout << "> Node: proof verified = " << (verified? "true" : "false") << endl;
-	
-	enc_answer.Parse(ss.str().c_str());
-	return stringify(enc_answer);
+  ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json[0]);
+  ElGamal::Plaintext plaintext(plain_vote, pk, true);
+  mpz_class randomness = Random::getRandomIntegerRange(pk.q);
+  cout << "plaintext = " << plain_vote.get_str(16)  << ", randomness = " << randomness.get_str(16) << endl;
+  ElGamal::Ciphertext ctext = ElGamal::encrypt(pk, plaintext, randomness);
+  ElGamal::Fiatshamir_dlog_challenge_generator fiatshamir_dlog_challenge_generator;
+  ElGamal::DLogProof proof = plaintext.proveKnowledge(ctext.alpha, randomness, fiatshamir_dlog_challenge_generator);
+  
+  bool verified = ctext.verifyPlaintextProof(proof, fiatshamir_dlog_challenge_generator);
+  
+  Document enc_answer;
+  stringstream ss;
+  ss  << "{\"alpha\":\"" << ctext.alpha.get_str(10)   << "\"," 
+    << "\"beta\":\""  << ctext.beta.get_str(10)   << "\"," 
+    << "\"commitment\":"  << proof.commitment.toJSON()  << "," //arr,t, s
+    << "\"response\":\""  << proof.response.get_str(10) << "\"," //
+    << "\"challenge\":\""  << proof.challenge.get_str(10) << "\"}";//
+  
+  cout << "> Node: proof verified = " << (verified? "true" : "false") << endl;
+  
+  enc_answer.Parse(ss.str().c_str());
+  return stringify(enc_answer);
 }
 
 //See examples: http://www.thomaswhitton.com/blog/2013/06/28/json-c-plus-plus-examples/
 
 string encrypt(const string & pk_path, const string & votes_path)
 {
-	string ret;
-	
-	Document pk, ballots, votes;
-	
-	cout << "> Node: reading pk" << endl;
-	pk.Parse( readFile(pk_path).c_str() );
-	
-	votes.Parse( readFile(votes_path).c_str() );
-	
-	assert(votes.IsArray());
-	
-	const Value& votesArray = votes;
-	
-	assert(votesArray.IsArray());
-	ballots.SetArray();	
-	string squestion;
-	
-	stringstream ssballot;
-	ssballot << "[\n";
-	for(SizeType i = 0; i < votesArray.Size(); i++)
-	{
-		mpz_class plain_vote;
-		if( votesArray[i].IsString() )
-		{
-			plain_vote = votesArray[i].GetString();
-		} 
-		else if( votesArray[i].IsInt() ) 
-		{
-			plain_vote = votesArray[i].GetInt();
-		}	
-		
-		Document ballot;
-		ballot.SetObject();	
-		//stringstream ssballot;
-		
-		
-		mpz_class bits, rand;
-		bits = "160";
-		rand = Random::getRandomIntegerBits(bits);
-		string date, answ;
-		date = get_date();
-		answ = encryptAnswer(pk, plain_vote);
-		if(i != 0)
-		{
-			ssballot << ",\n";
-		}			
-		
-		stringstream oneballot;
-		oneballot<< "\"is_vote_secret\":true,\"action\":\"vote\","
-			<< "\"issue_date\":\""		<< date			<< "\","
-			<< "\"unique_randomness\":\"" 	<< rand.get_str(16)	<< "\","
-			<< "\"question0\":"		<< answ			<< "";
-				
-		ssballot << "{" << oneballot.str() << "}";
-	}
-	
-	ssballot << "\n]";
-	ballots.Parse(ssballot.str().c_str() );
-	cout << "\n------------------\n" << stringify(ballots)<< endl;
-	
-	/*JSONNode n(JSON_ARRAY);
-	n.push_back(JSONNode("", ssballot.str() ));
-	
-	
-	cout << "\n------------------\n" << n.write_formatted() << endl;*/
-	
-	
-	return ret;
+  string ret;
+  
+  Document pk, ballots, votes;
+  
+  cout << "> Node: reading pk" << endl;
+  pk.Parse( readFile(pk_path).c_str() );
+  
+  votes.Parse( readFile(votes_path).c_str() );
+  
+  assert(votes.IsArray());
+  
+  const Value& votesArray = votes;
+  
+  assert(votesArray.IsArray());
+  ballots.SetArray(); 
+  string squestion;
+  
+  stringstream ssballot;
+  ssballot << "[\n";
+  for(SizeType i = 0; i < votesArray.Size(); i++)
+  {
+    mpz_class plain_vote;
+    if( votesArray[i].IsString() )
+    {
+      plain_vote = votesArray[i].GetString();
+    } 
+    else if( votesArray[i].IsInt() ) 
+    {
+      plain_vote = votesArray[i].GetInt();
+    } 
+    
+    Document ballot;
+    ballot.SetObject(); 
+    //stringstream ssballot;
+    
+    
+    mpz_class bits, rand;
+    bits = "160";
+    rand = Random::getRandomIntegerBits(bits);
+    string date, answ;
+    date = get_date();
+    answ = encryptAnswer(pk, plain_vote);
+    if(i != 0)
+    {
+      ssballot << ",\n";
+    }     
+    
+    stringstream oneballot;
+    oneballot<< "\"is_vote_secret\":true,\"action\":\"vote\","
+      << "\"issue_date\":\""    << date     << "\","
+      << "\"unique_randomness\":\""   << rand.get_str(16) << "\","
+      << "\"question0\":"   << answ     << "";
+        
+    ssballot << "{" << oneballot.str() << "}";
+  }
+  
+  ssballot << "\n]";
+  ballots.Parse(ssballot.str().c_str() );
+  cout << "\n------------------\n" << stringify(ballots)<< endl;
+  
+  /*JSONNode n(JSON_ARRAY);
+  n.push_back(JSONNode("", ssballot.str() ));
+  
+  
+  cout << "\n------------------\n" << n.write_formatted() << endl;*/
+  
+  
+  return ret;
 }
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -200,8 +200,11 @@ string operator*(const string& s, unsigned int n) {
     return out.str();
 }
 
-string to_string(int i) {
-  return static_cast<ostringstream*>( &(ostringstream() << i) )->str();
+template<typename T>
+string to_string(T i) {
+  stringstream ss;
+  ss << i;
+  return ss.str();
 }
 
 int to_int(string i) {
@@ -217,34 +220,68 @@ vector<int> split_choices(string choices, const Value& question) {
   SizeType size = question["answers"].Size();
   int tabsize = to_string(size).length();
   vector<int> choicesV;
-
   choices = string("0")*(choices.length() % tabsize) + choices;
   for(int i = 0; i < choices.length() / tabsize; i++) {
     int choice = to_int(choices.substr(i*tabsize, tabsize));
     choicesV.push_back(choice);
   }
-
   return choicesV;
 }
 
 const Value& find_value(const Value& arr, string field, string value) {
   for (SizeType i = 0; i < arr.Size(); i++) {
     const Value& el = arr[i];
-    if (el.IsObject() && el.HasMember(field.c_str()) && el[field.c_str()].GetString() == value) {
-      return el;
+    if (el.IsObject() && el.HasMember(field.c_str())) {
+      if(el[field.c_str()].IsString() )
+      {
+        if( string(el[field.c_str()].GetString()).compare(value) == 0 )
+        {  
+          return el;
+        }
+        else
+        {  
+          //cout << string(el[field.c_str()].GetString()) << " != " << value << endl;
+        }
+      }
+      else if ( el[field.c_str()].IsInt() )
+      {
+        if( to_string( el[field.c_str()].GetInt()  ).compare(value) == 0 )
+        {  
+          return el;
+        }
+        else
+        {  
+          //cout << to_string( el[field.c_str()].GetInt()  ) << " != " << value << endl;
+        }
+      }
     }
-    cout << el[field.c_str()].GetString() << " != " << value << endl;
   }
   cout << "value not found, exiting.." << endl;
   exit(1);
 }
 
 bool check_answer(const Value& choice, const Value& question, const Value& pubkey) {
+  
+  if(!question.HasMember("question") || !question["question"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+  exit(1);
+  }
+
+  if(!choice.HasMember("plaintext") || !choice["plaintext"].IsString()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if(!question.HasMember("answers") || !question["answers"].IsArray()){
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  
   cout << "Q: " << question["question"].GetString() << endl;
-  vector<int> choices = split_choices(choice["plaintext"].GetString(), question);
+  vector<int> choices = split_choices(choice["plaintext"].GetString(), question);  
   cout << "User answers:" << endl;
   for (int i = 0; i < choices.size(); i++) {
-    cout << " - " << find_value(question["answers"], "id", to_string(choices.at(i)))["value"].GetString();
+    cout << " - " << find_value( question["answers"], "id", to_string( choices.at(i) ) )["value"].GetString() << endl;
   }
 }
 
@@ -283,10 +320,13 @@ string audit(const string& auditable_ballot_path)
   string pubkeys_url = ballot["pubkeys_url"].GetString();
 
   string election_data = download_url(election_url);
-  std::cout << "> election data downloaded (hash: " + hex_sha256(election_data) + ")" << endl;
+  cout << "> election data downloaded (hash: " + hex_sha256(election_data) + ")" << endl;
   string pubkeys_data = download_url(pubkeys_url);
-  std::cout << "> public keys downloaded (hash: " + hex_sha256(pubkeys_data) + ")" << endl;
+  cout << "> public keys downloaded (hash: " + hex_sha256(pubkeys_data) + ")" << endl;
 
+  
+  cout << "> parsing..."  << endl;
+  
   pubkeys.Parse( pubkeys_data.c_str() );
   election.Parse( election_data.c_str() );
 
@@ -300,8 +340,9 @@ string audit(const string& auditable_ballot_path)
     cout << "!!! Invalid election format" << endl;
     exit(1);
   }
-
   for (SizeType i = 0; i < choices.Size(); i++) {
     check_answer(choices[i], election["questions_data"][i], pubkeys[i]);
   }
+  
+  return string("\naudit end\n");
 }
