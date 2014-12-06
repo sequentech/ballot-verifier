@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <set>
 
 #include <gmpxx.h>
 #include <curl/curl.h>
@@ -265,7 +266,8 @@ bool print_answer(const Value& choice, const Value& question, const Value& pubke
   }
 }
 
-void check_encrypted_answer(const Value & choice, const Value & question, const Value & pubkey)
+void check_encrypted_answer(const Value & choice, const Value & question, 
+                            const Value & pubkey)
 {  
   if(!choice.HasMember("alpha") || !choice["alpha"].IsString()){
     cout << "!!! Invalid ballot format" << endl;
@@ -319,10 +321,10 @@ void check_encrypted_answer(const Value & choice, const Value & question, const 
   mpz_class choiceAlpha, choiceBeta;
   choiceAlpha = choice["alpha"].GetString();
   choiceBeta = choice["beta"].GetString();
- 
+   
   cout << "> Verifying encrypted question: " << question["question"].GetString() << endl;
 
-  if( 0 == mpz_cmp(choiceAlpha.get_mpz_t(), ctext.alpha.get_mpz_t())  
+  if(0 == mpz_cmp(choiceAlpha.get_mpz_t(), ctext.alpha.get_mpz_t())  
     && 0 == mpz_cmp(choiceBeta.get_mpz_t(), ctext.beta.get_mpz_t())) 
   {
     cout << "> OK - Encrypted question verified" << endl;
@@ -330,6 +332,62 @@ void check_encrypted_answer(const Value & choice, const Value & question, const 
   else 
   {
     cout << "!!! INVALID - Encrypted question does not agree with plaintext vote" << endl;
+    exit(1);
+  }
+}
+
+void check_ballot_hash(rapidjson::Document & ballot)
+{
+  if (!ballot.HasMember("ballot_hash") || !ballot["ballot_hash"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  
+  string ballot_hash = ballot["ballot_hash"].GetString();
+  
+  ballot.RemoveMember("pubkeys_url");
+  ballot.RemoveMember("election_url");
+  ballot.RemoveMember("ballot_hash");
+  for (SizeType i = 0; i < ballot["choices"].Size(); ++i) {
+    ballot["choices"][i].RemoveMember("plaintext");
+    ballot["choices"][i].RemoveMember("randomness");
+  }
+  
+  stringstream ballotss;
+  string partial;
+  
+  Document choices_doc;
+  choices_doc.SetObject();
+  choices_doc.AddMember("choices", ballot["choices"], choices_doc.GetAllocator());
+  partial = stringify(choices_doc);
+  partial = partial.substr(1, partial.size()-2);
+  
+  ballotss << "{\"a\":\"" << ballot["a"].GetString() << "\"," << partial << ",";
+  
+  Document election_hash_doc;
+  election_hash_doc.SetObject();
+  election_hash_doc.AddMember("election_hash", ballot["election_hash"], election_hash_doc.GetAllocator());
+  partial = stringify(election_hash_doc);
+  partial = partial.substr(1, partial.size()-2);
+  
+  ballotss << partial  << ",\"issue_date\":\"" << ballot["issue_date"].GetString() << "\",";
+  
+  Document proofs_doc;
+  proofs_doc.SetObject();
+  proofs_doc.AddMember("proofs", ballot["proofs"], proofs_doc.GetAllocator());
+  partial = stringify(proofs_doc);
+  partial = partial.substr(1, partial.size()-2);
+  
+  ballotss << partial  << "}";
+  
+  string compare_hash = hex_sha256(ballotss.str());
+  
+  cout << "> Verifying ballot hash" << endl;
+  if (compare_hash.compare(ballot_hash) == 0) {
+    cout << "> OK - Hash verified" << endl;
+  } else {
+    cout << "!!! Invalid hash: " + compare_hash << endl;
+    exit(1);
   }
 }
 
@@ -344,6 +402,11 @@ string audit(const string& auditable_ballot_path)
     exit(1);
   }
 
+  if (!ballot.HasMember("a") || !ballot["a"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  
   if (!ballot.HasMember("election_url") || !ballot["election_url"].IsString()) {
     cout << "!!! Invalid ballot format" << endl;
     exit(1);
@@ -382,19 +445,26 @@ string audit(const string& auditable_ballot_path)
     cout << "!!! Invalid public keys format" << endl;
     exit(1);
   }
+  const Value& proofs = ballot["proofs"];
+  if (!proofs.IsArray() || proofs.Size() != pubkeys.Size()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
 
   if (!election.HasMember("questions_data") || !election["questions_data"].IsArray() || election["questions_data"].Size() != choices.Size()) {
     cout << "!!! Invalid election format" << endl;
     exit(1);
   }
   cout << "> Please check that the showed options are the ones you chose:" << endl;
-  for (SizeType i = 0; i < choices.Size(); i++) {
+  for (SizeType i = 0; i < choices.Size(); ++i) {
     print_answer(choices[i], election["questions_data"][i], pubkeys[i]);
   }
   //check encrypted choices with plaintext
-  for (SizeType i = 0; i < choices.Size(); i++) {
+  for (SizeType i = 0; i < choices.Size(); ++i) {
     check_encrypted_answer(choices[i], election["questions_data"][i], pubkeys[i]);
   }
+  //check hash
+  check_ballot_hash(ballot);
   
   return string("> --------------------\n> Audit PASSED");
 }
