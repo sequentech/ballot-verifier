@@ -11,7 +11,7 @@ OBJS := sha256.o ElGamal.o Random.o encrypt.o
 all: build
 
 build: $(OUTPUT) $(OBJS)
-	$(CXX) -DNDEBUG -g $(OUTPUT)/*.o main.cpp -o $(OUTPUT)/main $(INCSPATH) $(LIBSPATH) $(LIBS)
+	$(CXX) -DNDEBUG -g $(OUTPUT)/*.o main.cpp -o $(OUTPUT)/agora-airgap $(INCSPATH) $(LIBSPATH) $(LIBS)
 
 .PHONY: build clean all run
 
@@ -28,6 +28,6 @@ $(OUTPUT):
 run:
 	cd example && python -m SimpleHTTPServer & echo "$$!" > pid
 	sleep 1
-	$(OUTPUT)/main example/ballot.json || true
+	$(OUTPUT)/agora-airgap download-audit example/ballot.json || true
 	kill `cat pid`
 	rm pid

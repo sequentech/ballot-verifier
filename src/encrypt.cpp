@@ -46,7 +46,7 @@ string stringify(const Document & d)
   return buffer.GetString();
 }
 
-string readFile(const string & path)
+string read_file(const string & path)
 {
   ifstream t(path.c_str());
   string str;
@@ -58,6 +58,23 @@ string readFile(const string & path)
   str.assign( (std::istreambuf_iterator<char>(t)),
       std::istreambuf_iterator<char>());
   return str;
+}
+
+bool save_file(const string & path, const string & text)
+{
+  cout << "> writing to file " + path << endl;
+  ofstream f(path.c_str());
+  if(f.good())
+  {
+    f << text;
+    f.close();
+    return true;
+  }
+  else
+  {
+    f.close();
+  }
+  return false;
 }
 
 string encryptAnswer(const Value & pk_json, const mpz_class & plain_vote)
@@ -94,10 +111,10 @@ string encrypt(const string & pk_path, const string & votes_path)
   
   Document pk, ballots, votes;
   
-  cout << "> Node: reading pk" << endl;
-  pk.Parse( readFile(pk_path).c_str() );
+  cout << "> node: reading pk" << endl;
+  pk.Parse( read_file(pk_path).c_str() );
   
-  votes.Parse( readFile(votes_path).c_str() );
+  votes.Parse( read_file(votes_path).c_str() );
   
   assert(votes.IsArray());
   
@@ -180,6 +197,7 @@ string download_url(const string& url)
   if(res != CURLE_OK) {
     fprintf(stderr, "curl_easy_perform() failed: %s\n",
             curl_easy_strerror(res));
+    exit(1);
   }
 
   curl_easy_cleanup(curl);
@@ -260,7 +278,7 @@ bool print_answer(const Value& choice, const Value& question, const Value& pubke
   
   cout << "Q: " << question["question"].GetString() << endl;
   vector<int> choices = split_choices(choice["plaintext"].GetString(), question);  
-  cout << "User answers:" << endl;
+  cout << "user answers:" << endl;
   for (int i = 0; i < choices.size(); i++) {
     cout << " - " << find_value( question["answers"], "id", to_string( choices.at(i) ) )["value"].GetString() << endl;
   }
@@ -322,7 +340,7 @@ void check_encrypted_answer(const Value & choice, const Value & question,
   choiceAlpha = choice["alpha"].GetString();
   choiceBeta = choice["beta"].GetString();
    
-  cout << "> Verifying encrypted question: " << question["question"].GetString() << endl;
+  cout << "> verifying encrypted question: " << question["question"].GetString() << endl;
 
   if(0 == mpz_cmp(choiceAlpha.get_mpz_t(), ctext.alpha.get_mpz_t())  
     && 0 == mpz_cmp(choiceBeta.get_mpz_t(), ctext.beta.get_mpz_t())) 
@@ -382,20 +400,20 @@ void check_ballot_hash(rapidjson::Document & ballot)
   
   string compare_hash = hex_sha256(ballotss.str());
   
-  cout << "> Verifying ballot hash" << endl;
+  cout << "> verifying ballot hash" << endl;
   if (compare_hash.compare(ballot_hash) == 0) {
-    cout << "> OK - Hash verified" << endl;
+    cout << "> OK - hash verified" << endl;
   } else {
     cout << "!!! Invalid hash: " + compare_hash << endl;
     exit(1);
   }
 }
 
-string audit(const string& auditable_ballot_path)
+void download_audit(const string& auditable_ballot_path)
 {
   Document ballot, pubkeys, election;
-  cout << "> Reading auditable ballot" << endl;
-  ballot.Parse( readFile(auditable_ballot_path).c_str() );
+  cout << "> reading auditable ballot" << endl;
+  ballot.Parse( read_file(auditable_ballot_path).c_str() );
 
   if (!ballot.IsObject()) {
     cout << "!!! Invalid ballot format" << endl;
@@ -455,6 +473,146 @@ string audit(const string& auditable_ballot_path)
     cout << "!!! Invalid election format" << endl;
     exit(1);
   }
+  cout << "> please check that the showed options are the ones you chose:" << endl;
+  for (SizeType i = 0; i < choices.Size(); ++i) {
+    print_answer(choices[i], election["questions_data"][i], pubkeys[i]);
+  }
+  //check encrypted choices with plaintext
+  for (SizeType i = 0; i < choices.Size(); ++i) {
+    check_encrypted_answer(choices[i], election["questions_data"][i], pubkeys[i]);
+  }
+  //check hash
+  check_ballot_hash(ballot);
+  cout << "> --------------------\n> Audit PASSED" << endl;
+}
+
+void download(const string & auditable_ballot_path, const string & pk_path, const string &  voting_options_path)
+{
+  Document ballot, pubkeys, election;
+  cout << "> reading auditable ballot" << endl;
+  ballot.Parse( read_file(auditable_ballot_path).c_str() );
+
+  if (!ballot.IsObject()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("a") || !ballot["a"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  
+  if (!ballot.HasMember("election_url") || !ballot["election_url"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("choices") || !ballot["choices"].IsArray()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("choices") || !ballot["choices"].IsArray()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("pubkeys_url") || !ballot["pubkeys_url"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  string pubkeys_url = ballot["pubkeys_url"].GetString();
+  string election_url = ballot["election_url"].GetString();
+
+  string pubkeys_data = download_url(pubkeys_url);
+  cout << "> public keys downloaded (hash: " + hex_sha256(pubkeys_data) + ")" << endl;
+  string election_data = download_url(election_url);
+  cout << "> election data downloaded (hash: " + hex_sha256(election_data) + ")" << endl;
+  
+  cout << "> parsing..."  << endl;
+  
+  pubkeys.Parse( pubkeys_data.c_str() );
+  election.Parse( election_data.c_str() );
+
+  cout << "> saving files..."  << endl;
+  if(!save_file(pk_path, pubkeys_data))
+  {
+    cout << "!!! Error writing to public keys file " + pk_path << endl;
+    exit(1);
+  }
+  if(!save_file(voting_options_path, election_data))
+  {
+    cout << "!!! Error writing to election data file " + pk_path << endl;
+    exit(1);
+  }
+}
+
+void audit(const string & auditable_ballot_path, const string & pk_path, const string &  voting_options_path)
+{
+  Document ballot, pubkeys, election;
+  cout << "> reading auditable ballot" << endl;
+  ballot.Parse( read_file(auditable_ballot_path).c_str() );
+
+  if (!ballot.IsObject()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("a") || !ballot["a"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  
+  if (!ballot.HasMember("election_url") || !ballot["election_url"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("choices") || !ballot["choices"].IsArray()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("choices") || !ballot["choices"].IsArray()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!ballot.HasMember("pubkeys_url") || !ballot["pubkeys_url"].IsString()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+  
+  cout << "> reading public keys" << endl;
+  string pubkeys_data = read_file(pk_path).c_str();
+  cout << "> public keys loaded (hash: " + hex_sha256(pubkeys_data) + ")" << endl;
+  
+
+  cout << "> reading election data" << endl;
+  string election_data = read_file(voting_options_path).c_str();
+  cout << "> election data loaded (hash: " + hex_sha256(election_data) + ")" << endl;
+  
+  cout << "> parsing..."  << endl;
+  
+  pubkeys.Parse( pubkeys_data.c_str() );
+  election.Parse( election_data.c_str() );
+
+  const Value& choices = ballot["choices"];
+  if (!pubkeys.IsArray() || pubkeys.Size() != ballot["choices"].Size()) {
+    cout << "!!! Invalid public keys format" << endl;
+    exit(1);
+  }
+  const Value& proofs = ballot["proofs"];
+  if (!proofs.IsArray() || proofs.Size() != pubkeys.Size()) {
+    cout << "!!! Invalid ballot format" << endl;
+    exit(1);
+  }
+
+  if (!election.HasMember("questions_data") || !election["questions_data"].IsArray() || election["questions_data"].Size() != choices.Size()) {
+    cout << "!!! Invalid election format" << endl;
+    exit(1);
+  }
   cout << "> Please check that the showed options are the ones you chose:" << endl;
   for (SizeType i = 0; i < choices.Size(); ++i) {
     print_answer(choices[i], election["questions_data"][i], pubkeys[i]);
@@ -465,6 +623,5 @@ string audit(const string& auditable_ballot_path)
   }
   //check hash
   check_ballot_hash(ballot);
-  
-  return string("> --------------------\n> Audit PASSED");
+  cout << "> --------------------\n> Audit PASSED" << endl;
 }
