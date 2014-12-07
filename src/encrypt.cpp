@@ -407,7 +407,7 @@ void check_ballot_hash(rapidjson::Document & ballot)
   
   string compare_hash = hex_sha256(ballotss.str());
   
-  cout << "> verifying ballot hash" << endl;
+  cout << "> verifying ballot hash: " << compare_hash<< endl;
   if (compare_hash.compare(ballot_hash) == 0) {
     cout << "> OK - hash verified" << endl;
   } else {
