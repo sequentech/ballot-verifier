@@ -40,9 +40,7 @@ And compile:
 
 and now you have your binary in x64/agora-airgap.
 
-## Examples
-
-# Audit example
+## Audit example
 
 Once you have compiled agora-airgap, the fastest way to do a test is simply executing this command from the agora-airgap/src folder:
 
@@ -68,7 +66,7 @@ Afterwards, you can run the following command without the need of having the htt
 
     ./agora-airgap audit ../example/ballot.json pk.file election_data.file
 
-# Encrypt example
+## Encrypt example
 
 In this case we will encrypt a plaintext ballot without the need of an internet connection. For that we need the public keys and the plaintext ballot files. The following command will encrypt the ballot and save it into the file encrypted_ballot.json. Execute it from the agora-airgap/src/x64 folder:
 
