@@ -77,12 +77,12 @@ bool save_file(const string & path, const string & text)
   return false;
 }
 
-string encryptAnswer(const Value & pk_json, const mpz_class & plain_vote)
+string encrypt_answer(const Value & pk_json, const mpz_class & plain_vote)
 {
   ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json);
   ElGamal::Plaintext plaintext(plain_vote, pk, true);
   mpz_class randomness = Random::getRandomIntegerRange(pk.q);
-  cout << "plaintext = " << plain_vote.get_str(16)  << ", randomness = " << randomness.get_str(16) << endl;
+  cout << "> plaintext = " << plain_vote.get_str(16)  << "\n> randomness = " << randomness.get_str(16) << endl;
   ElGamal::Ciphertext ctext = ElGamal::encrypt(pk, plaintext, randomness);
   ElGamal::Fiatshamir_dlog_challenge_generator fiatshamir_dlog_challenge_generator;
   ElGamal::DLogProof proof = plaintext.proveKnowledge(ctext.alpha, randomness, fiatshamir_dlog_challenge_generator);
@@ -100,21 +100,23 @@ string encryptAnswer(const Value & pk_json, const mpz_class & plain_vote)
   cout << "> Node: proof verified = " << (verified? "true" : "false") << endl;
   
   enc_answer.Parse(ss.str().c_str());
+  
   return stringify(enc_answer);
 }
 
 //See examples: http://www.thomaswhitton.com/blog/2013/06/28/json-c-plus-plus-examples/
 
-string encrypt(const string & pk_path, const string & votes_path)
-{
-  string ret;
-  
+void encrypt_ballot(const string & votes_path, const string & pk_path, const string & ballot_path)
+{  
   Document pk, ballots, votes;
   
-  cout << "> node: reading pk" << endl;
+  cout << "> reading public keys" << endl;
   pk.Parse( read_file(pk_path).c_str() );
   
+  cout << "> reading plaintext ballot" << endl;
   votes.Parse( read_file(votes_path).c_str() );
+  
+  cout << "> generating encrypted ballot" << endl;
   
   assert(votes.IsArray());
   
@@ -128,6 +130,7 @@ string encrypt(const string & pk_path, const string & votes_path)
   ssballot << "[\n";
   for(SizeType i = 0; i < votesArray.Size(); i++)
   {
+    cout << "> question " << i << endl;
     mpz_class plain_vote;
     if( votesArray[i].IsString() )
     {
@@ -148,7 +151,7 @@ string encrypt(const string & pk_path, const string & votes_path)
     rand = Random::getRandomIntegerBits(bits);
     string date, answ;
     date = get_date();
-    answ = encryptAnswer(pk[0], plain_vote);
+    answ = encrypt_answer(pk[0], plain_vote);
     if(i != 0)
     {
       ssballot << ",\n";
@@ -165,9 +168,13 @@ string encrypt(const string & pk_path, const string & votes_path)
   
   ssballot << "\n]";
   ballots.Parse(ssballot.str().c_str() );
-  cout << "\n------------------\n" << stringify(ballots)<< endl;
+  //cout << "\n------------------\n" << stringify(ballots)<< endl;
   
-  return ret;
+  cout << "> saving encrypted ballot to file..."  << endl;
+  if( !save_file(ballot_path, stringify(ballots)) )
+  {
+    cout << "!!! Error saving encrypted ballot to file path " + ballot_path << endl;
+  }
 }
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)

@@ -24,9 +24,19 @@ bool check_file_exists(string file_path)
   return true;
 }
 
+void show_help()
+{
+  cout << "Usage: agora-airgap [option] file..." << endl << "Options:" << endl
+          << "\tdownload-audit\t\t\tdownload public keys and election data, afterwards audit the ballot" << endl
+          << "\tdownload\t\t\tdownload public keys and election data" << endl
+          << "\taudit\t\t\t\taudit the ballot, providing the files with the public keys and election data" << endl
+          << "\tencrypt\t\t\t\tencrypt the plaintext ballot, providing the public keys and the plaintext ballot files" << endl;
+}
+
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     cout << "You need to supply more arguments. Example: " << argv[0] << " download-audit <file_with_auditable_ballot.json>" << endl;
+    show_help();
     exit(1);
   }
   
@@ -42,7 +52,7 @@ int main(int argc, char *argv[]) {
   {
     if(vargs.size() < 3)
     {
-      cout << "You need to supply more arguments. Example: " << argv[0] << " download-audit <file_with_auditable_ballot.json>" << endl;
+      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " download-audit <file_with_auditable_ballot.json>" << endl;
       exit(1);
     }
     else if(vargs.size() > 3)
@@ -64,7 +74,7 @@ int main(int argc, char *argv[]) {
   {
     if(vargs.size() < 5)
     {
-      cout << "You need to supply more arguments. Example: " << argv[0] << " download <file_with_auditable_ballot.json> <public_key_file> <election_data_file>" << endl;
+      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " download <file_with_auditable_ballot.json> <public_key_file> <election_data_file>" << endl;
       exit(1);
     }
     else if(vargs.size() > 5)
@@ -96,7 +106,7 @@ int main(int argc, char *argv[]) {
   {
     if(vargs.size() < 5)
     {
-      cout << "You need to supply more arguments. Example: " << argv[0] << " audit <file_with_auditable_ballot.json> <public_key_file> <election_data_file>" << endl;
+      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " audit <file_with_auditable_ballot.json> <public_key_file> <election_data_file>" << endl;
       exit(1);
     }
     else if(vargs.size() > 5)
@@ -124,12 +134,41 @@ int main(int argc, char *argv[]) {
       audit(vargs.at(2),vargs.at(3), vargs.at(4));
     }
   }
+  else if(vargs.at(1) == string("encrypt"))
+  {
+    if(vargs.size() < 5)
+    {
+      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " encrypt <file_with_plaintext_ballot.json> <public_key_file> <encrypted_ballot_file>" << endl;
+      exit(1);
+    }
+    else if(vargs.size() > 5)
+    {
+      cout << "Error: too many arguments. " << endl;
+      exit(1);
+    }
+    else if(!check_file_exists(vargs.at(2)))
+    {
+      cout << "Error: plaintext ballot file not found at path " << vargs.at(2) << endl;
+      exit(1);
+    }
+    else if(!check_file_exists(vargs.at(3)))
+    {
+      cout << "Error: public key file not found at path " << vargs.at(3) << endl;
+      exit(1);
+    }
+    else if(check_file_exists(vargs.at(4)))
+    {
+      cout << "Error: cannot create encrypted ballot at path " << vargs.at(4) << " as it already exists" << endl;
+      exit(1);
+    }
+    else
+    {
+      encrypt_ballot(vargs.at(2),vargs.at(3), vargs.at(4));
+    }
+  }
   else
   {
-    cout << "Usage: agora-airgap [option] file..." << endl << "Options" << endl
-          << "\tdownload-audit\t\t\tdownload public keys and election data, afterwards audit the ballot" << endl
-          << "\tdownload\t\t\tdownload public keys and election data" << endl
-          << "\taudit\t\t\t\taudit the ballot, providing the files with the public keys and election data" << endl;
+    show_help();
   }
 	return 0;
 }
