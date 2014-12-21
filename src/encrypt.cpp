@@ -200,6 +200,7 @@ string download_url(const string& url)
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &read_buffer);
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
   res = curl_easy_perform(curl);
   if(res != CURLE_OK) {
     fprintf(stderr, "curl_easy_perform() failed: %s\n",
