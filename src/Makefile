@@ -13,7 +13,7 @@ all: build
 build: $(OUTPUT) $(OBJS)
 	$(CXX) -DNDEBUG -g $(OUTPUT)/*.o main.cpp -o $(OUTPUT)/agora-airgap $(INCSPATH) $(LIBSPATH) $(LIBS)
 
-.PHONY: build clean all run
+.PHONY: build clean all run gui
 
 clean:
 	rm -Rf $(OUTPUT)
@@ -31,3 +31,8 @@ run:
 	$(OUTPUT)/agora-airgap download-audit example/ballot.json || true
 	kill `cat pid`
 	rm pid
+
+gui: $(OUTPUT)
+# `wx-config --libs` `wx-config --cxxflags`
+	$(CXX) interface.cpp   `wx-config --cxxflags --libs` -o $(OUTPUT)/interface
+	

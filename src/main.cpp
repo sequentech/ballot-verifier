@@ -27,9 +27,9 @@ bool check_file_exists(string file_path)
 void show_help()
 {
   cout << "Usage: agora-airgap [option] file..." << endl << "Options:" << endl
-          << "\tdownload-audit\t\t\tdownload public keys and election data, afterwards audit the ballot" << endl
-          << "\tdownload\t\t\tdownload public keys and election data" << endl
-          << "\taudit\t\t\t\taudit the ballot, providing the files with the public keys and election data" << endl
+          << "\tdownload-audit\t\t\tdownload election data and audit the ballot" << endl
+          << "\tdownload\t\t\tdownload election data" << endl
+          << "\taudit\t\t\t\taudit the ballot, providing the election data file" << endl
           << "\tencrypt\t\t\t\tencrypt the plaintext ballot, providing the public keys and the plaintext ballot files" << endl;
 }
 
@@ -72,12 +72,12 @@ int main(int argc, char *argv[]) {
   }
   else if(vargs.at(1) == string("download"))
   {
-    if(vargs.size() < 5)
+    if(vargs.size() < 4)
     {
-      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " download <file_with_auditable_ballot.json> <public_key_file> <election_data_file>" << endl;
+      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " download <file_with_auditable_ballot.json> <election_data_file>" << endl;
       exit(1);
     }
-    else if(vargs.size() > 5)
+    else if(vargs.size() > 4)
     {
       cout << "Error: too many arguments " << endl;
       exit(1);
@@ -89,27 +89,22 @@ int main(int argc, char *argv[]) {
     }
     else if(check_file_exists(vargs.at(3)))
     {
-      cout << "Error: cannot create public key file at path " << vargs.at(3)  << " as it already exists" << endl;
-      exit(1);
-    }
-    else if(check_file_exists(vargs.at(4)))
-    {
-      cout << "Error: cannot create election data file at path " << vargs.at(4) << " as it already exists"  << endl;
+      cout << "Error: cannot create election data file at path " << vargs.at(3)  << " as it already exists" << endl;
       exit(1);
     }
     else
     {
-      download(vargs.at(2),vargs.at(3), vargs.at(4));
+      download(vargs.at(2),vargs.at(3));
     }
   }
   else if(vargs.at(1) == string("audit"))
   {
-    if(vargs.size() < 5)
+    if(vargs.size() < 4)
     {
-      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " audit <file_with_auditable_ballot.json> <public_key_file> <election_data_file>" << endl;
+      cout << "You need to supply more arguments. Example: " << vargs.at(0) << " audit <file_with_auditable_ballot.json> <election_data_file>" << endl;
       exit(1);
     }
-    else if(vargs.size() > 5)
+    else if(vargs.size() > 4)
     {
       cout << "Error: too many arguments. " << endl;
       exit(1);
@@ -121,17 +116,12 @@ int main(int argc, char *argv[]) {
     }
     else if(!check_file_exists(vargs.at(3)))
     {
-      cout << "Error: public key file not found at path " << vargs.at(3) << endl;
-      exit(1);
-    }
-    else if(!check_file_exists(vargs.at(4)))
-    {
-      cout << "Error: election data file not found at path " << vargs.at(4) << endl;
+      cout << "Error: election data file not found at path " << vargs.at(3) << endl;
       exit(1);
     }
     else
     {
-      audit(vargs.at(2),vargs.at(3), vargs.at(4));
+      audit(vargs.at(2),vargs.at(3));
     }
   }
   else if(vargs.at(1) == string("encrypt"))
