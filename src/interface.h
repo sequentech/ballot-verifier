@@ -26,6 +26,8 @@ private:
   wxStaticText* state_text;
   void OnVerify(wxCommandEvent& event);
   void OnClose(wxCloseEvent& event);
+  void OnBallotClick(wxMouseEvent& event );
+  void OnBallotLostFocus(wxFocusEvent& e);
   wxDECLARE_EVENT_TABLE();
 };
 

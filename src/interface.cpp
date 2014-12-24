@@ -11,6 +11,27 @@ bool MyApp::OnInit()
     return true;
 }
 
+
+void MyFrame::OnBallotClick(wxMouseEvent& event)
+{
+  string ballot = ballot_text->GetValue().ToStdString();
+  if(0 == ballot.compare(string("Paste your ballot here")) )
+  {
+    ballot_text->Clear();
+  }
+}
+
+
+void MyFrame::OnBallotLostFocus(wxFocusEvent& e)
+{
+  string ballot = ballot_text->GetValue().ToStdString();
+  if(0 == ballot.length() )
+  {
+    ballot_text->WriteText(string("Paste your ballot here"));
+  }
+}
+
+
 MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
         : wxFrame(NULL, wxID_ANY, title, pos, size)
 {    
@@ -19,11 +40,14 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
    
    wxBoxSizer *leftSizer = new wxBoxSizer( wxVERTICAL );
    
-   ballot_text = new wxTextCtrl(this, -1, wxT(""), wxDefaultPosition, wxSize(220,220) , wxTE_MULTILINE);
+   ballot_text = new wxTextCtrl(this, -1, wxT(""), wxDefaultPosition, wxSize(220,250) , wxTE_MULTILINE);
    
    ballot_text->SetEditable(true);
    
-   *ballot_text << wxString(string("Paste Your Ballot Here"));
+   *ballot_text << wxString(string("Paste your ballot here"));
+   
+   ballot_text->Connect(wxEVT_LEFT_UP, wxMouseEventHandler(MyFrame::OnBallotClick), NULL, this );
+   ballot_text->Connect(wxEVT_KILL_FOCUS, wxFocusEventHandler(MyFrame::OnBallotLostFocus), NULL, this );
    
 
    leftSizer->Add( ballot_text,
@@ -37,8 +61,9 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
    
    wxBoxSizer *rightSizer = new wxBoxSizer( wxVERTICAL );
    
-   rightSizer->Add(new wxStaticText( this, -1, wxT("This a help text"), wxDefaultPosition, wxSize(220,20)),
-    wxSizerFlags(0).Top().Border(wxALL, 5) );
+   rightSizer->Add(new wxStaticText( this, -1, 
+    wxT("Get the ballot from the voting booth, which looks like in the picture below. Copy the full text from the voting booth and paste it on the right white box that says 'Paste your ballot here'"), 
+    wxDefaultPosition, wxSize(400,50)), wxSizerFlags(0).Top().Border(wxALL, 5) );
    
    wxBitmap bmp( wxT("screen.png"), wxBITMAP_TYPE_ANY );
    bmp.SetHeight(165);
