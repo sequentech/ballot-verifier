@@ -4,6 +4,7 @@
 #include "sha256.h"
 #include <vector>
 #include <fstream>
+#include <stdexcept>
 
 using namespace rapidjson;
 using namespace std;
@@ -67,7 +68,16 @@ int main(int argc, char *argv[]) {
     }
     else
     {
-      download_audit(vargs.at(2));
+      try
+      {
+        stringstream out;
+        download_audit(out, vargs.at(2));
+        cout << out.str() << endl;
+      } 
+      catch(std::runtime_error error)
+      {
+        cout << error.what() << endl;
+      }
     }
   }
   else if(vargs.at(1) == string("download"))
@@ -94,7 +104,16 @@ int main(int argc, char *argv[]) {
     }
     else
     {
-      download(vargs.at(2),vargs.at(3));
+      try
+      {
+        stringstream out;
+        download(out, vargs.at(2),vargs.at(3));
+        cout << out.str() << endl;
+      } 
+      catch(std::runtime_error error)
+      {
+        cout << error.what() << endl;
+      }
     }
   }
   else if(vargs.at(1) == string("audit"))
@@ -121,7 +140,16 @@ int main(int argc, char *argv[]) {
     }
     else
     {
-      audit(vargs.at(2),vargs.at(3));
+      try
+      {
+        stringstream out;
+        audit(out, vargs.at(2),vargs.at(3));
+        cout << out.str() << endl;
+      } 
+      catch(std::runtime_error error)
+      {
+        cout << error.what() << endl;
+      }
     }
   }
   else if(vargs.at(1) == string("encrypt"))
@@ -153,7 +181,17 @@ int main(int argc, char *argv[]) {
     }
     else
     {
-      encrypt_ballot(vargs.at(2),vargs.at(3), vargs.at(4));
+      try
+      {
+        stringstream out;
+        encrypt_ballot(out, vargs.at(2),vargs.at(3), vargs.at(4));
+        cout << out.str() << endl;
+      } 
+      catch(std::runtime_error error)
+      {
+        cout << error.what() << endl;
+      }
+      
     }
   }
   else

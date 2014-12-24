@@ -24,6 +24,9 @@ clean:
 	
 $(OUTPUT):
 	mkdir -p $@
+
+$(OUTPUT)/screen.png:
+	cp screen.png $(OUTPUT)
 	
 run:
 	cd example && python -m SimpleHTTPServer & echo "$$!" > pid
@@ -32,7 +35,7 @@ run:
 	kill `cat pid`
 	rm pid
 
-gui: $(OUTPUT)
+gui: $(OUTPUT) $(OUTPUT)/screen.png $(OBJS)
 # `wx-config --libs` `wx-config --cxxflags`
-	$(CXX) interface.cpp   `wx-config --cxxflags --libs` -o $(OUTPUT)/interface
+	$(CXX) -DNDEBUG -g $(OUTPUT)/*.o interface.cpp   `wx-config --cxxflags --libs` -o $(OUTPUT)/interface $(INCSPATH) $(LIBSPATH) $(LIBS)
 	
