@@ -16,7 +16,7 @@ using namespace std;
 #if defined(_WIN32) || defined(WIN32) 
 	#include <iostream>
 	#include <windows.h>
-	#include <Wincrypt.h>
+	#include <wincrypt.h>
 #endif
 
 void Random::initState() {

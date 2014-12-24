@@ -56,7 +56,7 @@ Now we can audit the ballot. On another console, execute the following command f
 
     ./agora-airgap download-audit ../example/ballot.json
     
-As we mentioned earlier, you can also do the audit process in two steps. First to download the public key files, execute the following from the agora-airgap/src/x64.
+As we mentioned earlier, you can also do the audit procedure in two steps. First to download the public key files, execute the following from the agora-airgap/src/x64.
 
     ./agora-airgap download ../example/ballot.json pk.file election_data.file
     
@@ -71,3 +71,11 @@ Afterwards, you can run the following command without the need of having the htt
 In this case we will encrypt a plaintext ballot without the need of an internet connection. For that we need the public keys and the plaintext ballot files. The following command will encrypt the ballot and save it into the file encrypted_ballot.json. Execute it from the agora-airgap/src/x64 folder:
 
     ./agora-airgap encrypt ../example/votes.json ../example/pk_1 encrypted_ballot.json
+
+## Graphic interface
+
+There is a graphic interface for the audit procedure, available for linux 64 bits. Compile it executing the following command from the agora-airgap/src folder:
+
+    make gui
+    
+The audit graphic interface will be available in agora-airgap/src/x64/interface . If you want to move the program somewhere else don't forget to also copy/move the picture agora-airgap/src/x64/screen.png to the same folder.
