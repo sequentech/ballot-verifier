@@ -14,7 +14,7 @@ Once you have copied the ballot to agora-audit, you should click the "Verify Bal
 
 ## Compilation
 
-Go to the agora-airgap/src folder and execute:
+As an alternative to just downloading the pre-compiled tool, you can compile it yourself from the source code. Go to the agora-airgap/src folder and execute:
 
     make gui
     
