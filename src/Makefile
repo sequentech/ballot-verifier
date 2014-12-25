@@ -2,9 +2,11 @@ OUTPUT := x64
 OUTPUTW64 := w64
 
 INCSPATH := -I/usr/include/ -I/home/felix/workspace/libgmp/gmp-6.0.0/
-LIBSPATH := 
-#LIBS := -lgmpxx -lgmp -ljson  -I/usr/share/mingw-w64/include/
-LIBS := -lgmpxx -lgmp -lcurl
+LIBSPATH := -L/usr/local/lib
+LIBS :=  -Wl,-Bstatic -lgmpxx -lgmp -lstdc++ `curl-config --static-libs` -Wl,-Bdynamic `wx-config --cxxflags --libs`
+
+
+
 
 OBJS := sha256.o ElGamal.o Random.o encrypt.o
 
@@ -22,7 +24,7 @@ clean:
 	rm -Rf $(OUTPUT)
 	
 %.o:  %.cpp
-	$(CXX) -DNDEBUG -g -c  $^ $(INCSPATH) $(LIBSPATH) $(LIBS)
+	$(CXX) -DNDEBUG -g -c  $^ $(INCSPATH)
 	mv $@ $(OUTPUT)
 	
 $(OUTPUT):
@@ -45,7 +47,7 @@ run:
 	rm pid
 
 gui: $(OUTPUT) $(OUTPUT)/screen.png $(OBJS)
-	$(CXX) -DNDEBUG -g $(OUTPUT)/*.o interface.cpp  -o $(OUTPUT)/agora-audit $(INCSPATH) $(LIBSPATH) `wx-config --static=yes --cxxflags --libs` $(LIBS)
+	$(CXX) -Wall -DNDEBUG -g $(OUTPUT)/*.o interface.cpp  -o $(OUTPUT)/agora-audit $(INCSPATH) $(LIBSPATH) $(LIBS)
 	
 OBJSW64:
 	$(WXX64) -DNDEBUG -g -c  sha256.cpp $(INCSPATH) $(LIBSPATH) $(LIBS)
@@ -55,6 +57,6 @@ OBJSW64:
 	mv *.o $(OUTPUTW64)
 	
 xcompile: $(OUTPUTW64) $(OUTPUTW64)/screen.png OBJSW64
-	$(WXX64) $(XCOMPILEFLAGS) -DNDEBUG -g $(OUTPUTW64)/*.o interface.cpp   `wx-config --cxxflags --libs` -o $(OUTPUTW64)/interface $(INCSPATH) $(LIBSPATH) $(LIBS)
+	$(WXX64) $(XCOMPILEFLAGS) -DNDEBUG -g $(OUTPUTW64)/*.o interface.cpp    -o $(OUTPUTW64)/interface $(INCSPATH) $(LIBSPATH) $(LIBS)
 	
 	
