@@ -135,7 +135,7 @@ void MyFrame::OnVerify(wxCommandEvent& event)
   console_text->WriteText( wxString(sstext.str().c_str(), wxConvUTF8 ) );
   if(passed)
   {
-    state_text->SetLabelText("State: PASSED");
+    state_text->SetLabelText("State: VERIFIED");
   }
 }
 

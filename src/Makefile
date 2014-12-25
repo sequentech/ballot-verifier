@@ -34,7 +34,6 @@ $(OUTPUTW64):
 $(OUTPUT)/screen.png:
 	cp screen.png $(OUTPUT)
 	
-	
 $(OUTPUTW64)/screen.png:
 	cp screen.png $(OUTPUTW64)
 	
@@ -46,9 +45,7 @@ run:
 	rm pid
 
 gui: $(OUTPUT) $(OUTPUT)/screen.png $(OBJS)
-# `wx-config --libs` `wx-config --cxxflags`
-	$(CXX) -DNDEBUG -g $(OUTPUT)/*.o interface.cpp   `wx-config --cxxflags --libs` -o $(OUTPUT)/interface $(INCSPATH) $(LIBSPATH) $(LIBS)
-	
+	$(CXX) -DNDEBUG -g $(OUTPUT)/*.o interface.cpp  -o $(OUTPUT)/agora-audit $(INCSPATH) $(LIBSPATH) `wx-config --static=yes --cxxflags --libs` $(LIBS)
 	
 OBJSW64:
 	$(WXX64) -DNDEBUG -g -c  sha256.cpp $(INCSPATH) $(LIBSPATH) $(LIBS)
