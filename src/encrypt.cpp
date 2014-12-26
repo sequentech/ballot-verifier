@@ -249,10 +249,10 @@ int to_int(string i) {
 }
 
 vector<int> split_choices(string choices, const Value& question) {
-  SizeType size = question["answers"].Size();
-  int tabsize = to_string(size).length();
+  SizeType size = question["answers"].Size() + 2;
+  int tabsize = to_string(size).length() ;
   vector<int> choicesV;
-  choices = repeat_string( string("0"),(choices.length() % tabsize) ) + choices;
+  //choices = repeat_string( string("0"),(choices.length() % tabsize) ) + choices;
   for(int i = 0; i < choices.length() / tabsize; i++) {
     int choice = to_int(choices.substr(i*tabsize, tabsize)) - 1;
     choicesV.push_back(choice);
@@ -301,6 +301,7 @@ bool print_answer(stringstream& out, const Value& choice, const Value& question,
   vector<int> choices = split_choices(choice["plaintext"].GetString(), question);  
   out << "user answers:" << endl;
   for (int i = 0; i < choices.size(); i++) {
+    out << "choice " << to_string( choices.at(i) ) << endl;
     out << " - " << find_value(out, question["answers"], "id", to_string( choices.at(i) ) )["text"].GetString() << endl;
   }
 }
@@ -308,7 +309,6 @@ bool print_answer(stringstream& out, const Value& choice, const Value& question,
 void check_encrypted_answer(stringstream& out, const Value & choice, const Value & question, 
                             const Value & pubkey)
 {  
-  
   if(!choice.HasMember("alpha") || !choice["alpha"].IsString()){
     out << "!!! Invalid ballot format" << endl;
     throw runtime_error(out.str());
@@ -342,15 +342,16 @@ void check_encrypted_answer(stringstream& out, const Value & choice, const Value
     throw runtime_error(out.str());
   }
   
-  mpz_class plain_vote;
+  mpz_class plain_vote, test;
   if( choice["plaintext"].IsString() )
   {
-    plain_vote = choice["plaintext"].GetString();
+    plain_vote.set_str(choice["plaintext"].GetString(),10);
   } 
   else if( choice["plaintext"].IsInt() ) 
   {
     plain_vote = choice["plaintext"].GetInt();
   } 
+  
   mpz_class randomness;
   randomness = choice["randomness"].GetString();
   ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pubkey);
@@ -450,11 +451,10 @@ void download_audit_text(stringstream& out, const string& auditable_ballot)
   
 
   string election_url = ballot["election_url"].GetString();
-
-  string election_data = download_url(out, election_url);
-  out << "> election data downloaded (hash: " + hex_sha256(election_data) + ")" << endl;
+  out << "> election data downloaded";
   
-  out << "> parsing..."  << endl;
+  string election_data = download_url(out, election_url);
+  
   
   election.Parse( election_data.c_str() );
   
@@ -469,6 +469,10 @@ void download_audit_text(stringstream& out, const string& auditable_ballot)
   }
   
   string payloads = election["payload"]["configuration"].GetString();
+  
+  out << "> election data configuration hash: " + hex_sha256(payloads) << endl;
+  
+  out << "> parsing..."  << endl;
   payload.Parse( payloads.c_str() );
   
   if (!election["payload"].HasMember("pks") || election["payload"].IsString() ) {

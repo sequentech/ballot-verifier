@@ -132,6 +132,7 @@ void MyFrame::OnVerify(wxCommandEvent& event)
     state_text->SetLabelText("State: ERROR");
   }
   sstext.flush();
+  console_text->Clear();
   console_text->WriteText( wxString(sstext.str().c_str(), wxConvUTF8 ) );
   if(passed)
   {
