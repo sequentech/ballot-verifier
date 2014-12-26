@@ -1,7 +1,7 @@
 OUTPUT := x64
 OUTPUTW64 := w64
 
-INCSPATH := -I/usr/include/ -I/home/felix/workspace/libgmp/gmp-6.0.0/
+INCSPATH := -I/usr/include/
 LIBSPATH := -L/usr/local/lib
 LIBS :=  -Wl,-Bstatic -lgmpxx -lgmp -lstdc++ `curl-config --static-libs` -Wl,-Bdynamic `wx-config --cxxflags --libs`
 
