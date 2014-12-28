@@ -1,8 +1,8 @@
 ## agora-audit
 
-agora-audit is a tool that allows you to audit a spoiled ballot from Agora Voting. This software has been tested on linux 64 bits. If you move the agora-audit executable, remember to move the screen.png to the same folder as the executable.
+agora-audit is a tool that allows you to audit a spoiled ballot from Agora Voting. This software implements the 'cast or cancel' procedure described on the paper "Ballot Casting Assurance via Voter-Initiated Poll Station Auditing" by Josh Benaloh (https://www.usenix.org/legacy/event/evt07/tech/full_papers/benaloh/benaloh.pdf). This software has been tested both on Windows 64 bits and Linux 64 bits.
 
-You can find the present release of agora-audit for linux 64 bits at: 
+You can find the present release of agora-audit for Windows 64 bits or Linux 64 bits at: 
 
 https://github.com/agoravoting/agora-airgap/releases/download/0.49/agora-audit.tar.gz
 
