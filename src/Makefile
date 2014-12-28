@@ -1,7 +1,8 @@
 OUTPUT := x64
 OUTPUTW64 := w64
 
-INCSPATH := -I/usr/include/
+INCSPATH := -I/usr/include/ 
+WINCSPATH := -I/usr/share/mingw-w64/include/ -I/usr/local/include/
 LIBSPATH := -L/usr/local/lib
 LIBS :=  -Wl,-Bstatic -lgmpxx -lgmp -lstdc++ `curl-config --static-libs` -Wl,-Bdynamic `wx-config --cxxflags --libs`
 
@@ -22,6 +23,8 @@ build: $(OUTPUT) $(OBJS)
 
 clean:
 	rm -Rf $(OUTPUT)
+	rm -Rf $(OUTPUTW64)
+	rm -f *.o
 	
 %.o:  %.cpp
 	$(CXX) -DNDEBUG -g -c  $^ $(INCSPATH)
@@ -32,12 +35,6 @@ $(OUTPUT):
 	
 $(OUTPUTW64):
 	mkdir -p $@
-
-$(OUTPUT)/screen.png:
-	cp screen.png $(OUTPUT)
-	
-$(OUTPUTW64)/screen.png:
-	cp screen.png $(OUTPUTW64)
 	
 run:
 	cd example && python -m SimpleHTTPServer & echo "$$!" > pid
@@ -46,17 +43,17 @@ run:
 	kill `cat pid`
 	rm pid
 
-gui: $(OUTPUT) $(OUTPUT)/screen.png $(OBJS)
+gui: $(OUTPUT) $(OBJS)
 	$(CXX) -Wall -DNDEBUG -g $(OUTPUT)/*.o interface.cpp  -o $(OUTPUT)/agora-audit $(INCSPATH) $(LIBSPATH) $(LIBS)
 	
 OBJSW64:
-	$(WXX64) -DNDEBUG -g -c  sha256.cpp $(INCSPATH) $(LIBSPATH) $(LIBS)
-	$(WXX64) -DNDEBUG -g -c  ElGamal.cpp $(INCSPATH) $(LIBSPATH) $(LIBS)
-	$(WXX64) -DNDEBUG -g -c  Random.cpp $(INCSPATH) $(LIBSPATH) $(LIBS)
-	$(WXX64) -DNDEBUG -g -c  encrypt.cpp $(INCSPATH) $(LIBSPATH) $(LIBS)
+	$(WXX64) -DNDEBUG -g -c  sha256.cpp $(WINCSPATH)
+	$(WXX64) -DNDEBUG -g -c  ElGamal.cpp $(WINCSPATH)
+	$(WXX64) -DNDEBUG -g -c  Random.cpp $(WINCSPATH)
+	$(WXX64) -DNDEBUG -g -c  encrypt.cpp $(WINCSPATH)
 	mv *.o $(OUTPUTW64)
 	
-xcompile: $(OUTPUTW64) $(OUTPUTW64)/screen.png OBJSW64
-	$(WXX64) $(XCOMPILEFLAGS) -DNDEBUG -g $(OUTPUTW64)/*.o interface.cpp    -o $(OUTPUTW64)/interface $(INCSPATH) $(LIBSPATH) $(LIBS)
+xcompile: $(OUTPUTW64) OBJSW64
+	$(WXX64) -DNDEBUG -g $(OUTPUTW64)/*.o interface.cpp    -o $(OUTPUTW64)/interface.exe $(WINCSPATH) $(LIBSPATH) -static -lgmpxx -lgmp -lstdc++ -DCURL_STATICLIB /usr/local/lib/libcurl.dll.a -L/usr/local/lib -lidn -lws2_32  `wx-config --static=yes --cxxflags --libs` 
 	
 	

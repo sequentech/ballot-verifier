@@ -3,6 +3,7 @@
 #include "encrypt.h"
 #include "sha256.h"
 #include <wx/generic/statbmpg.h>
+#include "screen.h"
 
 bool MyApp::OnInit()
 {
@@ -14,6 +15,7 @@ bool MyApp::OnInit()
 
 void MyFrame::OnBallotClick(wxMouseEvent& event)
 {
+  event.Skip( true );
   string ballot = ballot_text->GetValue().ToStdString();
   if(0 == ballot.compare(string("Paste your ballot here")) )
   {
@@ -24,6 +26,7 @@ void MyFrame::OnBallotClick(wxMouseEvent& event)
 
 void MyFrame::OnBallotLostFocus(wxFocusEvent& e)
 {
+  e.Skip( true );
   string ballot = ballot_text->GetValue().ToStdString();
   if(0 == ballot.length() )
   {
@@ -65,7 +68,9 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     wxT("Get the ballot from the voting booth, which looks like in the picture below. Copy the full text from the voting booth and paste it on the right white box that says 'Paste your ballot here'"), 
     wxDefaultPosition, wxSize(400,50)), wxSizerFlags(0).Top().Border(wxALL, 5) );
    
-   wxBitmap bmp( wxT("screen.png"), wxBITMAP_TYPE_ANY );
+   wxInitAllImageHandlers();
+   
+   wxBitmap bmp = wxBITMAP_PNG_FROM_DATA(screen); //( wxT("screen.png"), wxBITMAP_TYPE_ANY );
    bmp.SetHeight(165);
    bmp.SetWidth(400);
    

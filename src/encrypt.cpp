@@ -411,7 +411,7 @@ void check_ballot_hash(stringstream& out, rapidjson::Document & ballot)
   
   ballotss << partial  << "}";
   
-  string compare_hash = hex_sha256(ballotss.str());
+  string compare_hash = sha256::hex_sha256(ballotss.str());
   
   out << "> verifying ballot hash: " << compare_hash<< endl;
   if (compare_hash.compare(ballot_hash) == 0) {
@@ -470,7 +470,7 @@ void download_audit_text(stringstream& out, const string& auditable_ballot)
   
   string payloads = election["payload"]["configuration"].GetString();
   
-  out << "> election data configuration hash: " + hex_sha256(payloads) << endl;
+  out << "> election data configuration hash: " + sha256::hex_sha256(payloads) << endl;
   
   out << "> parsing..."  << endl;
   payload.Parse( payloads.c_str() );
@@ -534,7 +534,7 @@ void download(stringstream& out, const string & auditable_ballot_path, const str
   string election_url = ballot["election_url"].GetString();
   
   string election_data = download_url(out, election_url);
-  out << "> election data downloaded (hash: " + hex_sha256(election_data) + ")" << endl;
+  out << "> election data downloaded (hash: " + sha256::hex_sha256(election_data) + ")" << endl;
   
   out << "> parsing..."  << endl;
   election.Parse( election_data.c_str() );
@@ -570,7 +570,7 @@ void audit(stringstream& out, const string & auditable_ballot_path, const string
   }
 
   string election_data = read_file(out, election_path);
-  out << "> election data loaded (hash: " + hex_sha256(election_data) + ")" << endl;
+  out << "> election data loaded (hash: " + sha256::hex_sha256(election_data) + ")" << endl;
   
   out << "> parsing..."  << endl;
   

@@ -111,7 +111,7 @@ std::string ElGamal::PlaintextCommitment::toJSON() const
 mpz_class ElGamal::Fiatshamir_dlog_challenge_generator::generator(const ElGamal::PlaintextCommitment & commitment) const
 {
 	mpz_class out;
-	mpz_init_set_str(out.get_mpz_t(), hex_sha256(commitment.toString()).c_str(), 16);
+	mpz_init_set_str(out.get_mpz_t(), sha256::hex_sha256(commitment.toString()).c_str(), 16);
 	return out;
 }
 

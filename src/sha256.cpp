@@ -20,6 +20,8 @@
 #include <iomanip>
 #include "sha256.h"
 
+namespace sha256{
+
 /****************************** MACROS ******************************/
 #define ROTLEFT(a,b) (((a) << (b)) | ((a) >> (32-(b))))
 #define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
@@ -179,3 +181,6 @@ void sha256_final(SHA256_CTX *ctx, BYTE hash[])
 		hash[i + 28] = (ctx->state[7] >> (24 - i * 8)) & 0x000000ff;
 	}
 }
+
+
+} //namespace sha256
