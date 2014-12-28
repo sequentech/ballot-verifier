@@ -54,6 +54,6 @@ OBJSW64:
 	mv *.o $(OUTPUTW64)
 	
 xcompile: $(OUTPUTW64) OBJSW64
-	$(WXX64) -DNDEBUG -g $(OUTPUTW64)/*.o interface.cpp    -o $(OUTPUTW64)/interface.exe $(WINCSPATH) $(LIBSPATH) -static -lgmpxx -lgmp -lstdc++ -DCURL_STATICLIB /usr/local/lib/libcurl.dll.a -L/usr/local/lib -lidn -lws2_32  `wx-config --static=yes --cxxflags --libs` 
+	$(WXX64) -DNDEBUG -g $(OUTPUTW64)/*.o interface.cpp    -o $(OUTPUTW64)/agora-audit.exe $(WINCSPATH) $(LIBSPATH) -static -lgmpxx -lgmp -lstdc++ -DCURL_STATICLIB /usr/local/lib/libcurl.dll.a -L/usr/local/lib -lidn -lws2_32  `wx-config --static=yes --cxxflags --libs` 
 	
 	

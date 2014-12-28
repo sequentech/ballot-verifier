@@ -2,11 +2,15 @@
 
 agora-audit is a tool that allows you to audit a spoiled ballot from Agora Voting. This software implements the 'cast or cancel' procedure described on the paper "Ballot Casting Assurance via Voter-Initiated Poll Station Auditing" by Josh Benaloh (https://www.usenix.org/legacy/event/evt07/tech/full_papers/benaloh/benaloh.pdf). This software has been tested both on Windows 64 bits and Linux 64 bits.
 
-You can find the present release of agora-audit for Windows 64 bits or Linux 64 bits at: 
+The Windows 64 bits version can be downloaded here:
 
-https://github.com/agoravoting/agora-airgap/releases/download/0.49/agora-audit.tar.gz
+https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-audit-windows.zip
 
-Download and extract agora-audit.tar.gz and execute agora-audit executable.
+The Linux 64 bits version can be downloaded here:
+
+https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-audit-linux.tar.gz
+
+Download and extract the files and execute agora-audit. On the Windows version, the zip includes a libcurl-4.dll file which you might need to copy to your C:\windows\system32 folder.
 
 The agora-audit tool has a textbox on the upper left side where you should copy the ballot. Before you cast your vote in Agora Voting, you are allowed to audit the ballot (this also discards the ballot for security reasons). The upper right side of agora-audit shows you a screen capture of the audit ballot screen and marks the place where you will find the auditable ballot enclosed with a red box.
 
@@ -41,6 +45,7 @@ http://sourceforge.net/projects/wxwindows/files/3.0.2/wxWidgets-3.0.2.tar.bz2/do
     sudo make install
     
 Download the idn library:
+
     wget http://ftp.gnu.org/gnu/libidn/libidn-1.29.tar.gz
     tar xzf libidn-1.29.tar.gz
     cd libidn-1.29
@@ -49,6 +54,7 @@ Download the idn library:
     sudo make install
     
 Download and install the static CUrl library:
+
     wget http://curl.haxx.se/download/curl-7.39.0.tar.gz
     tar xzf curl-7.39.0.tar.gz
     cd curl-7.39.0
@@ -70,7 +76,9 @@ Go to the agora-airgap/src folder and execute:
     cd agora-airgap/src
     make gui
     
-If the build is successful, you will find the agora-audit tool on agora-airgap/src/x64/agora-audit . Don't forget to copy along the screen.png file if you choose to move agora-audit somewhere else.
+If the build is successful, you will find the agora-audit tool on agora-airgap/src/x64/agora-audit
+
+As a side note, the file screen.h includes the PNG agora-airgap/src/screen.png file. The file screen.h has been generated with the bin2c tool available at https://github.com/gwilymk/bin2c
 
 ## Windows compilation
 
@@ -103,6 +111,7 @@ Download the idn library:
     sudo make install
     
 Download and install the static CUrl library:
+
     wget http://curl.haxx.se/download/curl-7.39.0.tar.gz
     tar xzf curl-7.39.0.tar.gz
     cd curl-7.39.0
@@ -110,5 +119,23 @@ Download and install the static CUrl library:
     make
     sudo make install
 
+Download the source code by executing the following command:
+
+    git clone https://github.com/agoravoting/agora-airgap.git
     
+Download the rapidjson library and copy the includes to the agora-airgap/src folder:
+
+    git clone https://github.com/miloyip/rapidjson.git
+    cp -Rf rapidjson/include/rapidjson/ agora-airgap/src
+
+Go to the agora-airgap/src folder and execute:
+
+    cd agora-airgap/src
+    make xcompile
+    
+If the build is successful, you will find the agora-audit tool on agora-airgap/src/w64/agora-audit.exe
+
+As a side note, the file screen.h includes the PNG agora-airgap/src/screen.png file. The file screen.h has been generated with the bin2c tool available at https://github.com/gwilymk/bin2c
+
+
 
