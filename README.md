@@ -14,7 +14,7 @@ The Linux 64 bits version can be downloaded here:
 
 https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-audit-linux.tar.gz
 
-Download and extract the files and execute agora-audit. On the Windows version, the zip includes a number of dll files which you will need to copy to your C:\windows\system32 folder.
+Download and extract the files and execute agora-audit.
 
 The agora-audit tool has a textbox on the upper left side where you should copy the ballot. Before you cast your vote in Agora Voting, you are allowed to audit the ballot (this also discards the ballot for security reasons). The upper right side of agora-audit shows you a screen capture of the audit ballot screen and marks the place where you will find the auditable ballot enclosed with a red box.
 
@@ -135,10 +135,6 @@ Download and install the static CUrl library:
     ./configure  --host=x86_64-w64-mingw32 --disable-shared --disable-ldap --without-librtmp --with-ssl=/usr/local/ssl
     make
     sudo make install
-    
-If you want to skip the CUrl library compilation, you can download it here:
-
-    wget http://curl.haxx.se/gknw.net/7.39.0/dist-w64/curl-7.39.0-devel-mingw64.7z
 
 Download the agora-airgap source code by executing the following command:
 

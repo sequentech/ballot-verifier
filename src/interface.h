@@ -1,8 +1,6 @@
-// wxWidgets "Hello world" Program
+#ifndef INTERFACE_H
+#define INTERFACE_H
 // For compilers that support precompilation, includes "wx/wx.h".
-#if defined(_WIN32)
- # define CURL_STATICLIB 1 
-#endif 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -60,3 +58,5 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_CLOSE(MyFrame::OnClose)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(MyApp);
+
+#endif //INTERFACE_H

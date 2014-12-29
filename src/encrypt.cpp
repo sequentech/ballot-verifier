@@ -21,6 +21,10 @@
 #include <stdexcept>
 
 #include <gmpxx.h>
+
+#if defined(_WIN32)
+  #define CURL_STATICLIB
+#endif 
 #include <curl/curl.h>
 #include "encrypt.h"
 #include "Random.h"
