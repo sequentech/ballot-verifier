@@ -306,7 +306,7 @@ bool print_answer(stringstream& out, const Value& choice, const Value& question,
   vector<int> choices = split_choices(choice["plaintext"].GetString(), question);  
   out << "user answers:" << endl;
   for (int i = 0; i < choices.size(); i++) {
-    if(choices.at(i) >= 0 && choices.at(i) < choices.size())
+    if(choices.at(i) >= 0 && choices.at(i) < size - 1)
     {
       out << "choice " << to_string( choices.at(i) ) << endl;
       out << " - " << find_value(out, question["answers"], "id", to_string( choices.at(i) ) )["text"].GetString() << endl;

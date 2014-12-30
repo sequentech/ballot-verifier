@@ -3,8 +3,8 @@ OUTPUTW64 := w64
 
 INCSPATH := -I/usr/include/ 
 WINCSPATH := -I/usr/share/mingw-w64/include/ -I/usr/local/include/
-LIBSPATH := -L/usr/local/lib
-LIBS :=  -Wl,-Bstatic -lgmpxx -lgmp -lstdc++ `curl-config --static-libs` -Wl,-Bdynamic `wx-config --cxxflags --libs`
+LIBSPATH := -L/usr/local/lib -L/usr/local/ssl/lib/
+LIBS :=  -Wl,-Bstatic -lgmpxx -lgmp -lstdc++ `curl-config --static-libs` -Wl,-Bdynamic `wx-config --cxxflags --libs`  
 
 
 
