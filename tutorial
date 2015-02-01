@@ -58,13 +58,13 @@ Now we can audit the ballot. On another console, execute the following command f
     
 As we mentioned earlier, you can also do the audit procedure in two steps. First to download the public key files, execute the following from the agora-airgap/src/x64.
 
-    ./agora-airgap download ../example/ballot.json pk.file election_data.file
+    ./agora-airgap download ../example/ballot.json election_data.file
     
 Note that for that command to work you need to still be running the python http server and you also need the files pk.file and election_data.file not to exist.
 
 Afterwards, you can run the following command without the need of having the http server running:
 
-    ./agora-airgap audit ../example/ballot.json pk.file election_data.file
+    ./agora-airgap audit ../example/ballot.json election_data.file
 
 ## Encrypt example
 
