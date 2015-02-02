@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
 
+import copy
 from pprint import pprint
 
 import urllib.request as req
 import json
 
+from hashlib import sha256
+from collections import OrderedDict
 from Crypto.PublicKey import ElGamal
 from Crypto.Random import random
 
@@ -62,7 +65,30 @@ def test_encryption(choice, key):
     assert(a == int(choice['alpha']))
     assert(b == int(choice['beta']))
 
-    print('OK')
+    print('OK - encryption')
+
+
+def test_hash(ballot):
+    h = ballot['ballot_hash']
+    b = copy.deepcopy(ballot)
+    del b['election_url']
+    del b['ballot_hash']
+
+    for c in b['choices']:
+        del c['randomness']
+        del c['plaintext']
+
+    b2 = OrderedDict()
+    b2['choices'] = [OrderedDict([('alpha', i['alpha']), ('beta', i['beta'])]) for i in b['choices']]
+    b2['issue_date'] = b['issue_date']
+    b2['proofs'] = [OrderedDict([('challenge', i['challenge']),
+                                 ('commitment', i['commitment']),
+                                 ('response', i['response'])]) for i in b['proofs']]
+
+    calc_hash = sha256(json.dumps(b2).replace(' ', '').encode('utf-8')).hexdigest()
+    assert(h == calc_hash)
+
+    print('OK - hash', calc_hash)
 
 
 def custom_encryption(choice, key):
@@ -83,5 +109,6 @@ if __name__ == '__main__':
     ballot = parse_ballot(args.ballot)
     pks = download_pk(ballot['election_url'])
 
+    test_hash(ballot)
     for c, k in zip(ballot["choices"], pks):
         test_encryption(c, k)
