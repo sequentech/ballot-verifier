@@ -292,7 +292,7 @@ bool print_answer(stringstream& out, const Value& choice, const Value& question,
   }
 
   if(!choice.HasMember("plaintext") || !choice["plaintext"].IsString()){
-    out << "!!! Invalid ballot format" << endl;
+    out << "!!! Invalid election format" << endl;
     throw runtime_error(out.str());
   }
 
@@ -481,19 +481,31 @@ void download_audit_text(stringstream& out, const string& auditable_ballot)
     throw runtime_error(out.str());
   }
   
-  if (!election["payload"].HasMember("configuration") || !election["payload"]["configuration"].IsString()) {
+  string payloads;
+  
+  if (election["payload"]["configuration"].IsString())
+  {
+    payloads = election["payload"]["configuration"].GetString();
+  }
+  else if (election["payload"]["configuration"].IsObject())
+  {
+    Document payload_doc;
+    payload_doc.SetObject();
+    payload_doc.CopyFrom(election["payload"]["configuration"], payload_doc.GetAllocator());
+    payloads = stringify(payload_doc);
+  }
+  else
+  {
     out << "!!! Invalid election format" << endl;
     throw runtime_error(out.str());
   }
-  
-  string payloads = election["payload"]["configuration"].GetString();
   
   out << "> election data configuration hash: " + sha256::hex_sha256(payloads) << endl;
   
   out << "> parsing..."  << endl;
   payload.Parse( payloads.c_str() );
   
-  if (!election["payload"].HasMember("pks") || election["payload"].IsString() ) {
+  if (!election["payload"].HasMember("pks") || !election["payload"]["pks"].IsString() ) {
     out << "!!! Invalid election format pks\n" << stringify(payload) << endl;
     throw runtime_error(out.str());
   }

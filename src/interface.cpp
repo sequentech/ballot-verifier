@@ -7,13 +7,13 @@
 
 bool MyApp::OnInit()
 {
-    MyFrame *frame = new MyFrame( "Audit Your Ballot", wxPoint(50, 50), wxSize(450, 840) );
+    MainFrame *frame = new MainFrame( "Audit Your Ballot", wxPoint(50, 50), wxSize(450, 840) );
     frame->Show( true );
     return true;
 }
 
 
-void MyFrame::OnBallotClick(wxMouseEvent& event)
+void MainFrame::OnBallotClick(wxMouseEvent& event)
 {
   event.Skip( true );
   string ballot = ballot_text->GetValue().ToStdString();
@@ -24,7 +24,7 @@ void MyFrame::OnBallotClick(wxMouseEvent& event)
 }
 
 
-void MyFrame::OnBallotLostFocus(wxFocusEvent& e)
+void MainFrame::OnBallotLostFocus(wxFocusEvent& e)
 {
   e.Skip( true );
   string ballot = ballot_text->GetValue().ToStdString();
@@ -35,7 +35,7 @@ void MyFrame::OnBallotLostFocus(wxFocusEvent& e)
 }
 
 
-MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
+MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
         : wxFrame(NULL, wxID_ANY, title, pos, size)
 {    
   wxBoxSizer *overSizer = new wxBoxSizer( wxVERTICAL );
@@ -44,25 +44,26 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
    wxBoxSizer *leftSizer = new wxBoxSizer( wxVERTICAL );
    
    ballot_text = new wxTextCtrl(this, -1, wxT(""), wxDefaultPosition, wxSize(220,250) , wxTE_MULTILINE);
+   //ballot_text = new wxTextCtrl(this, -1, wxT(""), wxDefaultPosition, wxSize(220,300) , wxTE_MULTILINE);
    
    ballot_text->SetEditable(true);
    
    *ballot_text << wxString(string("Paste your ballot here"));
    
-   ballot_text->Connect(wxEVT_LEFT_UP, wxMouseEventHandler(MyFrame::OnBallotClick), NULL, this );
-   ballot_text->Connect(wxEVT_KILL_FOCUS, wxFocusEventHandler(MyFrame::OnBallotLostFocus), NULL, this );
+   ballot_text->Connect(wxEVT_LEFT_UP, wxMouseEventHandler(MainFrame::OnBallotClick), NULL, this );
+   ballot_text->Connect(wxEVT_KILL_FOCUS, wxFocusEventHandler(MainFrame::OnBallotLostFocus), NULL, this );
    
-
    leftSizer->Add( ballot_text,
-    wxSizerFlags(5).Expand().Border(wxALL, 5) );
-   
-   
+    wxSizerFlags(5).Expand().Border(wxALL, 5) );   
    
     mainSizer->Add(
         leftSizer,
         wxSizerFlags(1).Left().Border(wxALL, 5) );        // set border width to 10
    
    wxBoxSizer *rightSizer = new wxBoxSizer( wxVERTICAL );
+   
+   //rightSizer->Add(new wxButton( this, ID_ADVANCED_SETTINGS, "Advanced settings", wxDefaultPosition, wxSize(400,40)),
+   // wxSizerFlags(0).Expand().Border(wxALL, 5));
    
    rightSizer->Add(new wxStaticText( this, -1, 
     wxT("Get the ballot from the voting booth, which looks like in the picture below. Copy the full text from the voting booth and paste it on the right white box that says 'Paste your ballot here'"), 
@@ -113,7 +114,25 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
                               // to smaller size
 }
 
-void MyFrame::OnVerify(wxCommandEvent& event)
+
+void MainFrame::OnAdvancedSettings(wxCommandEvent& event)
+{
+    AdvancedSettingsFrame *frame = new AdvancedSettingsFrame(this, "Advanced Settings", wxPoint(100, 100), wxSize(350, 400) );
+    frame->Show( true );
+}
+
+
+AdvancedSettingsFrame::AdvancedSettingsFrame(wxFrame* parent, const wxString& title, const wxPoint& pos, const wxSize& size)
+        : wxFrame(parent, wxID_ANY, title, pos, size)
+{    
+  wxBoxSizer *main = new wxBoxSizer( wxVERTICAL );
+  main->Add(new wxButton(this, ID_VERIFY_ON_AIRGAP, "Verify on airgap computer", wxDefaultPosition, wxSize(350,40)),
+      wxSizerFlags(0).Expand().Border(wxALL, 5));
+  main->SetSizeHints(this);
+  SetSizer(main);
+}
+
+void MainFrame::OnVerify(wxCommandEvent& event)
 {
   string ballot = ballot_text->GetValue().ToStdString();
   stringstream sstext;
@@ -145,7 +164,7 @@ void MyFrame::OnVerify(wxCommandEvent& event)
   }
 }
 
-void MyFrame::OnClose(wxCloseEvent& event)
+void MainFrame::OnClose(wxCloseEvent& event)
 {
  Destroy();
 }
