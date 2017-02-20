@@ -26,13 +26,13 @@ As an alternative to just downloading the pre-compiled tool, you can compile it 
 
 First you'll need to install some libraries:
 
-    sudo apt-get install m4 libgtk-3-dev libcurl4-openssl-dev libcurl3-gnutls
+    sudo apt-get install m4 libgtk-3-dev libcurl4-openssl-dev libcurl3-gnutls libssl-dev
 
 Now we will need the static version of the GMP library.
 
-    wget https://gmplib.org/download/gmp/gmp-6.0.0a.tar.bz2
-    tar xjf gmp-6.0.0a.tar.bz2
-    cd gmp-6.0.0a
+    wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
+    tar xjf gmp-6.1.2.tar.bz2
+    cd gmp-6.1.2
     ./configure --enable-static --enable-cxx
     make && make check
     sudo make install
@@ -47,22 +47,22 @@ http://sourceforge.net/projects/wxwindows/files/3.0.2/wxWidgets-3.0.2.tar.bz2/do
     ./configure --disable-shared
     make
     sudo make install
-    
+
 Download the idn library:
 
-    wget http://ftp.gnu.org/gnu/libidn/libidn-1.29.tar.gz
-    tar xzf libidn-1.29.tar.gz
-    cd libidn-1.29
+    wget http://ftp.gnu.org/gnu/libidn/libidn-1.33.tar.gz
+    tar xzf libidn-1.33.tar.gz
+    cd libidn-1.33
     ./configure
     make
     sudo make install
     
 Download and install the static CUrl library:
 
-    wget http://curl.haxx.se/download/curl-7.39.0.tar.gz
-    tar xzf curl-7.39.0.tar.gz
-    cd curl-7.39.0
-    ./configure  --disable-ldap --without-librtmp
+    wget https://curl.haxx.se/download/curl-7.52.1.tar.gz
+    tar xzf curl-7.52.1.tar.gz
+    cd curl-7.52.1
+    ./configure  --disable-ldap --without-librtmp --with-ssl
     make
     sudo make install
 
@@ -88,10 +88,10 @@ As a side note, the file screen.h includes the PNG agora-airgap/src/screen.png f
 
 Now we will need the static version of the GMP library.
 
-    wget https://gmplib.org/download/gmp/gmp-6.0.0a.tar.bz2
-    tar xjf gmp-6.0.0a.tar.bz2
-    cd gmp-6.0.0a
-    ./configure --host=x86_64-w64-mingw32 --enable-static --enable-cxx
+    wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
+    tar xjf gmp-6.1.2.tar.bz2
+    cd gmp-6.1.2
+    ./configure --host=x86_64-w64-mingw64 --enable-static --enable-cxx
     make && make check
     sudo make install
 
@@ -104,42 +104,41 @@ http://sourceforge.net/projects/wxwindows/files/3.0.2/wxWidgets-3.0.2.tar.bz2/do
     ./configure --host=x86_64-w64-mingw32 --disable-shared
     make
     sudo make install
-    
+
 Download the idn library:
 
-    wget http://ftp.gnu.org/gnu/libidn/libidn-1.29.tar.gz
-    tar xzf libidn-1.29.tar.gz
-    cd libidn-1.29
-    ./configure --host=x86_64-w64-mingw32
+    wget https://ftp.gnu.org/gnu/libidn/libidn-1.33.tar.gz
+    tar xzf libidn-1.33.tar.gz
+    cd libidn-1.33
+    ./configure --host=x86_64-w64-mingw64 --enable-static --disable-shared
     make
     sudo make install
-    
+
 Download and install OpenSSL.
 
-    wget https://www.openssl.org/source/openssl-1.0.1j.tar.gz
-    tar xzf openssl-1.0.1j.tar.gz && cd openssl-1.0.1j
-    export CROSS_COMPILE="x86_64-w64-mingw32-" 
+    wget https://www.openssl.org/source/openssl-1.0.2k.tar.gz
+    tar xzf openssl-1.0.1j.tar.gz && cd openssl-1.0.2k
+    export CROSS_COMPILE="x86_64-w64-mingw32-"
     ./Configure mingw64 no-asm no-shared
     make depend
     make
     sudo make install
-    
-    
+
 Download and install the static CUrl library:
 
-    wget http://curl.haxx.se/download/curl-7.39.0.tar.gz
-    tar xzf curl-7.39.0.tar.gz
-    cd curl-7.39.0
-    export LDFLAGS="-L/usr/local/ssl/lib"
+    wget https://curl.haxx.se/download/curl-7.52.1.tar.gz
+    tar xzf curl-7.52.1.tar.gz
+    cd curl-7.52.1
+    export LDFLAGS="-L/usr/local/ssl"
     export CPPFLAGS="-I/usr/local/ssl/include"
-    ./configure  --host=x86_64-w64-mingw32 --disable-shared --disable-ldap --without-librtmp --with-ssl=/usr/local/ssl
+    ./configure  --host=x86_64-w64-mingw64 --disable-shared --disable-ldap --without-librtmp --with-ssl=/usr/local/ssl
     make
     sudo make install
 
 Download the agora-airgap source code by executing the following command:
 
     git clone https://github.com/agoravoting/agora-airgap.git
-    
+
 Download the rapidjson library and copy the includes to the agora-airgap/src folder:
 
     git clone https://github.com/miloyip/rapidjson.git
@@ -149,7 +148,7 @@ Go to the agora-airgap/src folder and execute:
 
     cd agora-airgap/src
     make xcompile
-    
+
 If the build is successful, you will find the agora-audit tool on agora-airgap/src/w64/agora-audit.exe
 
 As a side note, the file screen.h includes the PNG agora-airgap/src/screen.png file. The file screen.h has been generated with the bin2c tool available at https://github.com/gwilymk/bin2c
