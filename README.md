@@ -6,13 +6,13 @@ https://www.usenix.org/legacy/event/evt07/tech/full_papers/benaloh/benaloh.pdf
 
 This software has been tested both on Windows 64 bits and Linux 64 bits systems
 
-The Windows 64 bits version can be downloaded here:
+The Windows 64 bits version can be downloaded here (note, outdated!):
 
 https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-audit-windows.zip
 
 The Linux 64 bits version can be downloaded here:
 
-https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-audit-linux.tar.gz
+https://github.com/agoravoting/agora-airgap/releases/download/3.4.0/agora-audit-linux-3.4.0.tar.gz
 
 Download and extract the files and execute agora-audit.
 
