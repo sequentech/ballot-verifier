@@ -1,13 +1,8 @@
 OUTPUT := x64
 OUTPUTW64 := w64
 
-INCSPATH := -I/usr/include/ 
 WINCSPATH := -I/usr/share/mingw-w64/include/ -I/usr/local/include/
-LIBSPATH := -L/usr/local/lib -L/usr/local/ssl/lib/
-LIBS :=  -Wl,-Bstatic -lgmpxx -lgmp -lstdc++ `curl-config --static-libs` -Wl,-Bdynamic `wx-config --cxxflags --libs`  
-
-
-
+LIBS :=  -lgmpxx -lgmp -lstdc++ `curl-config --libs` `wx-config --cxxflags --libs`  
 
 OBJS := sha256.o ElGamal.o Random.o encrypt.o
 
@@ -31,7 +26,7 @@ clean:
 	mv $@ $(OUTPUT)
 	
 $(OUTPUT):
-	mkdir -p $@
+	pwd && mkdir -p $@
 	
 $(OUTPUTW64):
 	mkdir -p $@
@@ -44,7 +39,9 @@ run:
 	rm pid
 
 gui: $(OUTPUT) $(OBJS)
-	$(CXX) -Wall -DNDEBUG -g $(OUTPUT)/*.o interface.cpp  -o $(OUTPUT)/agora-audit $(INCSPATH) $(LIBSPATH) $(LIBS)
+	$(CXX) \
+		-Wall -DNDEBUG -g $(OUTPUT)/*.o interface.cpp\
+		-o $(OUTPUT)/agora-audit $(INCSPATH) $(LIBSPATH) $(LIBS)
 	
 OBJSW64:
 	$(WXX64) -DNDEBUG -g -c  sha256.cpp $(WINCSPATH)
