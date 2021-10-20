@@ -6,10 +6,10 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.4
+    - uses: actions/checkout@v2.3.5
     - uses: cachix/install-nix-action@v14
       with:
-        nix_path: nixpkgs=channel:nixos-unstable
+        install_url: https://github.com/numtide/nix-flakes-installer/releases/download/nix-3.0pre20200820_4d77513/install
         extra_nix_config: |
           experimental-features = nix-command flakes
     - run: nix flake show
