@@ -25,3 +25,9 @@ jobs:
     - run: nix flake info
     - run: nix build -L
     - run: nix flake check
+
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: agora-airgap
+        path: /nix/store/*-agora-airgap
