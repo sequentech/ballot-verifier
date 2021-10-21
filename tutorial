@@ -50,7 +50,7 @@ This will audit an example ballot that is stored in the agora-airgap/src/example
 
 In order to audit a ballot we first need an auditable ballot and in this case that is the file agora-airgap/src/example/ballot.json . That file stores the urls to the public key file and to the election data file. So firt we need to have an http server to serve the files when someone requests those urls. To start a very basic http server, execute this command from the agora-airgap/src/example/ folder:
 
-    python -m SimpleHTTPServer
+    python3 -m http.server
     
 Now we can audit the ballot. On another console, execute the following command from the agora-airgap/src/x64 folder:
 
@@ -80,7 +80,7 @@ There is a graphic interface for the audit procedure, available for linux 64 bit
     
 The audit graphic interface will be available in agora-airgap/src/x64/interface . If you want to move the program somewhere else don't forget to also copy/move the picture agora-airgap/src/x64/screen.png to the same folder.
 
-##OpenRISC tutorial
+## OpenRISC tutorial
 
 To start the openrisc simulator with linux, you need two terminals, one to start the sim and another to connect to it through telnet.
 

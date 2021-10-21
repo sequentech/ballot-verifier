@@ -1,4 +1,4 @@
-## agora-audit
+## agora-airgap
 
 agora-audit is a tool that allows you to audit a spoiled ballot from Agora Voting. This software implements the 'cast or cancel' procedure described on the paper "Ballot Casting Assurance via Voter-Initiated Poll Station Auditing" by Josh Benaloh. The paper can be found on:
 

@@ -57,29 +57,20 @@
             name = "agora-airgap";
             version = "4.0.2";
             src = self;
-            nativeBuildInputs = [ pkgs.pkg-config ];
             buildInputs = [
-                pkgs.gnumake
-                pkgs.gnum4
+                pkgs.pkg-config
+                pkgs.cmake
                 pkgs.rapidjson
                 # the overlayed libraries
                 gmpCustom
                 wxCustom
                 curlCustom
-              ] 
+              ]
               ++ nixpkgs.lib.optionals (system == "x86_64-darwin") [
                 pkgs.pkgs.darwin.apple_sdk.frameworks.IOKit
                 pkgs.pkgs.darwin.apple_sdk.frameworks.Carbon
                 pkgs.pkgs.darwin.apple_sdk.frameworks.Cocoa
               ];
-            buildPhase = ''
-              cd src && make gui
-            '';
-            installPhase = ''
-              mkdir -p $out/bin
-              [ -f x64/agora-audit ] && mv x64/agora-audit $out/bin
-              echo $?
-            '';
           };
           # agora-airgap is the default package
           defaultPackage = packages.agora-airgap;
