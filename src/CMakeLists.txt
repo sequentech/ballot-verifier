@@ -23,12 +23,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DNDEBUG")
 
 
 # TODO: move header files to a include dir
-#file(
-#    GLOB
-#    AGORA_AIRGAP_HEADER_LIST
-#    CONFIGURE_DEPENDS
-#    "*.h"
-#)
+file(
+    GLOB
+    AGORA_AIRGAP_HEADER_LIST
+    CONFIGURE_DEPENDS
+    "*.h"
+)
 
 add_library(
     agora-airgap-lib
@@ -36,14 +36,7 @@ add_library(
     ElGamal.cpp
     Random.cpp
     encrypt.cpp
-    # TODO: move header files to a include dir
-    sha256.h
-    ElGamal.h
-    Random.h
-    encrypt.h
-    screen.h
-    common.h
-    # ${AGORA_AIRGAP_HEADER_LIST}
+    ${AGORA_AIRGAP_HEADER_LIST}
 )
 
 # All users of this library will need at least C++11

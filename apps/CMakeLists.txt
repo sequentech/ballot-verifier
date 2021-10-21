@@ -6,21 +6,41 @@ include(FindPkgConfig)
 find_package(wxWidgets COMPONENTS core base REQUIRED)
 include("${wxWidgets_USE_FILE}")
 
-
-#### Create the agora-airgap binary ############################################
+#### Create the agora-airgap-gui binary ########################################
 
 add_executable(
-    agora-airgap 
+    agora-airgap-gui
     interface.cpp
     interface.h
 )
 
 target_link_libraries(
-    agora-airgap 
+    agora-airgap-gui
     PRIVATE 
     agora-airgap-lib
     stdc++
     ${wxWidgets_LIBRARIES} 
+)
+
+install(
+    TARGETS
+    agora-airgap-gui
+    DESTINATION
+    ${CMAKE_INSTALL_PREFIX}/bin/
+)
+
+#### Create the agora-airgap command line utility binary #######################
+
+add_executable(
+    agora-airgap
+    main.cpp
+)
+
+target_link_libraries(
+    agora-airgap
+    PRIVATE 
+    agora-airgap-lib
+    stdc++
 )
 
 install(
