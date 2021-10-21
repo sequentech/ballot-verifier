@@ -41,8 +41,13 @@ install_manifest.txt
 Makefile
 CMakeFiles
 out/
+.ninja_deps
+.ninja_log
+build.ninja
 
 # testing
 CTestTestfile.cmake
 DartConfiguration.tcl
 _deps
+Testing/
+tests/agora_*.cmake

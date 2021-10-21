@@ -18,15 +18,33 @@ jobs:
           experimental-features = nix-command flakes
 
     - name: Print nixpkgs version
+      if: ${{ !env.ACT }}
       run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
 
-    - run: nix flake show
-    - run: nix flake metadata
-    - run: nix flake info
-    - run: nix build -L
-    - run: nix flake check
+    - name: Show flake
+      run: nix --extra-experimental-features "nix-command flakes" flake show
+
+    # in all these nix command we add again the --extra-experimental-features
+    # because apparently otherwise it doesn't work with
+    # https://github.com/nektos/act
+    - name: Show flake metadata
+      run: nix --extra-experimental-features "nix-command flakes" flake metadata
+
+    - name: Build the flake
+      run: nix --extra-experimental-features "nix-command flakes" build -L
+    
+    - name: Run the unit tests
+      run: |
+        nix \
+          --extra-experimental-features "nix-command flakes" \
+          develop \
+          --command bash -c "cmake -G  ninja . && ninja -v && ninja -v test"
+
+    - name: Run flake check
+      run: nix --extra-experimental-features "nix-command flakes" flake check
 
     - name: Archive artifacts
+      if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
         name: agora-airgap-${{ matrix.os }}

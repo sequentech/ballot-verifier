@@ -61,6 +61,8 @@
                 pkgs.pkg-config
                 pkgs.cmake
                 pkgs.rapidjson
+                pkgs.cryptopp
+                pkgs.ninja
                 # the overlayed libraries
                 gmpCustom
                 wxCustom

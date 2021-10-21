@@ -1,6 +1,6 @@
 /*********************************************************************
 * Filename:   sha256.h
-* Authors:     Brad Conte (brad AT bradconte.com), Félix Robles
+* Authors:     Brad Conte (brad AT bradconte.com), Fï¿½lix Robles
 * Disclaimer: This code is presented "as is" without any guarantees.
 * Details:    Defines the API for the corresponding SHA1 implementation.
 *********************************************************************/
@@ -15,7 +15,7 @@
 #include "Random.h"
 using namespace std;
 
-namespace sha256{
+namespace sha256 {
 
 /****************************** MACROS ******************************/
 #define SHA256_BLOCK_SIZE 32            // SHA256 outputs a 32 byte digest
