@@ -11,20 +11,8 @@ project(
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
 
-include(CMakePrintHelpers)
-cmake_print_variables(CMAKE_MODULE_PATH)
-
 # allow our custom cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-execute_process(
-    COMMAND bash -c "ls -lah ."
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/cmake"
-    RESULT_VARIABLE LS_RESULT
-    OUTPUT_VARIABLE LS_OUTPUT
-)
-message(STATUS "ls -lah ${CMAKE_SOURCE_DIR}/cmake (res: ${LS_RESULT}): ${LS_OUTPUT}")
-
-cmake_print_variables(CMAKE_MODULE_PATH)
 
 # set the output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/out")
