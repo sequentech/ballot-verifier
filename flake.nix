@@ -57,12 +57,14 @@
             name = "agora-airgap";
             version = "4.0.2";
             src = self;
-            buildInputs = [
+            nativeBuildInputs = [
                 pkgs.pkg-config
                 pkgs.cmake
                 pkgs.rapidjson
                 pkgs.cryptopp
                 pkgs.ninja
+            ];
+            buildInputs = [
                 # the overlayed libraries
                 gmpCustom
                 wxCustom
@@ -79,7 +81,8 @@
 
           # configure the dev shell
           devShell = pkgs.mkShell { 
-            buildInputs = packages.agora-airgap.buildInputs; 
+            buildInputs = packages.agora-airgap.nativeBuildInputs 
+              ++ packages.agora-airgap.buildInputs; 
           };
         }
     );
