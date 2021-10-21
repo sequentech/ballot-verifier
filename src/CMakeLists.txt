@@ -73,26 +73,3 @@ target_link_libraries(
     ${GMPXX_LIBRARIES}
     ${CURL_LIBRARIES}
 )
-
-#### Create the agora-airgap binary ############################################
-
-add_executable(
-    agora-airgap 
-    interface.cpp
-    interface.h
-)
-
-target_link_libraries(
-    agora-airgap 
-    PRIVATE 
-    agora-airgap-lib
-    stdc++
-    ${wxWidgets_LIBRARIES} 
-)
-
-install(
-    TARGETS
-    agora-airgap
-    DESTINATION
-    ${CMAKE_INSTALL_PREFIX}/bin/
-)
