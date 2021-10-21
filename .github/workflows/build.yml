@@ -1,7 +1,17 @@
 name: "nix-build"
+
 on:
-  pull_request:
   push:
+    branches:
+    - master
+    - '[0-9]+.[0-9]+.x'
+    tags:
+    - '**'
+  pull_request:
+    branches:
+    - master
+    - '[0-9]+.[0-9]+.x'
+
 jobs:
   build:
     strategy:
