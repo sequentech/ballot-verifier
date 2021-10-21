@@ -41,3 +41,8 @@ install_manifest.txt
 Makefile
 CMakeFiles
 out/
+
+# testing
+CTestTestfile.cmake
+DartConfiguration.tcl
+_deps
