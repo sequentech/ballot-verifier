@@ -11,9 +11,13 @@ project(
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
 
-# allow our custom cmake modules
+include(CMakePrintHelpers)
+cmake_print_variables(CMAKE_MODULE_PATH)
 
+# allow our custom cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+cmake_print_variables(CMAKE_MODULE_PATH)
 
 # set the output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/out")
@@ -30,9 +34,9 @@ add_subdirectory(src)
 # The executable code is here
 add_subdirectory(apps)
 
-# Testing only available if this is the main app
-# Emergency override MODERN_CMAKE_BUILD_TESTING provided as well
-#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING)
-#   AND BUILD_TESTING)
-#  add_subdirectory(tests)
-#endif()
+include(CTest)
+enable_testing()
+
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
