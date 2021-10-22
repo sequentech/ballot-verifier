@@ -11,27 +11,25 @@
 #define RANDOM_H_
 
 #include <gmpxx.h>
+
 #include <string>
 
 namespace AgoraAirgap {
 class Random
 {
-protected:
-	Random()
-		: state(gmp_randinit_default)
-	{ 
-		initState();
-	}
-	
-	gmp_randclass state;
-	
-	void initState();
-	static Random* singleton();
-public:
-	static mpz_class getRandomIntegerBits(const mpz_class &bits);
-	static mpz_class getRandomIntegerRange(const mpz_class &max);
+    protected:
+    Random() : state(gmp_randinit_default) { initState(); }
+
+    gmp_randclass state;
+
+    void initState();
+    static Random * singleton();
+
+    public:
+    static mpz_class getRandomIntegerBits(const mpz_class & bits);
+    static mpz_class getRandomIntegerRange(const mpz_class & max);
 };
 
-} // namespace AgoraAirgap
+}  // namespace AgoraAirgap
 
 #endif /* RANDOM_H_ */

@@ -8,42 +8,31 @@
  */
 #ifndef ENCRYPT_H
 #define ENCRYPT_H
-#include "common.h"
-#include <string>
 #include <sstream>
+#include <string>
+
+#include "common.h"
 
 using namespace std;
 
 namespace AgoraAirgap {
 
 void encrypt_ballot(
-    stringstream& out, 
-    const string & votes_path, 
-    const string & pk_path, 
-    const string & ballot_path
-);
+    stringstream & out, const string & votes_path, const string & pk_path,
+    const string & ballot_path);
 
-void download_audit(
-    stringstream& out,
-    const string & auditable_ballot_path
-);
+void download_audit(stringstream & out, const string & auditable_ballot_path);
 
 void download_audit_text(
-    stringstream& out,
-    const string & auditable_ballot_path
-);
+    stringstream & out, const string & auditable_ballot_path);
 void download(
-    stringstream& out,
-    const string & auditable_ballot_path,
-    const string & election_path
-);
+    stringstream & out, const string & auditable_ballot_path,
+    const string & election_path);
 
 void audit(
-    stringstream& out,
-    const string & auditable_ballot_path,
-    const string & election_path
-);
+    stringstream & out, const string & auditable_ballot_path,
+    const string & election_path);
 
-} // namespace AgoraAirgap
+}  // namespace AgoraAirgap
 
-#endif //ENCRYPT_H
+#endif  // ENCRYPT_H

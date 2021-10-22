@@ -44,6 +44,7 @@ out/
 .ninja_deps
 .ninja_log
 build.ninja
+CPM_modules
 
 # testing
 CTestTestfile.cmake

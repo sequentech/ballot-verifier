@@ -60,9 +60,11 @@
             nativeBuildInputs = [
                 pkgs.pkg-config
                 pkgs.cmake
+                pkgs.cmake-format
                 pkgs.rapidjson
                 pkgs.cryptopp
                 pkgs.ninja
+                pkgs.git
             ];
             buildInputs = [
                 # the overlayed libraries
