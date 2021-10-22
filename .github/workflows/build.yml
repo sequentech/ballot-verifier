@@ -50,7 +50,7 @@ jobs:
         nix \
           --extra-experimental-features "nix-command flakes" \
           develop \
-          --command bash -c "cmake -G  Ninja . && ninja -v && ninja -v test"
+          --command bash -c "cmake -G  Ninja . && ninja -v && ctest -VV"
 
     - name: Run flake check
       run: nix --extra-experimental-features "nix-command flakes" flake check
