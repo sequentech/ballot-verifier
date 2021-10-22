@@ -1,4 +1,4 @@
-name: "nix-build"
+name: "Workflow Tasks"
 
 on:
   push:
@@ -13,7 +13,8 @@ on:
     - '[0-9]+.[0-9]+.x'
 
 jobs:
-  build:
+  nixFlakeInfo:
+    name: Register Nix Flake Information
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -42,18 +43,26 @@ jobs:
     - name: Show flake metadata
       run: nix --extra-experimental-features "nix-command flakes" flake metadata
 
-    - name: Build the flake
-      run: nix --extra-experimental-features "nix-command flakes" build -L
-    
-    - name: Run the unit tests
-      run: |
-        nix \
-          --extra-experimental-features "nix-command flakes" \
-          develop \
-          --command bash -c "cmake -G  Ninja . && ninja -v && ctest -VV"
-
     - name: Run flake check
       run: nix --extra-experimental-features "nix-command flakes" flake check
+
+  nixFlakeBuild:
+    name: Build Nix Flake
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2.3.5
+    - uses: cachix/install-nix-action@v14
+      with:
+        install_url: https://github.com/numtide/nix-flakes-installer/releases/download/nix-2.5pre20211015_130284b/install
+        nix_path: nixpkgs=channel:nixos-21.05
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+
+    - name: Build the flake
+      run: nix --extra-experimental-features "nix-command flakes" build -L
 
     - name: Archive artifacts
       if: ${{ !env.ACT }}
@@ -61,3 +70,25 @@ jobs:
       with:
         name: agora-airgap-${{ matrix.os }}
         path: /nix/store/*-agora-airgap*
+
+  testing:
+    name: Run unit tests
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2.3.5
+    - uses: cachix/install-nix-action@v14
+      with:
+        install_url: https://github.com/numtide/nix-flakes-installer/releases/download/nix-2.5pre20211015_130284b/install
+        nix_path: nixpkgs=channel:nixos-21.05
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+
+    - name: Run unit tests
+      run: |
+        nix \
+          --extra-experimental-features "nix-command flakes" \
+          develop \
+          --command bash -c "cmake -G  Ninja . && ninja -v && ctest -VV"
