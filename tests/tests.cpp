@@ -7,6 +7,8 @@
 #include <string.h>
 #include <gtest/gtest.h>
 #include <agora-airgap/sha256.h>
+#include <agora-airgap/ElGamal.h>
+#include <gmpxx.h>
 
 using namespace std;
 using namespace AgoraAirgap::sha256;
@@ -69,49 +71,73 @@ TEST(ElGamalUnitTest, SmallMessageDecryption) {
 	mpz_init_set_str(alpha, "81", 10);
 	mpz_init_set_str(beta, "818", 10);
 	mpz_init_set_str(x, "66", 10);
-	AgoraAirgap::ElGamal::PublicKey pk(p, q, g, y);
-	AgoraAirgap::ElGamal::Ciphertext ctext(alpha, beta, pk);
-	AgoraAirgap::ElGamal::SecretKey sk(x, pk);
-	AgoraAirgap::ElGamal::Plaintext ptext = AgoraAirgap::ElGamal::decrypt(sk, ctext);
-	ptext.getM(m);
-	sm = string(mpz_get_str(NULL, 10, m));
-	EXPECT_EQ(0, sm.compare("134"));
+	
+	mpz_class
+		p_c(p),
+		q_c(q),
+		g_c(g),
+		x_c(x),
+		y_c(y),
+		alpha_c(alpha),
+		beta_c(beta);
+
+	AgoraAirgap::ElGamal::PublicKey pk(
+		p_c,
+		q_c, 
+		g_c, 
+		y_c
+	);
+
+	AgoraAirgap::ElGamal::Ciphertext ctext(alpha_c, beta_c, pk);
+	ElGamal::SecretKey sk(x_c, pk);
+	//AgoraAirgap::ElGamal::Plaintext ptext = AgoraAirgap::ElGamal::decrypt(sk, ctext);
+	//ptext.getM(m);
+	//sm = string(mpz_get_str(NULL, 10, m));
+	//EXPECT_EQ(0, sm.compare("134"));
 
 	//U = r^x mod p = (81^66) mod 1019 = 508
 	//U^-1  <----------> (U^-1) U  = 1 mod p -> (U^-1) U = 1 + p*n              so U^-1 = 339
 	//M = (U^-1) t  mod p = (339 * 818) mod 1019 = 134
 }
+*/
 
-/*
 TEST(AgoraUnitTest, SmallMessageEncryption) {
 	
 	mpz_t p, q, g, y, x, m, rand;
 	string alpha, beta;
 	
 	mpz_init_set_str(p, "1019", 10);
-	mpz_init_set_str(q, "359", 10); //q = (p-1)/2 = 359
+	mpz_init_set_str(q, "509", 10); //q = (p-1)/2 = 509
 	mpz_init_set_str(g, "3", 10);
 	mpz_init_set_str(y, "770", 10); //y = (g^x) mod p
 	mpz_init_set_str(x, "66", 10);
 	mpz_init_set_str(m, "133", 10);
-	ElGamal::Params params = ElGamal::Params(p, q, g);
-	ElGamal::SecretKey sk = params.generate();
-	ElGamal::PublicKey pk = sk.pk;
-	ElGamal::PublicKey pk(p, q, g, y);
-	ElGamal::SecretKey sk(x, pk);
-	//Random::getRandomInteger(rand, pk.q);
 	mpz_init_set_str(rand, "4", 10);
+
+	mpz_class
+		p_c(p),
+		q_c(q),
+		g_c(g),
+		x_c(x),
+		y_c(y),
+		rand_c(rand),
+		m_c(m);
+
+	AgoraAirgap::ElGamal::PublicKey pk(p_c,q_c, g_c, y_c);
+	AgoraAirgap::ElGamal::Plaintext plaintext(m_c, pk, true);
+  	AgoraAirgap::ElGamal::Ciphertext ciphertext = 
+	  	AgoraAirgap::ElGamal::encrypt(pk, plaintext, rand_c);
+	//Random::getRandomInteger(rand, pk.q);
 	//alpha = (g^random) mod p  = (3^4) mod 1019 = 81
 	//U = (h^random) mod p = (770^4) mod 1019 = 508
 	//M = m+1 = 134
 	//beta = ( U M  ) mod p = ( 508 * 134) mod 1019 = 818
-	Agora::Encrypted_answer coded_m = Agora::encryptAnswer(pk, m, rand);
-	alpha = mpz_get_str(NULL, 10, coded_m.alpha);
-	beta = mpz_get_str(NULL, 10, coded_m.beta);
-	EXPECT_EQ(0, alpha.compare("81"));
-	EXPECT_EQ(0, beta.compare("818"));
+
+	EXPECT_EQ(0, ciphertext.alpha.get_str().compare("81"));
+	EXPECT_EQ(0, ciphertext.beta.get_str().compare("818"));
 }
 
+/*
 TEST(ElGamalIntegrationTest, SmallEncryptDecryptIntegration) {
 	
 	mpz_t p, q, g, y, x, m, rand;
