@@ -1,13 +1,14 @@
 #include <iostream>
 
-#include "encrypt.h"
-#include "sha256.h"
+#include <agora-airgap/encrypt.h>
+#include <agora-airgap/sha256.h>
 #include <vector>
 #include <fstream>
 #include <stdexcept>
 
 using namespace rapidjson;
 using namespace std;
+using namespace AgoraAirgap;
 
 bool check_file_exists(string file_path)
 {

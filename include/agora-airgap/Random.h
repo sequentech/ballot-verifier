@@ -2,7 +2,7 @@
  * Random.h
  *
  *  Created on: May 26, 2014
- *      Author: Félix Robles felrobelv at gmail dot com
+ *      Author: Fï¿½lix Robles felrobelv at gmail dot com
  * Loosely based on Ben Adida's jscrypto:
  * https://github.com/benadida/jscrypto/blob/master/elgamal.js
  */
@@ -13,13 +13,18 @@
 #include <gmpxx.h>
 #include <string>
 
+namespace AgoraAirgap {
 class Random
 {
 protected:
 	Random()
-	: state(gmp_randinit_default)
-	{ initState(); }
+		: state(gmp_randinit_default)
+	{ 
+		initState();
+	}
+	
 	gmp_randclass state;
+	
 	void initState();
 	static Random* singleton();
 public:
@@ -27,8 +32,6 @@ public:
 	static mpz_class getRandomIntegerRange(const mpz_class &max);
 };
 
-
-
-
+} // namespace AgoraAirgap
 
 #endif /* RANDOM_H_ */

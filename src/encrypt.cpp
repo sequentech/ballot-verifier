@@ -26,12 +26,14 @@
   #define CURL_STATICLIB
 #endif 
 #include <curl/curl.h>
-#include "encrypt.h"
-#include "Random.h"
-#include "ElGamal.h"
+#include <agora-airgap/encrypt.h>
+#include <agora-airgap/Random.h>
+#include <agora-airgap/ElGamal.h>
 
 using namespace std;
 using namespace rapidjson;
+
+namespace AgoraAirgap {
 
 string get_date()
 {
@@ -654,3 +656,5 @@ void audit(stringstream& out, const string & auditable_ballot_path, const string
   check_ballot_hash(out, ballot);
   out << "> --------------------\n> Audit PASSED" << endl;
 }
+
+} // namespace AgoraAirgap

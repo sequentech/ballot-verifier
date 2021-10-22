@@ -2,16 +2,18 @@
  * Random.cpp
  *
  *  Created on: May 26, 2014
- *      Author: Félix Robles felrobelv at gmail dot com
+ *      Author: Fï¿½lix Robles felrobelv at gmail dot com
  * Loosely based on Ben Adida's jscrypto:
  * https://github.com/benadida/jscrypto/blob/master/elgamal.js
  */
 
-#include "Random.h"
+#include <agora-airgap/Random.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
+
 using namespace std;
+using namespace AgoraAirgap;
 
 #if defined(_WIN32) || defined(WIN32) 
 	#include <iostream>

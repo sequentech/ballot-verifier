@@ -1,9 +1,11 @@
-#include "interface.h"
 #include <wx/filename.h>
-#include "encrypt.h"
-#include "sha256.h"
 #include <wx/generic/statbmpg.h>
-#include "screen.h"
+#include <agora-airgap/encrypt.h>
+#include <agora-airgap/sha256.h>
+#include <agora-airgap/screen.h>
+#include "interface.h"
+
+using namespace AgoraAirgap;
 
 bool MyApp::OnInit()
 {

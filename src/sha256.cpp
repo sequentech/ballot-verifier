@@ -1,6 +1,6 @@
 /*********************************************************************
 * Filename:   sha256.c
-* Author:     Brad Conte (brad AT bradconte.com), Félix Robles
+* Author:     Brad Conte (brad AT bradconte.com), Fï¿½lix Robles
 * Disclaimer: This code is presented "as is" without any guarantees.
 * Details:    Implementation of the SHA-256 hashing algorithm.
               SHA-256 is one of the three algorithms in the SHA2
@@ -18,9 +18,10 @@
 #include <cstring>
 #include <sstream>
 #include <iomanip>
-#include "sha256.h"
+#include <agora-airgap/sha256.h>
 
-namespace sha256{
+namespace AgoraAirgap {
+namespace sha256 {
 
 /****************************** MACROS ******************************/
 #define ROTLEFT(a,b) (((a) << (b)) | ((a) >> (32-(b))))
@@ -182,5 +183,6 @@ void sha256_final(SHA256_CTX *ctx, BYTE hash[])
 	}
 }
 
-
 } //namespace sha256
+
+} // namespace AgoraAirgap

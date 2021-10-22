@@ -14,6 +14,8 @@
 
 using namespace std;
 
+namespace AgoraAirgap {
+
 void encrypt_ballot(
     stringstream& out, 
     const string & votes_path, 
@@ -41,5 +43,7 @@ void audit(
     const string & auditable_ballot_path,
     const string & election_path
 );
+
+} // namespace AgoraAirgap
 
 #endif //ENCRYPT_H

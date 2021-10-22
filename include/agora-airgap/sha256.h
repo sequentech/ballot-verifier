@@ -15,6 +15,9 @@
 #include "Random.h"
 using namespace std;
 
+
+namespace AgoraAirgap {
+
 namespace sha256 {
 
 /****************************** MACROS ******************************/
@@ -39,5 +42,7 @@ void sha256_update(SHA256_CTX *ctx, const BYTE data[], size_t len);
 void sha256_final(SHA256_CTX *ctx, BYTE hash[]);
 
 } //namespace sha256
+
+} // namespace AgoraAirgap
 
 #endif   // SHA256_H

@@ -15,6 +15,8 @@
 
 using namespace rapidjson;
 
+namespace AgoraAirgap {
+
 class ElGamal {
 public:
 	class ChallengeGenerator;
@@ -120,5 +122,7 @@ public:
 		const mpz_class & r
 	);
 };
+
+} // namespace AgoraAirgap
 
 #endif //ELGAMAL_H

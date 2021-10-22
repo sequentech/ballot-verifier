@@ -11,6 +11,8 @@
 
 using namespace std;
 
+namespace AgoraAirgap {
+
 class MyApp: public wxApp
 {
 public:
@@ -61,7 +63,9 @@ enum
     ID_VERIFY_ON_AIRGAP
 };
 
+} // using namespace AgoraAirgap;
 
+using namespace AgoraAirgap;
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_BUTTON(ID_VERIFY_ONLINE,      MainFrame::OnVerify)

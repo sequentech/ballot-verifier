@@ -6,12 +6,14 @@
  * Based on George Danezis/Ben Adida/Eduardo Robles
  * https://github.com/agoravoting/agora-api
  */
-#include "ElGamal.h"
-#include "Random.h"
+#include <agora-airgap/ElGamal.h>
+#include <agora-airgap/Random.h>
 #include <iostream>
 #include <sstream>
 
 using namespace std;
+
+namespace AgoraAirgap {
 
 ElGamal::PublicKey::PublicKey(const mpz_class & ap, const mpz_class & aq, const mpz_class & ag, const mpz_class & ay)
 : p(ap), q(aq), g(ag), y(ay)
@@ -162,3 +164,5 @@ bool ElGamal::Ciphertext::verifyPlaintextProof(const ElGamal::DLogProof & proof,
 ElGamal::DLogProof::DLogProof(PlaintextCommitment commitment_, mpz_class challenge_, mpz_class response_)
 : commitment(commitment_), challenge(challenge_), response(response_)
 {}
+
+} // namespace AgoraAirgap

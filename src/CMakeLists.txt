@@ -55,7 +55,7 @@ target_include_directories(
 target_include_directories(
     agora-airgap-lib
     PUBLIC
-    "."
+    "../include"
 )
 
 target_link_libraries(
@@ -65,4 +65,10 @@ target_link_libraries(
     ${GMP_LIBRARIES}
     ${GMPXX_LIBRARIES}
     ${CURL_LIBRARIES}
+)
+
+source_group(
+  TREE "${PROJECT_SOURCE_DIR}/include"
+  PREFIX "Header Files"
+  FILES ${AGORA_AIRGAP_HEADER_LIST}
 )
