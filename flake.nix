@@ -65,6 +65,7 @@
                 pkgs.cryptopp
                 pkgs.ninja
                 pkgs.git
+                pkgs.cppcheck
             ];
             buildInputs = [
                 # the overlayed libraries

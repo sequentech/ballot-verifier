@@ -94,7 +94,7 @@ jobs:
           --command bash -c "cmake -G  Ninja . && ninja -v && ctest -VV"
 
   checkFormat:
-    name: Check code format
+    name: Check code quality
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -114,3 +114,10 @@ jobs:
           --extra-experimental-features "nix-command flakes" \
           develop \
           --command bash -c "cmake -G  Ninja . && ninja check-format"
+
+    - name: Run cppcheck
+      run: |
+        nix \
+          --extra-experimental-features "nix-command flakes" \
+          develop \
+          --command bash -c "cppcheck  --enable=all src include apps tests"
