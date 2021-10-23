@@ -11,21 +11,10 @@ project(
   DESCRIPTION "cast-as-intended verifier for nVotes platform"
   LANGUAGES CXX)
 
-include(cmake/CPM.cmake)
+set(CMAKE_FORMAT_EXCLUDE "(cmake/.*|_deps/.*|cpm-package-lock\.cmake|CMakeLists.txt)")
+set(FORMAT_SKIP_CMAKE "NO")
 
-cpmaddpackage(
-  NAME
-  Format.cmake
-  VERSION
-  1.7.0
-  GITHUB_REPOSITORY
-  TheLartians/Format.cmake
-  OPTIONS
-  # set to yes skip cmake formatting
-  "FORMAT_SKIP_CMAKE NO"
-  # path to exclude (optional, supports regular expressions)
-  "CMAKE_FORMAT_EXCLUDE (cmake/.*|_deps/.*|cpm-package-lock\.cmake|CMakeLists.txt)"
-)
+add_subdirectory(Format.cmake)
 
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
