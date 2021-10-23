@@ -135,7 +135,10 @@ MainFrame::MainFrame(
                           // to smaller size
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void MainFrame::OnAdvancedSettings(wxCommandEvent & event)
+#pragma clang diagnostic pop
 {
     AdvancedSettingsFrame * frame = new AdvancedSettingsFrame(
         this, "Advanced Settings", wxPoint(100, 100), wxSize(350, 400));
@@ -157,7 +160,10 @@ AdvancedSettingsFrame::AdvancedSettingsFrame(
     SetSizer(main);
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void MainFrame::OnVerify(wxCommandEvent & event)
+#pragma clang diagnostic pop
 {
     string ballot = ballot_text->GetValue().ToStdString();
     stringstream sstext;
@@ -186,5 +192,7 @@ void MainFrame::OnVerify(wxCommandEvent & event)
         state_text->SetLabelText("State: VERIFIED");
     }
 }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void MainFrame::OnClose(wxCloseEvent & event) { Destroy(); }
+#pragma clang diagnostic pop

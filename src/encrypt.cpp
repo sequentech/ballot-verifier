@@ -270,7 +270,7 @@ vector<int> split_choices(string choices, const Value & question)
     vector<int> choicesV;
     // choices = repeat_string( string("0"),(choices.length() % tabsize) ) +
     // choices;
-    for (int i = 0; i < choices.length() / tabsize; i++)
+    for (std::size_t i = 0; i < choices.length() / tabsize; i++)
     {
         int choice = to_int(choices.substr(i * tabsize, tabsize)) - 1;
         choicesV.push_back(choice);
@@ -303,9 +303,8 @@ const Value & find_value(
 }
 
 // prints the options selected on the ballot from the plaintext
-bool print_answer(
-    stringstream & out, const Value & choice, const Value & question,
-    const Value & pubkey)
+void print_answer(
+    stringstream & out, const Value & choice, const Value & question)
 {
     if (!question.HasMember("title") || !question["title"].IsString())
     {
@@ -330,9 +329,9 @@ bool print_answer(
     vector<int> choices =
         split_choices(choice["plaintext"].GetString(), question);
     out << "user answers:" << endl;
-    for (int i = 0; i < choices.size(); i++)
+    for (std::size_t i = 0; i < choices.size(); i++)
     {
-        if (choices.at(i) >= 0 && choices.at(i) < size - 1)
+        if (choices.at(i) >= 0 && choices.at(i) < static_cast<int>(size - 1))
         {
             out << "choice " << to_string(choices.at(i)) << endl;
             out << " - "
@@ -341,7 +340,7 @@ bool print_answer(
                        to_string(choices.at(i)))["text"]
                        .GetString()
                 << endl;
-        } else if (choices.at(i) == size - 1)
+        } else if (choices.at(i) == static_cast<int>(size - 1))
         {
             out << "choice " << to_string(choices.at(i)) << endl;
             out << "- BLANK vote" << endl;
@@ -588,7 +587,7 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
         << endl;
     for (SizeType i = 0; i < choices.Size(); ++i)
     {
-        print_answer(out, choices[i], payload["questions"][i], pks[i]);
+        print_answer(out, choices[i], payload["questions"][i]);
     }
     // check encrypted choices with plaintext
     for (SizeType i = 0; i < choices.Size(); ++i)
@@ -731,7 +730,7 @@ void audit(
         << endl;
     for (SizeType i = 0; i < choices.Size(); ++i)
     {
-        print_answer(out, choices[i], payload["questions"][i], pks[i]);
+        print_answer(out, choices[i], payload["questions"][i]);
     }
     // check encrypted choices with plaintext
     for (SizeType i = 0; i < choices.Size(); ++i)
