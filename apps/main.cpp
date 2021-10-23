@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
                 stringstream out;
                 download_audit(out, vargs.at(2));
                 cout << out.str() << endl;
-            } catch (std::runtime_error error)
+            } catch (std::runtime_error & error)
             {
                 cout << error.what() << endl;
             }
@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
                 stringstream out;
                 download(out, vargs.at(2), vargs.at(3));
                 cout << out.str() << endl;
-            } catch (std::runtime_error error)
+            } catch (std::runtime_error & error)
             {
                 cout << error.what() << endl;
             }
@@ -158,7 +158,7 @@ int main(int argc, char * argv[])
                 stringstream out;
                 audit(out, vargs.at(2), vargs.at(3));
                 cout << out.str() << endl;
-            } catch (std::runtime_error error)
+            } catch (std::runtime_error & error)
             {
                 cout << error.what() << endl;
             }
@@ -200,7 +200,7 @@ int main(int argc, char * argv[])
                 stringstream out;
                 encrypt_ballot(out, vargs.at(2), vargs.at(3), vargs.at(4));
                 cout << out.str() << endl;
-            } catch (std::runtime_error error)
+            } catch (std::runtime_error & error)
             {
                 cout << error.what() << endl;
             }

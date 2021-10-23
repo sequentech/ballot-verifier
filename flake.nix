@@ -53,8 +53,7 @@
                 pkgs.cryptopp
                 pkgs.ninja
                 pkgs.git
-                # TODO: cppcheck not in use yet
-                # pkgs.cppcheck
+                pkgs.cppcheck
                 pkgs.reuse
             ];
             buildInputs = [

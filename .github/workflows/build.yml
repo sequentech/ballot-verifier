@@ -131,4 +131,8 @@ jobs:
         nix \
           --extra-experimental-features "nix-command flakes" \
           develop \
-          --command bash -c "cppcheck  --enable=all src include apps tests"
+          --command bash -c "cppcheck \
+            --enable=all \
+            --suppressions-list=.cppcheck-suppressions.txt \
+            --error-exitcode=1 \
+            src include apps tests"

@@ -238,15 +238,6 @@ string download_url(stringstream & out, const string & url)
     return read_buffer;
 }
 
-// repeat n times string s
-string repeat_string(const string & s, unsigned int n)
-{
-    stringstream out;
-    while (n--)
-        out << s;
-    return out.str();
-}
-
 template <typename T>
 string to_string(T i)
 {
@@ -268,8 +259,6 @@ vector<int> split_choices(string choices, const Value & question)
     SizeType size = question["answers"].Size() + 2;
     int tabsize = to_string(size).length();
     vector<int> choicesV;
-    // choices = repeat_string( string("0"),(choices.length() % tabsize) ) +
-    // choices;
     for (std::size_t i = 0; i < choices.length() / tabsize; i++)
     {
         int choice = to_int(choices.substr(i * tabsize, tabsize)) - 1;

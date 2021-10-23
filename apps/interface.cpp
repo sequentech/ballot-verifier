@@ -173,12 +173,12 @@ void MainFrame::OnVerify(wxCommandEvent & event)
     {
         download_audit_text(sstext, ballot);
         passed = true;
-    } catch (runtime_error e)
+    } catch (runtime_error & e)
     {
         sstext.str(string());
         sstext << e.what();
         state_text->SetLabelText("State: ERROR");
-    } catch (exception e)
+    } catch (exception & e)
     {
         sstext.str(string());
         sstext << e.what();
