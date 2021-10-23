@@ -13,12 +13,14 @@
 #include <gmpxx.h>
 #include <gtest/gtest.h>
 #include <memory.h>
-#include <string.h>
 
-using namespace std;
+#include <cstring>
+
 using namespace AgoraAirgap::sha256;
 using namespace CryptoPP;
 
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
 TEST(Sha256Test, StringOne)
 {
     BYTE text1[] = {"abc"};
@@ -34,6 +36,8 @@ TEST(Sha256Test, StringOne)
     EXPECT_EQ(0, memcmp(hash1, buf, SHA256_BLOCK_SIZE));
 }
 
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
 TEST(Sha256Test, StringTwo)
 {
     BYTE text2[] = {"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"};
@@ -49,6 +53,8 @@ TEST(Sha256Test, StringTwo)
     EXPECT_EQ(0, memcmp(hash2, buf, SHA256_BLOCK_SIZE));
 }
 
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
 TEST(Sha256Test, StringLoopTest)
 {
     BYTE text3[] = {"aaaaaaaaaa"};
@@ -67,6 +73,8 @@ TEST(Sha256Test, StringLoopTest)
     EXPECT_EQ(0, memcmp(hash3, buf, SHA256_BLOCK_SIZE));
 }
 
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
 TEST(AgoraUnitTest, SmallMessageEncryption)
 {
     mpz_t p, q, g, y, x, m, rand;

@@ -30,9 +30,13 @@ cpmaddpackage(
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
 
+# Disable response files, not compatible with clang-tidy. See:
+# https://stackoverflow.com/a/69394586
+# set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES Off)
+
 # Code Quality: Enable all the compiler warnings and ensure to error on
 # warnings.
-add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+add_compile_options(-Wall -Wextra -Wpedantic -Werror -DNDEBUG)
 
 # allow our custom cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")

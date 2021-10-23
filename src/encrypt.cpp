@@ -28,7 +28,6 @@
 #include <agora-airgap/encrypt.h>
 #include <curl/curl.h>
 
-using namespace std;
 using namespace rapidjson;
 
 namespace AgoraAirgap {
@@ -76,16 +75,17 @@ bool save_file(stringstream & out, const string & path, const string & text)
 {
     out << "> writing to file " + path << endl;
     ofstream f(path.c_str());
+    bool ret = false;
     if (f.good())
     {
         f << text;
         f.close();
-        return true;
+        ret = true;
     } else
     {
         f.close();
     }
-    return false;
+    return ret;
 }
 
 string encrypt_answer(
@@ -433,8 +433,12 @@ void check_encrypted_answer(
     }
 }
 
-void check_ballot_hash(stringstream & out, rapidjson::Document & ballot)
+void check_ballot_hash(
+    stringstream & out, const rapidjson::Document & original_ballot)
 {
+    rapidjson::Document ballot;
+    ballot.CopyFrom(original_ballot, ballot.GetAllocator());
+
     if (!ballot.HasMember("ballot_hash") || !ballot["ballot_hash"].IsString())
     {
         out << "!!! Invalid ballot format" << endl;

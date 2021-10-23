@@ -12,8 +12,7 @@
 
 #include <iostream>
 
-using namespace std;
-using namespace AgoraAirgap;
+using AgoraAirgap::Random;
 
 #if defined(_WIN32) || defined(WIN32)
 #include <wincrypt.h>

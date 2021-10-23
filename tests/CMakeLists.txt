@@ -16,6 +16,10 @@ set(gtest_force_shared_crt
     CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# TODO: does not locate headers correctly in nix
+# Code Quality: ensure clang-tidy is used to inspect code quality
+# set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
+
 add_executable(agora_airgap_tests tests.cpp)
 
 # NOTE: we are not using target_include_directories() for cryptopp because it

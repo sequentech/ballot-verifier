@@ -12,8 +12,6 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
 namespace AgoraAirgap {
 
 ElGamal::PublicKey::PublicKey(
