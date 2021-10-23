@@ -30,6 +30,10 @@ cpmaddpackage(
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
 
+# Code Quality: Enable all the compiler warnings and ensure to error on
+# warnings.
+add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+
 # allow our custom cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
