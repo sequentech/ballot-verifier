@@ -45,6 +45,8 @@
             name = "agora-airgap";
             version = "4.0.2";
             src = self;
+            type = "git"; 
+            submodules = "true";
             nativeBuildInputs = [
                 pkgs.pkg-config
                 pkgs.cmake
