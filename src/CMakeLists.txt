@@ -22,9 +22,9 @@ include("${wxWidgets_USE_FILE}")
 
 # NOTE: we also depend on rapidjson, but we are letting nix take care of that
 
-# TODO: does not locate headers correctly in nix
-# Code Quality: ensure clang-tidy is used to inspect code quality
-#set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*")
+# TODO: does not locate headers correctly in nix Code Quality: ensure clang-tidy
+# is used to inspect code quality set(CMAKE_CXX_CLANG_TIDY
+# "clang-tidy;-checks=*")
 
 # Create the common library #################################################
 
@@ -44,7 +44,9 @@ target_include_directories(
 # We need this directory in the and users of this library and users of the
 # library needs them too
 target_include_directories(
-  agora-airgap-lib PUBLIC "../include" SYSTEM PUBLIC "../include")
+  agora-airgap-lib
+  PUBLIC "../include" SYSTEM
+  PUBLIC "../include")
 
 target_link_libraries(
   agora-airgap-lib PRIVATE stdc++ ${GMP_LIBRARIES} ${GMPXX_LIBRARIES}
