@@ -41,7 +41,7 @@
         # resulting packages of the flake
         in rec {
           # Derivation for agora-airgap
-          packages.agora-airgap = pkgs.stdenv.mkDerivation {
+          packages.agora-airgap = pkgs.clangStdenv.mkDerivation {
             name = "agora-airgap";
             version = "4.0.2";
             src = self;
@@ -74,7 +74,9 @@
           defaultPackage = packages.agora-airgap;
 
           # configure the dev shell
-          devShell = pkgs.mkShell { 
+          devShell = (
+            pkgs.mkShell.override { stdenv = pkgs.clangStdenv; }
+          ) { 
             buildInputs = packages.agora-airgap.nativeBuildInputs 
               ++ packages.agora-airgap.buildInputs; 
           };
