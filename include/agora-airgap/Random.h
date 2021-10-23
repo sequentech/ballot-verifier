@@ -1,11 +1,10 @@
-/*
- * Random.h
- *
- *  Created on: May 26, 2014
- *      Author: F�lix Robles felrobelv at gmail dot com
- * Loosely based on Ben Adida's jscrypto:
- * https://github.com/benadida/jscrypto/blob/master/elgamal.js
- */
+// SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
+// Loosely based on Ben Adida's jscrypto:
+// https://github.com/benadida/jscrypto/blob/master/elgamal.js
 
 #ifndef RANDOM_H_
 #define RANDOM_H_

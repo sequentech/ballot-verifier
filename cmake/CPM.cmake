@@ -1,9 +1,13 @@
+# SPDX-FileCopyrightText: 2021 Lars Melchior and additional contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-only OR MIT
+
 # CPM.cmake - CMake's missing package manager
 # ===========================================
 # See https://github.com/cpm-cmake/CPM.cmake for usage and update instructions.
 #
-# MIT License
-# -----------
+# MIT License (original)
+# ----------------------
 #[[
   Copyright (c) 2021 Lars Melchior and additional contributors
 

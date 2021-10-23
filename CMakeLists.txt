@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 cmake_minimum_required(VERSION 3.14)
 
 # Project name and a few useful settings. Other commands can pick up the results

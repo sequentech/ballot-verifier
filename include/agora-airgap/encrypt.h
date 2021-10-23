@@ -1,11 +1,11 @@
-/*
- * Encrypt.h
- *
- *  Created on: November 19, 2014
- *      Author: Félix Robles felrobelv at gmail dot com
- * Based on Eduardo Robles's agora-api:
- * https://github.com/agoravoting/agora-api
- */
+// SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
+// Based on Eduardo Robles's agora-api:
+// https://github.com/agoravoting/agora-api
+
 #ifndef ENCRYPT_H
 #define ENCRYPT_H
 #include <sstream>

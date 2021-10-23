@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 name: "Workflow Tasks"
 
 on:
@@ -107,6 +111,13 @@ jobs:
         nix_path: nixpkgs=channel:nixos-21.05
         extra_nix_config: |
           experimental-features = nix-command flakes
+
+    - name: Check all files have licensing information
+      run: |
+        nix \
+          --extra-experimental-features "nix-command flakes" \
+          develop \
+          --command bash -c "reuse lint"
 
     - name: Run check-format
       run: |

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 if(GMP_INCLUDES AND GMP_LIBRARIES)
   set(GMP_FIND_QUIETLY TRUE)
 endif(GMP_INCLUDES AND GMP_LIBRARIES)

@@ -1,9 +1,13 @@
-/*********************************************************************
- * Filename:   sha256.h
- * Authors:     Brad Conte (brad AT bradconte.com), F�lix Robles
- * Disclaimer: This code is presented "as is" without any guarantees.
- * Details:    Defines the API for the corresponding SHA1 implementation.
- *********************************************************************/
+// SPDX-FileCopyrightText: 2014 Brad Conte (brad AT bradconte.com)
+// SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
+// Based on https://github.com/B-Con/crypto-algorithms (Public Domain from Brad
+// Conte).
+//
+// This code defines the API for the corresponding SHA256 implementation
 
 #ifndef SHA256_H
 #define SHA256_H

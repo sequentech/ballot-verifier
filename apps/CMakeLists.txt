@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 # include PkgConfig for dependency management
 include(FindPkgConfig)
 

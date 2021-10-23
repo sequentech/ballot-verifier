@@ -1,11 +1,11 @@
-/*
- * ElGamal.cpp
- *
- *  Created on: May 18, 2014
- *      Author: Félix Robles felrobelv at gmail dot com
- * Based on George Danezis/Ben Adida/Eduardo Robles
- * https://github.com/agoravoting/agora-api
- */
+// SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
+// Based on George Danezis/Ben Adida/Eduardo Robles
+// https://github.com/agoravoting/agora-api
+
 #include <agora-airgap/ElGamal.h>
 #include <agora-airgap/Random.h>
 

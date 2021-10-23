@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
 #include <agora-airgap/ElGamal.h>
 #include <agora-airgap/sha256.h>
 #include <cryptopp/cryptlib.h>

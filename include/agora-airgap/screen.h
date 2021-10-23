@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
 const char screen_png[58690] = {
     (char) 0x89, (char) 0x50, (char) 0x4e, (char) 0x47, (char) 0x0d,
     (char) 0x0a, (char) 0x1a, (char) 0x0a, (char) 0x00, (char) 0x00,
