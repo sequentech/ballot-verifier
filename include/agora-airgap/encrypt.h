@@ -29,6 +29,7 @@ void encrypt_ballot(
     const string & ballot_path);
 
 string download_url(stringstream & out, const string & url);
+string read_file(stringstream & out, const string & path);
 
 void download_audit(
     stringstream & out,

@@ -5,6 +5,7 @@
 
 #include <agora-airgap/ElGamal.h>
 #include <agora-airgap/sha256.h>
+#include <agora-airgap/encrypt.h>
 #include <cryptopp/cryptlib.h>
 #include <cryptopp/elgamal.h>
 #include <cryptopp/files.h>
@@ -13,11 +14,16 @@
 #include <gmpxx.h>
 #include <gtest/gtest.h>
 #include <memory.h>
-
 #include <cstring>
+#include <string>
+#include <vector>
+#include <iostream>
 
 using namespace AgoraAirgap::sha256;
 using namespace CryptoPP;
+using std::stringstream;
+using std::string;
+using std::function;
 
 // Supress warnings related to using the google test macro
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
@@ -101,4 +107,53 @@ TEST(AgoraUnitTest, SmallMessageEncryption)
 
     EXPECT_EQ(0, ciphertext.alpha.get_str().compare("81"));
     EXPECT_EQ(0, ciphertext.beta.get_str().compare("818"));
+}
+
+/**
+ * Groups examples that should not fail
+ */
+class ExampleDirsTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        this->exampleDirs = std::vector<std::string>({"example_1"});
+    }
+    std::vector<string> exampleDirs;
+};
+
+/**
+ * Executes download_audit with correct data
+ */
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
+TEST_F(ExampleDirsTest, MockDownloadAudit) {
+    for (string & examplePath : exampleDirs) {
+        string ballotPath = examplePath + "/ballot.json";
+        auto getConfig = [&examplePath] (stringstream & out, const string &) {
+            return AgoraAirgap::read_file(out, examplePath + "/config");
+        };
+        stringstream out;
+        EXPECT_NO_THROW({
+            AgoraAirgap::download_audit(out, ballotPath, getConfig);
+        });
+        EXPECT_EQ(out.str().find("Error"), string::npos) 
+            << "Error found in output: " << out.str() << std::endl;
+    }
+}
+
+/**
+ * Executes download_audit with invalid data (/config-bad will yield nothing)
+ */
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
+TEST_F(ExampleDirsTest, MockBadDownloadAudit) {
+    for (string & examplePath : exampleDirs) {
+        string ballotPath = examplePath + "/ballot.json";
+        auto getConfig = [&examplePath] (stringstream & out, const string &) {
+            return AgoraAirgap::read_file(out, examplePath + "/config-bad");
+        };
+        stringstream out;
+        EXPECT_ANY_THROW({
+            AgoraAirgap::download_audit(out, ballotPath, getConfig);
+        });
+    }
 }
