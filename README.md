@@ -211,23 +211,23 @@ Once you have compiled agora-airgap, the fastest way to do a test is simply exec
     
 This will audit an example ballot that is stored in the agora-airgap/src/example folder, now we'll analyze thoroughly what is going on and achieve the same thing using the underlying commands.
 
-In order to audit a ballot we first need an auditable ballot and in this case that is the file agora-airgap/src/example/ballot.json . That file stores the urls to the public key file and to the election data file. So firt we need to have an http server to serve the files when someone requests those urls. To start a very basic http server, execute this command from the agora-airgap/src/example/ folder:
+In order to audit a ballot we first need an auditable ballot and in this case that is the file agora-airgap/tests/example_1/ballot.json . That file stores the urls to the public key file and to the election data file. So firt we need to have an http server to serve the files when someone requests those urls. To start a very basic http server, execute this command from the agora-airgap/tests/example_1/ folder:
 
     python3 -m http.server
     
-Now we can audit the ballot. On another console, execute the following command from the agora-airgap/src/x64 folder:
+Now we can audit the ballot. On another console, execute the following command from the agora-airgap/ folder:
 
-    ./agora-airgap download-audit ../example/ballot.json
+    ./out/agora-airgap download-audit tests/example_1/ballot.json
     
-As we mentioned earlier, you can also do the audit procedure in two steps. First to download the public key files, execute the following from the agora-airgap/src/x64.
+As we mentioned earlier, you can also do the audit procedure in two steps. First to download the public key files, execute the following from the agora-airgap/ directory.
 
-    ./agora-airgap download ../example/ballot.json election_data.file
+    ./out/agora-airgap download tests/example_1/ballot.json election_config.json
     
 Note that for that command to work you need to still be running the python http server and you also need the files pk.file and election_data.file not to exist.
 
 Afterwards, you can run the following command without the need of having the http server running:
 
-    ./agora-airgap audit ../example/ballot.json election_data.file
+    ./out/agora-airgap audit tests/example_1/ballot.json election_config.json
 
 ## Encrypt example
 

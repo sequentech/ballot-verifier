@@ -49,8 +49,10 @@ int main(int argc, char * argv[])
 {
     if (argc < 2)
     {
-        cout << "You need to supply more arguments. Example: " << argv[0]
-             << " download-audit <file_with_auditable_ballot.json>" << endl;
+        cout << "!!! Error [main-nargs]: You need to supply more arguments. "
+                "Example: "
+             << argv[0] << " download-audit <file_with_auditable_ballot.json>"
+             << endl;
         show_help();
         exit(1);
     }
@@ -66,18 +68,21 @@ int main(int argc, char * argv[])
     {
         if (vargs.size() < 3)
         {
-            cout << "You need to supply more arguments. Example: "
+            cout << "!!! Error [download-audit-nargs]: You need to supply more "
+                    "arguments. Example: "
                  << vargs.at(0)
                  << " download-audit <file_with_auditable_ballot.json>" << endl;
             exit(1);
         } else if (vargs.size() > 3)
         {
-            cout << "Error: too many arguments. " << endl;
+            cout << "!!! Error [download-audit-nargs2]: too many arguments. "
+                 << endl;
             exit(1);
         } else if (!check_file_exists(vargs.at(2)))
         {
-            cout << "Error: ballot file not found at path " << vargs.at(2)
-                 << endl;
+            cout << "!!! Error [download-audit-arg2]: ballot file not found at "
+                    "path "
+                 << vargs.at(2) << endl;
             exit(1);
         } else
         {
@@ -88,14 +93,16 @@ int main(int argc, char * argv[])
                 cout << out.str() << endl;
             } catch (std::runtime_error & error)
             {
-                cout << error.what() << endl;
+                cout << "!!! Error [download-audit-catch]: " << error.what()
+                     << endl;
             }
         }
     } else if (vargs.at(1) == string("download"))
     {
         if (vargs.size() < 4)
         {
-            cout << "You need to supply more arguments. Example: "
+            cout << "!!! Error [download-nargs]: You need to supply more "
+                    "arguments. Example: "
                  << vargs.at(0)
                  << " download <file_with_auditable_ballot.json> "
                     "<election_data_file>"
@@ -103,35 +110,39 @@ int main(int argc, char * argv[])
             exit(1);
         } else if (vargs.size() > 4)
         {
-            cout << "Error: too many arguments " << endl;
+            cout << "!!! Error [download-nargs2]: too many arguments " << endl;
             exit(1);
         } else if (!check_file_exists(vargs.at(2)))
         {
-            cout << "Error: ballot file not found at path " << vargs.at(2)
-                 << endl;
+            cout << "!!! Error [download-file1]: ballot file not found at path "
+                 << vargs.at(2) << endl;
             exit(1);
         } else if (check_file_exists(vargs.at(3)))
         {
-            cout << "Error: cannot create election data file at path "
+            cout << "!!! Error [download-file2]: cannot create election data "
+                    "file at path "
                  << vargs.at(3) << " as it already exists" << endl;
             exit(1);
         } else
         {
             try
             {
+                const string & ballot_path = vargs.at(2);
+                const string & election_path = vargs.at(2);
                 stringstream out;
-                download(out, vargs.at(2), vargs.at(3));
+                download(out, ballot_path, election_path);
                 cout << out.str() << endl;
             } catch (std::runtime_error & error)
             {
-                cout << error.what() << endl;
+                cout << "!!! Error [download-catch]: " << error.what() << endl;
             }
         }
     } else if (vargs.at(1) == string("audit"))
     {
         if (vargs.size() < 4)
         {
-            cout << "You need to supply more arguments. Example: "
+            cout << "!!! Error [audit-nargs]: You need to supply more "
+                    "arguments. Example: "
                  << vargs.at(0)
                  << " audit <file_with_auditable_ballot.json> "
                     "<election_data_file>"
@@ -139,35 +150,39 @@ int main(int argc, char * argv[])
             exit(1);
         } else if (vargs.size() > 4)
         {
-            cout << "Error: too many arguments. " << endl;
+            cout << "!!! Error [audit-nargs2]: too many arguments. " << endl;
             exit(1);
         } else if (!check_file_exists(vargs.at(2)))
         {
-            cout << "Error: ballot file not found at path " << vargs.at(2)
-                 << endl;
+            cout << "!!! Error [audit-file1]: ballot file not found at path "
+                 << vargs.at(2) << endl;
             exit(1);
         } else if (!check_file_exists(vargs.at(3)))
         {
-            cout << "Error: election data file not found at path "
+            cout << "!!! Error [audit-file2]: election data file not found at "
+                    "path "
                  << vargs.at(3) << endl;
             exit(1);
         } else
         {
             try
             {
+                const string & ballot_path = vargs.at(2);
+                const string & election_path = vargs.at(3);
                 stringstream out;
-                audit(out, vargs.at(2), vargs.at(3));
+                audit(out, ballot_path, election_path);
                 cout << out.str() << endl;
             } catch (std::runtime_error & error)
             {
-                cout << error.what() << endl;
+                cout << "!!! Error [audit-catch]: " << error.what() << endl;
             }
         }
     } else if (vargs.at(1) == string("encrypt"))
     {
         if (vargs.size() < 5)
         {
-            cout << "You need to supply more arguments. Example: "
+            cout << "!!! Error [encrypt-nargs]: You need to supply more "
+                    "arguments. Example: "
                  << vargs.at(0)
                  << " encrypt <file_with_plaintext_ballot.json> "
                     "<public_key_file> "
@@ -176,33 +191,39 @@ int main(int argc, char * argv[])
             exit(1);
         } else if (vargs.size() > 5)
         {
-            cout << "Error: too many arguments. " << endl;
+            cout << "!!! Error [encrypt-nargs2]: too many arguments. " << endl;
             exit(1);
         } else if (!check_file_exists(vargs.at(2)))
         {
-            cout << "Error: plaintext ballot file not found at path "
+            cout << "!!! Error [encrypt-file1]: plaintext ballot file not "
+                    "found at path "
                  << vargs.at(2) << endl;
             exit(1);
         } else if (!check_file_exists(vargs.at(3)))
         {
-            cout << "Error: public key file not found at path " << vargs.at(3)
-                 << endl;
+            cout << "!!! Error [encrypt-file2]: public key file not found at "
+                    "path "
+                 << vargs.at(3) << endl;
             exit(1);
         } else if (check_file_exists(vargs.at(4)))
         {
-            cout << "Error: cannot create encrypted ballot at path "
+            cout << "!!! Error [encrypt-file3]: cannot create encrypted ballot "
+                    "at path "
                  << vargs.at(4) << " as it already exists" << endl;
             exit(1);
         } else
         {
             try
             {
+                const string & votes_path = vargs.at(2);
+                const string & pk_path = vargs.at(2);
+                const string & ballot_path = vargs.at(2);
                 stringstream out;
-                encrypt_ballot(out, vargs.at(2), vargs.at(3), vargs.at(4));
+                encrypt_ballot(out, votes_path, pk_path, ballot_path);
                 cout << out.str() << endl;
             } catch (std::runtime_error & error)
             {
-                cout << error.what() << endl;
+                cout << "!!! Error [encrypt-catch]: " << error.what() << endl;
             }
         }
     } else

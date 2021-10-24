@@ -57,7 +57,7 @@ string read_file(stringstream & out, const string & path)
 
     if (!t.good())
     {
-        out << "!!! error opening file: " << path << endl;
+        out << "!!! Error [read-file]: error opening file: " << path << endl;
         throw runtime_error(out.str());
     }
     string str;
@@ -192,12 +192,14 @@ void encrypt_ballot(
         out << "> saving encrypted ballot to file..." << endl;
         if (!save_file(out, ballot_path, stringify(ballots)))
         {
-            out << "!!! Error saving encrypted ballot to file path " +
+            out << "!!! Error [encrypt-ballot-save]: couldn't save encrypted "
+                   "ballot to file path " +
                        ballot_path
                 << endl;
         }
     } catch (...)
     {
+        out << "!!! Error [encrypt-ballot-catch]: " << out.str() << endl;
         throw runtime_error(out.str());
     }
 }
@@ -218,7 +220,8 @@ string download_url(stringstream & out, const string & url)
     curl = curl_easy_init();
     if (!curl)
     {
-        out << "curl doesn't work" << std::endl;
+        out << "!!! Error [download-url-curl-not-found]: curl doesn't work"
+            << std::endl;
         throw runtime_error(out.str());
     }
 
@@ -230,7 +233,8 @@ string download_url(stringstream & out, const string & url)
     res = curl_easy_perform(curl);
     if (res != CURLE_OK)
     {
-        out << "curl_easy_perform() failed:" << curl_easy_strerror(res) << endl;
+        out << "!!! Error [download-url-curl2]: curl_easy_perform() failed:"
+            << curl_easy_strerror(res) << endl;
         throw runtime_error(out.str());
     }
 
@@ -287,7 +291,8 @@ const Value & find_value(
             }
         }
     }
-    out << "value not found, exiting.." << endl;
+    out << "!!! Error [find-value-not-found]: value not found, exiting.."
+        << endl;
     throw runtime_error(out.str());
 }
 
@@ -297,19 +302,22 @@ void print_answer(
 {
     if (!question.HasMember("title") || !question["title"].IsString())
     {
-        out << "!!! Invalid election format" << endl;
+        out << "!!! Error [print-answer-title]: Invalid election format"
+            << endl;
         throw runtime_error(out.str());
     }
 
     if (!choice.HasMember("plaintext") || !choice["plaintext"].IsString())
     {
-        out << "!!! Invalid election format" << endl;
+        out << "!!! Error [print-answer-plaintext]:  Invalid election format"
+            << endl;
         throw runtime_error(out.str());
     }
 
     if (!question.HasMember("answers") || !question["answers"].IsArray())
     {
-        out << "!!! Invalid election format" << endl;
+        out << "!!! Error [print-answer-answers]: Invalid election format"
+            << endl;
         throw runtime_error(out.str());
     }
 
@@ -347,43 +355,53 @@ void check_encrypted_answer(
 {
     if (!choice.HasMember("alpha") || !choice["alpha"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-alpha]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
     if (!choice.HasMember("beta") || !choice["beta"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-beta]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
     if (!choice.HasMember("plaintext") ||
         (!choice["plaintext"].IsString() && !choice["plaintext"].IsInt()))
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-plaintext]: Invalid ballot "
+               "format"
+            << endl;
         throw runtime_error(out.str());
     }
     if (!choice.HasMember("randomness") || !choice["randomness"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-randomness]: Invalid ballot "
+               "format"
+            << endl;
         throw runtime_error(out.str());
     }
     if (!pubkey.HasMember("q") || !pubkey["q"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-q]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
     if (!pubkey.HasMember("p") || !pubkey["p"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-p]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
     if (!pubkey.HasMember("g") || !pubkey["g"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-g]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
     if (!pubkey.HasMember("y") || !pubkey["y"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-encrypted-answer-y]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
 
@@ -415,7 +433,8 @@ void check_encrypted_answer(
         out << "> OK - Encrypted question verified" << endl;
     } else
     {
-        out << "!!! INVALID - Encrypted question does not agree with plaintext "
+        out << "!!! Error [check-encrypted-answer-invalid]: INVALID - "
+               "Encrypted question does not agree with plaintext "
                "vote"
             << endl;
         throw runtime_error(out.str());
@@ -430,7 +449,9 @@ void check_ballot_hash(
 
     if (!ballot.HasMember("ballot_hash") || !ballot["ballot_hash"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [check-ballot-hash-ballot-hash]: Invalid ballot "
+               "format"
+            << endl;
         throw runtime_error(out.str());
     }
 
@@ -474,7 +495,9 @@ void check_ballot_hash(
         out << "> OK - hash verified" << endl;
     } else
     {
-        out << "!!! Invalid hash: " + compare_hash << endl;
+        out << "!!! Error [check-ballot-hash-invalid]: Invalid hash: " +
+                   compare_hash
+            << endl;
         throw runtime_error(out.str());
     }
 }
@@ -492,19 +515,23 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
 
     if (!ballot.IsObject())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [download-audit-text-ballot]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
 
     if (!ballot.HasMember("election_url") || !ballot["election_url"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [download-audit-text-election-url]: Invalid ballot "
+               "format"
+            << endl;
         throw runtime_error(out.str());
     }
 
     if (!ballot.HasMember("choices") || !ballot["choices"].IsArray())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [download-audit-text-choices]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
 
@@ -517,7 +544,9 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
 
     if (!election.HasMember("payload"))
     {
-        out << "!!! Invalid election format: " << stringify(election) << endl;
+        out << "!!! Error [download-audit-text-payload]: Invalid election "
+               "format: "
+            << stringify(election) << endl;
         throw runtime_error(out.str());
     }
 
@@ -535,20 +564,24 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
         payloads = stringify(payload_doc);
     } else
     {
-        out << "!!! Invalid election format" << endl;
+        out << "!!! Error [download-audit-text-configuration]: Invalid "
+               "election format"
+            << endl;
         throw runtime_error(out.str());
     }
 
-    out << "> election data configuration hash: " + sha256::hex_sha256(payloads)
-        << endl;
+    out << "> election data configuration (hash: " +
+               sha256::hex_sha256(payloads)
+        << ")" << endl;
 
-    out << "> parsing..." << endl;
+    out << "> parsing... (" << payloads.length() << " characters)" << endl;
     payload.Parse(payloads.c_str());
 
     if (!election["payload"].HasMember("pks") ||
         !election["payload"]["pks"].IsString())
     {
-        out << "!!! Invalid election format pks\n"
+        out << "!!! Error [download-audit-text-pks]: Invalid election format "
+               "pks\n"
             << stringify(payload) << endl;
         throw runtime_error(out.str());
     }
@@ -559,21 +592,25 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
     const Value & choices = ballot["choices"];
     if (!pks.IsArray() || pks.Size() != ballot["choices"].Size())
     {
-        out << "!!! Invalid public keys format: " << pks.Size()
-            << " != " << ballot["choices"].Size() << endl;
+        out << "!!! Error [download-audit-text-pks-choices]: Invalid public "
+               "keys format: "
+            << pks.Size() << " != " << ballot["choices"].Size() << endl;
         throw runtime_error(out.str());
     }
     const Value & proofs = ballot["proofs"];
     if (!proofs.IsArray() || proofs.Size() != pks.Size())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [download-audit-text-proofs]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
 
     if (!payload.HasMember("questions") || !payload["questions"].IsArray() ||
         payload["questions"].Size() != choices.Size())
     {
-        out << "!!! Invalid election format questions" << endl;
+        out << "!!! Error [download-audit-text-questions]: Invalid election "
+               "format questions"
+            << endl;
         throw runtime_error(out.str());
     }
     out << "> please check that the showed options are the ones you chose:"
@@ -603,19 +640,20 @@ void download(
 
     if (!ballot.IsObject())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [download-ballot]: Invalid ballot format" << endl;
         throw runtime_error(out.str());
     }
 
     if (!ballot.HasMember("choices") || !ballot["choices"].IsArray())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [download-choices]: Invalid ballot format" << endl;
         throw runtime_error(out.str());
     }
 
-    if (!ballot.HasMember("choices") || !ballot["choices"].IsArray())
+    if (!ballot.HasMember("election_url") || !ballot["election_url"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [download-election-url]: Invalid ballot format"
+            << endl;
         throw runtime_error(out.str());
     }
     string election_url = ballot["election_url"].GetString();
@@ -625,14 +663,16 @@ void download(
                sha256::hex_sha256(election_data) + ")"
         << endl;
 
-    out << "> parsing..." << endl;
+    out << "> parsing... (" << election_data.length() << " characters)" << endl;
     election.Parse(election_data.c_str());
 
     out << "> saving files..." << endl;
 
     if (!save_file(out, election_path, election_data))
     {
-        out << "!!! Error writing to election data file " + election_path
+        out << "!!! Error [download-save]: Error writing to election data "
+               "file " +
+                   election_path
             << endl;
         throw runtime_error(out.str());
     }
@@ -648,19 +688,19 @@ void audit(
 
     if (!ballot.IsObject())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [audit-ballot]: Invalid ballot format" << endl;
         throw runtime_error(out.str());
     }
 
     if (!ballot.HasMember("election_url") || !ballot["election_url"].IsString())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [audit-election-url]: Invalid ballot format" << endl;
         throw runtime_error(out.str());
     }
 
     if (!ballot.HasMember("choices") || !ballot["choices"].IsArray())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [audit-choices]: Invalid ballot format" << endl;
         throw runtime_error(out.str());
     }
 
@@ -669,29 +709,53 @@ void audit(
                sha256::hex_sha256(election_data) + ")"
         << endl;
 
-    out << "> parsing..." << endl;
+    out << "> parsing... (" << election_data.length() << " characters)" << endl;
 
     election.Parse(election_data.c_str());
 
     if (!election.HasMember("payload"))
     {
-        out << "!!! Invalid election format: " << stringify(election) << endl;
+        out << "!!! Error [audit-payload]: Invalid election format: "
+            << stringify(election) << endl;
         throw runtime_error(out.str());
     }
 
-    if (!election["payload"].HasMember("configuration") ||
-        !election["payload"]["configuration"].IsString())
+    if (!election["payload"].HasMember("configuration"))
     {
-        out << "!!! Invalid election format" << endl;
+        out << "!!! Error [audit-configuration]: Invalid election format"
+            << endl;
         throw runtime_error(out.str());
     }
 
-    string payloads = election["payload"]["configuration"].GetString();
+    string payloads;
+
+    if (election["payload"]["configuration"].IsString())
+    {
+        payloads = election["payload"]["configuration"].GetString();
+    } else if (election["payload"]["configuration"].IsObject())
+    {
+        Document payload_doc;
+        payload_doc.SetObject();
+        payload_doc.CopyFrom(
+            election["payload"]["configuration"], payload_doc.GetAllocator());
+        payloads = stringify(payload_doc);
+    } else
+    {
+        out << "!!! Error [audit-configuration2]: Invalid election format"
+            << endl;
+        throw runtime_error(out.str());
+    }
+
+    out << "> election data configuration (hash: " +
+               sha256::hex_sha256(payloads)
+        << ")" << endl;
+
+    out << "> parsing... (" << payloads.length() << " characters)" << endl;
     payload.Parse(payloads.c_str());
 
     if (!election["payload"].HasMember("pks") || election["payload"].IsString())
     {
-        out << "!!! Invalid election format pks\n"
+        out << "!!! Error [audit-pks]: Invalid election format pks\n"
             << stringify(payload) << endl;
         throw runtime_error(out.str());
     }
@@ -702,21 +766,22 @@ void audit(
     const Value & choices = ballot["choices"];
     if (!pks.IsArray() || pks.Size() != ballot["choices"].Size())
     {
-        out << "!!! Invalid public keys format: " << pks.Size()
-            << " != " << ballot["choices"].Size() << endl;
+        out << "!!! Error [audit-choices]: Invalid public keys format: "
+            << pks.Size() << " != " << ballot["choices"].Size() << endl;
         throw runtime_error(out.str());
     }
     const Value & proofs = ballot["proofs"];
     if (!proofs.IsArray() || proofs.Size() != pks.Size())
     {
-        out << "!!! Invalid ballot format" << endl;
+        out << "!!! Error [audit-proofs]: Invalid ballot format" << endl;
         throw runtime_error(out.str());
     }
 
     if (!payload.HasMember("questions") || !payload["questions"].IsArray() ||
         payload["questions"].Size() != choices.Size())
     {
-        out << "!!! Invalid election format questions" << endl;
+        out << "!!! Error [audit-questions]: Invalid election format questions"
+            << endl;
         throw runtime_error(out.str());
     }
     out << "> please check that the showed options are the ones you chose:"

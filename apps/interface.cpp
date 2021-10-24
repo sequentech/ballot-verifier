@@ -123,7 +123,7 @@ MainFrame::MainFrame(
         wxSizerFlags(0).Top().Border(wxALL, 5));
 
     console_text = new wxTextCtrl(
-        this, -1, "", wxDefaultPosition, wxSize(440, 100), wxTE_MULTILINE);
+        this, -1, "", wxDefaultPosition, wxSize(440, 300), wxTE_MULTILINE);
 
     console_text->SetEditable(false);
 
