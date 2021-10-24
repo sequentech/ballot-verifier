@@ -89,7 +89,9 @@ bool save_file(stringstream & out, const string & path, const string & text)
 }
 
 string encrypt_answer(
-    stringstream & out, const Value & pk_json, const mpz_class & plain_vote)
+    stringstream & out,
+    const Value & pk_json,
+    const mpz_class & plain_vote)
 {
     ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json);
     ElGamal::Plaintext plaintext(plain_vote, pk, true);
@@ -124,7 +126,9 @@ string encrypt_answer(
 // http://www.thomaswhitton.com/blog/2013/06/28/json-c-plus-plus-examples/
 
 void encrypt_ballot(
-    stringstream & out, const string & votes_path, const string & pk_path,
+    stringstream & out,
+    const string & votes_path,
+    const string & pk_path,
     const string & ballot_path)
 {
     try
@@ -204,8 +208,8 @@ void encrypt_ballot(
     }
 }
 
-static size_t WriteCallback(
-    void * contents, size_t size, size_t nmemb, void * userp)
+static size_t
+WriteCallback(void * contents, size_t size, size_t nmemb, void * userp)
 {
     ((std::string *) userp)->append((char *) contents, size * nmemb);
     return size * nmemb;
@@ -271,8 +275,8 @@ vector<int> split_choices(string choices, const Value & question)
     return choicesV;
 }
 
-const Value & find_value(
-    stringstream & out, const Value & arr, string field, string value)
+const Value &
+find_value(stringstream & out, const Value & arr, string field, string value)
 {
     for (SizeType i = 0; i < arr.Size(); i++)
     {
@@ -298,7 +302,9 @@ const Value & find_value(
 
 // prints the options selected on the ballot from the plaintext
 void print_answer(
-    stringstream & out, const Value & choice, const Value & question)
+    stringstream & out,
+    const Value & choice,
+    const Value & question)
 {
     if (!question.HasMember("title") || !question["title"].IsString())
     {
@@ -333,7 +339,9 @@ void print_answer(
             out << "choice " << to_string(choices.at(i)) << endl;
             out << " - "
                 << find_value(
-                       out, question["answers"], "id",
+                       out,
+                       question["answers"],
+                       "id",
                        to_string(choices.at(i)))["text"]
                        .GetString()
                 << endl;
@@ -350,7 +358,9 @@ void print_answer(
 }
 
 void check_encrypted_answer(
-    stringstream & out, const Value & choice, const Value & question,
+    stringstream & out,
+    const Value & choice,
+    const Value & question,
     const Value & pubkey)
 {
     if (!choice.HasMember("alpha") || !choice["alpha"].IsString())
@@ -442,7 +452,8 @@ void check_encrypted_answer(
 }
 
 void check_ballot_hash(
-    stringstream & out, const rapidjson::Document & original_ballot)
+    stringstream & out,
+    const rapidjson::Document & original_ballot)
 {
     rapidjson::Document ballot;
     ballot.CopyFrom(original_ballot, ballot.GetAllocator());
@@ -631,7 +642,8 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
 }
 
 void download(
-    stringstream & out, const string & auditable_ballot_path,
+    stringstream & out,
+    const string & auditable_ballot_path,
     const string & election_path)
 {
     Document ballot, pubkeys, election;
@@ -679,7 +691,8 @@ void download(
 }
 
 void audit(
-    stringstream & out, const string & auditable_ballot_path,
+    stringstream & out,
+    const string & auditable_ballot_path,
     const string & election_path)
 {
     Document ballot, election, payload, pks;

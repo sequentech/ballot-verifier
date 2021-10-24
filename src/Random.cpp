@@ -30,7 +30,8 @@ void Random::initState()
     while (randomDataLen < sizeof(myRandomInteger))
     {
         ssize_t result = read(
-            randomData, ((char *) &myRandomInteger) + randomDataLen,
+            randomData,
+            ((char *) &myRandomInteger) + randomDataLen,
             sizeof(myRandomInteger) - randomDataLen);
         if (result < 0)
         {
@@ -46,7 +47,10 @@ void Random::initState()
     unsigned long int myRandomInteger = 0;
 
     if (!CryptAcquireContextW(
-            &hProvider, 0, 0, PROV_RSA_FULL,
+            &hProvider,
+            0,
+            0,
+            PROV_RSA_FULL,
             CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
     {
         exit(1);

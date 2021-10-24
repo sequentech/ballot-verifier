@@ -46,7 +46,9 @@ class AdvancedSettingsFrame : public wxFrame
 {
     public:
     AdvancedSettingsFrame(
-        wxFrame * parent, const wxString & title, const wxPoint & pos,
+        wxFrame * parent,
+        const wxString & title,
+        const wxPoint & pos,
         const wxSize & size);
 
     private:

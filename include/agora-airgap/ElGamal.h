@@ -28,7 +28,9 @@ class ElGamal
     {
         public:
         PublicKey(
-            const mpz_class & ap, const mpz_class & aq, const mpz_class & ag,
+            const mpz_class & ap,
+            const mpz_class & aq,
+            const mpz_class & ag,
             const mpz_class & ay);
 
         mpz_class p, q, g, y;
@@ -43,7 +45,8 @@ class ElGamal
         PublicKey pk;
 
         Ciphertext(
-            const mpz_class & aalpha, const mpz_class & abeta,
+            const mpz_class & aalpha,
+            const mpz_class & abeta,
             const PublicKey & apk);
         bool verifyPlaintextProof(
             const DLogProof & proof,
@@ -71,7 +74,8 @@ class ElGamal
         mpz_class response;
 
         DLogProof(
-            PlaintextCommitment commitment_, mpz_class challenge_,
+            PlaintextCommitment commitment_,
+            mpz_class challenge_,
             mpz_class response_);
     };
 
@@ -81,10 +85,13 @@ class ElGamal
         PublicKey pk;
         mpz_class m;
         Plaintext(
-            const mpz_class & am, const PublicKey & apk, const bool & encode_m);
+            const mpz_class & am,
+            const PublicKey & apk,
+            const bool & encode_m);
 
         DLogProof proveKnowledge(
-            const mpz_class & alpha, const mpz_class & randomness,
+            const mpz_class & alpha,
+            const mpz_class & randomness,
             const ChallengeGenerator & challenge_generator);
     };
 
@@ -104,7 +111,9 @@ class ElGamal
     };
 
     static Ciphertext encrypt(
-        const PublicKey & pk, const Plaintext & plaintext, const mpz_class & r);
+        const PublicKey & pk,
+        const Plaintext & plaintext,
+        const mpz_class & r);
 };
 
 }  // namespace AgoraAirgap

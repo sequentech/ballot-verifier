@@ -42,7 +42,9 @@ void MainFrame::OnBallotLostFocus(wxFocusEvent & e)
 }
 
 MainFrame::MainFrame(
-    const wxString & title, const wxPoint & pos, const wxSize & size)
+    const wxString & title,
+    const wxPoint & pos,
+    const wxSize & size)
     : wxFrame(NULL, wxID_ANY, title, pos, size)
 {
     wxBoxSizer * overSizer = new wxBoxSizer(wxVERTICAL);
@@ -60,11 +62,15 @@ MainFrame::MainFrame(
     *ballot_text << wxString(string("Paste your ballot here"));
 
     ballot_text->Connect(
-        wxEVT_LEFT_UP, wxMouseEventHandler(MainFrame::OnBallotClick), NULL,
+        wxEVT_LEFT_UP,
+        wxMouseEventHandler(MainFrame::OnBallotClick),
+        NULL,
         this);
     ballot_text->Connect(
-        wxEVT_KILL_FOCUS, wxFocusEventHandler(MainFrame::OnBallotLostFocus),
-        NULL, this);
+        wxEVT_KILL_FOCUS,
+        wxFocusEventHandler(MainFrame::OnBallotLostFocus),
+        NULL,
+        this);
 
     leftSizer->Add(ballot_text, wxSizerFlags(5).Expand().Border(wxALL, 5));
 
@@ -80,12 +86,14 @@ MainFrame::MainFrame(
 
     rightSizer->Add(
         new wxStaticText(
-            this, -1,
+            this,
+            -1,
             wxT("Get the ballot from the voting booth, which looks "
                 "like in the picture below. Copy the full text from "
                 "the voting booth and paste it on the right white "
                 "box that says 'Paste your ballot here'"),
-            wxDefaultPosition, wxSize(400, 50)),
+            wxDefaultPosition,
+            wxSize(400, 50)),
         wxSizerFlags(0).Top().Border(wxALL, 5));
 
     wxInitAllImageHandlers();
@@ -113,7 +121,10 @@ MainFrame::MainFrame(
 
     overSizer->Add(
         new wxButton(
-            this, ID_VERIFY_ONLINE, "Verify Ballot", wxDefaultPosition,
+            this,
+            ID_VERIFY_ONLINE,
+            "Verify Ballot",
+            wxDefaultPosition,
             wxSize(220, 40)),
         wxSizerFlags(0).Expand().Border(wxALL, 5));
 
@@ -146,15 +157,20 @@ void MainFrame::OnAdvancedSettings(wxCommandEvent & event)
 }
 
 AdvancedSettingsFrame::AdvancedSettingsFrame(
-    wxFrame * parent, const wxString & title, const wxPoint & pos,
+    wxFrame * parent,
+    const wxString & title,
+    const wxPoint & pos,
     const wxSize & size)
     : wxFrame(parent, wxID_ANY, title, pos, size)
 {
     wxBoxSizer * main = new wxBoxSizer(wxVERTICAL);
     main->Add(
         new wxButton(
-            this, ID_VERIFY_ON_AIRGAP, "Verify on airgap computer",
-            wxDefaultPosition, wxSize(350, 40)),
+            this,
+            ID_VERIFY_ON_AIRGAP,
+            "Verify on airgap computer",
+            wxDefaultPosition,
+            wxSize(350, 40)),
         wxSizerFlags(0).Expand().Border(wxALL, 5));
     main->SetSizeHints(this);
     SetSizer(main);

@@ -18,19 +18,24 @@ using namespace std;
 namespace AgoraAirgap {
 
 void encrypt_ballot(
-    stringstream & out, const string & votes_path, const string & pk_path,
+    stringstream & out,
+    const string & votes_path,
+    const string & pk_path,
     const string & ballot_path);
 
 void download_audit(stringstream & out, const string & auditable_ballot_path);
 
 void download_audit_text(
-    stringstream & out, const string & auditable_ballot_path);
+    stringstream & out,
+    const string & auditable_ballot_path);
 void download(
-    stringstream & out, const string & auditable_ballot_path,
+    stringstream & out,
+    const string & auditable_ballot_path,
     const string & election_path);
 
 void audit(
-    stringstream & out, const string & auditable_ballot_path,
+    stringstream & out,
+    const string & auditable_ballot_path,
     const string & election_path);
 
 }  // namespace AgoraAirgap
