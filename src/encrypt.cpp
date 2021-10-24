@@ -520,9 +520,7 @@ void download_audit(
 {
     out << "> reading auditable ballot" << endl;
     download_audit_text(
-        out, 
-        read_file(out, auditable_ballot_path),
-        download_func);
+        out, read_file(out, auditable_ballot_path), download_func);
 }
 
 void download_audit_text(

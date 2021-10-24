@@ -8,15 +8,15 @@
 
 #ifndef ENCRYPT_H
 #define ENCRYPT_H
+#include <functional>
 #include <sstream>
 #include <string>
-#include <functional>
 
 #include "common.h"
 
-using std::stringstream;
-using std::string;
 using std::function;
+using std::string;
+using std::stringstream;
 
 namespace AgoraAirgap {
 
