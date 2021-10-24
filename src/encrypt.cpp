@@ -513,13 +513,22 @@ void check_ballot_hash(
     }
 }
 
-void download_audit(stringstream & out, const string & auditable_ballot_path)
+void download_audit(
+    stringstream & out,
+    const string & auditable_ballot_path,
+    const DownloadFunc & download_func)
 {
     out << "> reading auditable ballot" << endl;
-    download_audit_text(out, read_file(out, auditable_ballot_path));
+    download_audit_text(
+        out, 
+        read_file(out, auditable_ballot_path),
+        download_func);
 }
 
-void download_audit_text(stringstream & out, const string & auditable_ballot)
+void download_audit_text(
+    stringstream & out,
+    const string & auditable_ballot,
+    const DownloadFunc & download_func)
 {
     Document ballot, election, payload, pks;
     ballot.Parse(auditable_ballot.c_str());
@@ -549,7 +558,7 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
     string election_url = ballot["election_url"].GetString();
     out << "> election data downloaded";
 
-    string election_data = download_url(out, election_url);
+    string election_data = download_func(out, election_url);
 
     election.Parse(election_data.c_str());
 
@@ -644,7 +653,8 @@ void download_audit_text(stringstream & out, const string & auditable_ballot)
 void download(
     stringstream & out,
     const string & auditable_ballot_path,
-    const string & election_path)
+    const string & election_path,
+    const DownloadFunc & download_func)
 {
     Document ballot, pubkeys, election;
     out << "> reading auditable ballot" << endl;
@@ -670,7 +680,7 @@ void download(
     }
     string election_url = ballot["election_url"].GetString();
 
-    string election_data = download_url(out, election_url);
+    string election_data = download_func(out, election_url);
     out << "> election data downloaded (hash: " +
                sha256::hex_sha256(election_data) + ")"
         << endl;

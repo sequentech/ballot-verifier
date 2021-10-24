@@ -10,12 +10,17 @@
 #define ENCRYPT_H
 #include <sstream>
 #include <string>
+#include <functional>
 
 #include "common.h"
 
-using namespace std;
+using std::stringstream;
+using std::string;
+using std::function;
 
 namespace AgoraAirgap {
+
+typedef function<string(stringstream &, const string &)> DownloadFunc;
 
 void encrypt_ballot(
     stringstream & out,
@@ -23,15 +28,23 @@ void encrypt_ballot(
     const string & pk_path,
     const string & ballot_path);
 
-void download_audit(stringstream & out, const string & auditable_ballot_path);
+string download_url(stringstream & out, const string & url);
+
+void download_audit(
+    stringstream & out,
+    const string & auditable_ballot_path,
+    const DownloadFunc & download_func = &download_url);
 
 void download_audit_text(
     stringstream & out,
-    const string & auditable_ballot_path);
+    const string & auditable_ballot_path,
+    const DownloadFunc & download_func = &download_url);
+
 void download(
     stringstream & out,
     const string & auditable_ballot_path,
-    const string & election_path);
+    const string & election_path,
+    const DownloadFunc & download_func = &download_url);
 
 void audit(
     stringstream & out,
