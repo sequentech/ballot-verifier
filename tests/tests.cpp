@@ -85,7 +85,6 @@ TEST(Sha256Test, StringLoopTest)
 TEST(AgoraUnitTest, SmallMessageEncryption)
 {
     mpz_t p, q, g, y, x, m, rand;
-    string alpha, beta;
 
     mpz_init_set_str(p, "1019", 10);
     mpz_init_set_str(q, "509", 10);  // q = (p-1)/2 = 509
