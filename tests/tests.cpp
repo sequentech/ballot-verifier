@@ -190,7 +190,11 @@ TEST_F(ExampleDirsTest, MockDownload)
         };
         stringstream out;
         string election_path = std::tmpnam(nullptr);
-        AgoraAirgap::download(out, ballotPath, election_path, getConfig);
+
+        EXPECT_NO_THROW({
+            AgoraAirgap::download(out, ballotPath, election_path, getConfig);
+        }) << "Unexpected Exception from AgoraAirgap::download(). Output: "
+           << out.str() << std::endl;
 
         EXPECT_THAT(out.str(), Not(HasSubstr("!!! Error")))
             << std::endl
@@ -222,11 +226,11 @@ TEST_F(ExampleDirsTest, MockAudit)
         string ballotPath = examplePath + "/ballot.json";
         stringstream out;
         string election_path = examplePath + "/config";
-        EXPECT_NO_THROW(
-            { AgoraAirgap::audit(out, ballotPath, election_path); });
+        EXPECT_NO_THROW({ AgoraAirgap::audit(out, ballotPath, election_path); })
+            << "Unexpected Exception from AgoraAirgap::audit(). Output: "
+            << out.str() << std::endl;
         EXPECT_EQ(out.str().find("Error"), string::npos)
             << "Error found in output: " << out.str() << std::endl;
-        AgoraAirgap::audit(out, ballotPath, election_path);
 
         EXPECT_THAT(out.str(), HasSubstr("\n> Audit PASSED\n"))
             << std::endl
