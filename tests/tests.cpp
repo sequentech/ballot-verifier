@@ -231,6 +231,5 @@ TEST_F(ExampleDirsTest, MockAudit)
         EXPECT_THAT(out.str(), HasSubstr("\n> Audit PASSED\n"))
             << std::endl
             << "Error found in output: " << out.str() << std::endl;
-
     }
 }
