@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 #include <memory.h>
 
+#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -27,6 +28,7 @@ using std::function;
 using std::string;
 using std::stringstream;
 using ::testing::HasSubstr;
+using ::testing::Not;
 using ::testing::ThrowsMessage;
 
 // Supress warnings related to using the google test macro
@@ -143,6 +145,10 @@ TEST_F(ExampleDirsTest, MockDownloadAudit)
             { AgoraAirgap::download_audit(out, ballotPath, getConfig); });
         EXPECT_EQ(out.str().find("Error"), string::npos)
             << "Error found in output: " << out.str() << std::endl;
+
+        EXPECT_THAT(out.str(), HasSubstr("\n> Audit PASSED\n"))
+            << std::endl
+            << "Error found in output: " << out.str() << std::endl;
     }
 }
 
@@ -166,5 +172,65 @@ TEST_F(ExampleDirsTest, MockBadDownloadAudit)
                 HasSubstr("!!! Error [read-file]")))
             << std::endl
             << "Error found in output: " << out.str() << std::endl;
+    }
+}
+
+/**
+ * Executes download only and compares downloaded file with original
+ */
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
+TEST_F(ExampleDirsTest, MockDownload)
+{
+    for (string & examplePath: exampleDirs)
+    {
+        string ballotPath = examplePath + "/ballot.json";
+        auto getConfig = [&examplePath](stringstream & out, const string &) {
+            return AgoraAirgap::read_file(out, examplePath + "/config");
+        };
+        stringstream out;
+        string election_path = std::tmpnam(nullptr);
+        AgoraAirgap::download(out, ballotPath, election_path, getConfig);
+
+        EXPECT_THAT(out.str(), Not(HasSubstr("!!! Error")))
+            << std::endl
+            << "Error found in output: " << out.str() << std::endl;
+
+        stringstream out2;
+        string read_election_str = AgoraAirgap::read_file(out, election_path);
+        string orig_election_str =
+            AgoraAirgap::read_file(out, examplePath + "/config");
+
+        EXPECT_THAT(out2.str(), Not(HasSubstr("!!! Error")))
+            << std::endl
+            << "Error found in output: " << out2.str() << std::endl;
+
+        EXPECT_EQ(read_election_str, orig_election_str)
+            << "Read election config does not match original" << std::endl;
+    }
+}
+
+/**
+ * Executes audit only
+ */
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
+TEST_F(ExampleDirsTest, MockAudit)
+{
+    for (string & examplePath: exampleDirs)
+    {
+        string ballotPath = examplePath + "/ballot.json";
+        stringstream out;
+        string election_path = examplePath + "/config";
+        EXPECT_NO_THROW(
+            { AgoraAirgap::audit(out, ballotPath, election_path); });
+        EXPECT_EQ(out.str().find("Error"), string::npos)
+            << "Error found in output: " << out.str() << std::endl;
+        AgoraAirgap::audit(out, ballotPath, election_path);
+
+        EXPECT_THAT(out.str(), HasSubstr("\n> Audit PASSED\n"))
+            << std::endl
+            << "Error found in output: " << out.str() << std::endl;
+
     }
 }
