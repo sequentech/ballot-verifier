@@ -11,6 +11,7 @@
 #include <cryptopp/files.h>
 #include <cryptopp/osrng.h>
 #include <cryptopp/secblock.h>
+#include <gmock/gmock.h>
 #include <gmpxx.h>
 #include <gtest/gtest.h>
 #include <memory.h>
@@ -25,6 +26,8 @@ using namespace CryptoPP;
 using std::function;
 using std::string;
 using std::stringstream;
+using ::testing::HasSubstr;
+using ::testing::ThrowsMessage;
 
 // Supress warnings related to using the google test macro
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
@@ -157,7 +160,11 @@ TEST_F(ExampleDirsTest, MockBadDownloadAudit)
             return AgoraAirgap::read_file(out, examplePath + "/config-bad");
         };
         stringstream out;
-        EXPECT_ANY_THROW(
-            { AgoraAirgap::download_audit(out, ballotPath, getConfig); });
+        EXPECT_THAT(
+            [&]() { AgoraAirgap::download_audit(out, ballotPath, getConfig); },
+            ThrowsMessage<std::runtime_error>(
+                HasSubstr("!!! Error [read-file]")))
+            << std::endl
+            << "Error found in output: " << out.str() << std::endl;
     }
 }
