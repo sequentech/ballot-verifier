@@ -1,0 +1,18 @@
+{
+    "MockDownloadAudit": {
+        "type": "NoThrow",
+        "message": "",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": ""
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> Audit PASSED",
+                "message": ""
+            }
+        ]
+    }
+}
