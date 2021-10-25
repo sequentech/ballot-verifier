@@ -2,11 +2,11 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-# include GoogleTest library
+# include GoogleTest library (latest version, v1.11.0)
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+  URL https://github.com/google/googletest/archive/e2239ee6043f73722e7aa812a459f54a28552929.zip
 )
 
 # GoogleTest: For Windows: Prevent overriding the parent project's
@@ -27,7 +27,7 @@ add_executable(agora_airgap_tests tests.cpp)
 # libraries in the include path
 
 target_link_libraries(agora_airgap_tests PRIVATE agora-airgap-lib stdc++
-                                                 gtest_main cryptopp)
+                                                 gtest_main gmock cryptopp)
 
 include(GoogleTest)
 gtest_discover_tests(agora_airgap_tests)
