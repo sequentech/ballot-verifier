@@ -1,0 +1,65 @@
+{
+    "MockDownloadAudit": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "MockDownload::Run": {
+        "type": "NoThrow",
+        "message": "Exception downloading",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Error downloading"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> writing to file",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "MockDownload::Compare": {
+        "type": "Equals",
+        "message": "Both config files should be equal"
+    },
+    "MockDownload::CompareOutput": {
+        "type": "NoThrow",
+        "message": "Output should not throw",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Error reading file"
+            }
+        ]
+    },
+    "MockAudit": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    }
+}

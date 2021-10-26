@@ -148,7 +148,8 @@ class ExampleDirsTest : public ::testing::Test
     protected:
     void SetUp() override
     {
-        this->exampleDirs = std::vector<std::string>({"example_1"});
+        this->exampleDirs = std::vector<std::string>(
+            {"fixtures/example_1", "fixtures/example_1__ballot_hash_error"});
     }
     std::vector<string> exampleDirs;
 };
@@ -156,58 +157,114 @@ class ExampleDirsTest : public ::testing::Test
 /**
  * Helper function to run expectations.json
  */
-void run_expectations(
-    const function<void(stringstream &)> & lambda,
-    const Value & config)
+void runExpectations2(
+    const function<string()> & lambda1,
+    const function<string()> & lambda2,
+    const Document & document,
+    const string & testName)
 {
-    const string & run_type = config["type"].GetString();
-    stringstream out;
-    if (run_type == string("NoThrow"))
+    SCOPED_TRACE("run_expectations2: " + testName);
+    const Value & config = document[testName.c_str()];
+    const string & runType = config["type"].GetString();
+    stringstream result1;
+    if (runType == string("Equals"))
+    {
+        const string & runMessage = config["message"].GetString();
+        EXPECT_EQ(lambda1(), lambda2()) << runMessage << endl;
+    } else if (runType == string("NotEquals"))
     {
         const string & run_message = config["message"].GetString();
-
-        EXPECT_NO_THROW({ lambda(out); }) << run_message << endl;
-    } else if (run_type == string("ThrowsMessage_HasSubStr"))
-    {
-        const string & match_string = config["data"].GetString();
-        const string & run_message = config["message"].GetString();
-        EXPECT_THAT(
-            [&]() { lambda(out); },
-            ThrowsMessage<std::runtime_error>(HasSubstr(match_string)))
-            << run_message << endl;
+        EXPECT_NE(lambda1(), lambda2()) << run_message << endl;
     } else
     {
-        FAIL() << "invalid run type: " << run_type << endl;
+        FAIL() << "invalid run type: " << runType << endl;
+    }
+}
+
+/**
+ * Helper function to run expectations.json
+ */
+void runExpectations(
+    const function<void(stringstream &)> & lambda,
+    const Document & document,
+    const string & testName)
+{
+    SCOPED_TRACE("run_expectations: " + testName);
+    std::cout << "run_expectations: " << testName << endl;
+    const Value & config = document[testName.c_str()];
+    std::cout << "__1" << endl;
+    const string & runType = config["type"].GetString();
+    std::cout << "__2" << endl;
+    stringstream out;
+    if (runType == string("NoThrow"))
+    {
+        std::cout << "NoThrow" << endl;
+        const string & runMessage = config["message"].GetString();
+
+        EXPECT_NO_THROW({ lambda(out); }) << runMessage << endl;
+
+        std::cout << "NoThrow called" << endl;
+    } else if (runType == string("ThrowsMessage_HasSubStr"))
+    {
+        const string & matchString = config["data"].GetString();
+        const string & runMessage = config["message"].GetString();
+        EXPECT_THAT(
+            [&]() { lambda(out); },
+            ThrowsMessage<std::runtime_error>(HasSubstr(matchString)))
+            << runMessage << endl;
+    } else
+    {
+        FAIL() << "invalid run type: " << runType << endl;
     }
     string result = out.str();
 
     for (const Value & expectation: config["expectations"].GetArray())
     {
-        const string & expectation_type = expectation["type"].GetString();
-        if (expectation_type == string("HasSubstr"))
+        const string & expectationType = expectation["type"].GetString();
+        if (expectationType == string("HasSubstr"))
         {
             const string & data = expectation["data"].GetString();
             const string & message = expectation["message"].GetString();
             EXPECT_THAT(result, HasSubstr(data)) << message << endl;
-        } else if (expectation_type == string("Not_HasSubstr"))
+        } else if (expectationType == string("Not_HasSubstr"))
         {
             const string & data = expectation["data"].GetString();
             const string & message = expectation["message"].GetString();
             EXPECT_THAT(result, Not(HasSubstr(data))) << message << endl;
-        } else if (expectation_type == string("NoThrow"))
+        } else if (expectationType == string("NoThrow"))
         {
             const string & data = expectation["data"].GetString();
             const string & message = expectation["message"].GetString();
             EXPECT_THAT(result, Not(HasSubstr(data))) << message << endl;
-        } else if (expectation_type == string("Not_HasSubstr"))
+        } else if (expectationType == string("Not_HasSubstr"))
         {
             const string & data = expectation["data"].GetString();
             const string & message = expectation["message"].GetString();
             EXPECT_THAT(result, Not(HasSubstr(data))) << message << endl;
         } else
         {
-            FAIL() << "invalid expectation type: " << expectation_type << endl;
+            FAIL() << "invalid expectation type: " << expectationType << endl;
         }
+    }
+}
+
+/**
+ * Handy function to get the expectations doc from a fixture
+ */
+void getExpectationsDoc(const string & examplePath, Document & expectationsDoc)
+{
+    const string expectationsPath = examplePath + "/expectations.json";
+    stringstream out;
+    const string expectationsData =
+        AgoraAirgap::read_file(out, expectationsPath.c_str());
+
+    if (expectationsDoc.Parse(expectationsData.c_str()).HasParseError())
+    {
+        FAIL() << "getExpectationsDoc(\"" << examplePath
+               << "\"): parse error:\n"
+               << "\toffset: " << (unsigned) expectationsDoc.GetErrorOffset()
+               << "\n\terror: "
+               << GetParseError_En(expectationsDoc.GetParseError()) << endl;
     }
 }
 
@@ -220,22 +277,20 @@ TEST_F(ExampleDirsTest, MockDownloadAudit)
 {
     for (string & examplePath: exampleDirs)
     {
-        Document expectations_doc;
-        const string expectations_path = examplePath + "/expectations.json";
-        stringstream out;
-        const string expectations_data =
-            AgoraAirgap::read_file(out, expectations_path.c_str());
-        expectations_doc.Parse(expectations_data.c_str());
-
+        SCOPED_TRACE(examplePath);
+        Document expectationsDoc;
+        getExpectationsDoc(examplePath, expectationsDoc);
         string ballotPath = examplePath + "/ballot.json";
         auto getConfig = [&examplePath](stringstream & out, const string &) {
             return AgoraAirgap::read_file(out, examplePath + "/config");
         };
-        run_expectations(
+
+        runExpectations(
             [&](stringstream & out) {
                 AgoraAirgap::download_audit(out, ballotPath, getConfig);
             },
-            expectations_doc["MockDownloadAudit"]);
+            expectationsDoc,
+            "MockDownloadAudit");
     }
 }
 
@@ -246,35 +301,37 @@ TEST_F(ExampleDirsTest, MockDownloadAudit)
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
 TEST_F(ExampleDirsTest, MockDownload)
 {
+    SCOPED_TRACE("");
     for (string & examplePath: exampleDirs)
     {
+        Document expectationsDoc;
+        getExpectationsDoc(examplePath, expectationsDoc);
         string ballotPath = examplePath + "/ballot.json";
         auto getConfig = [&examplePath](stringstream & out, const string &) {
             return AgoraAirgap::read_file(out, examplePath + "/config");
         };
         stringstream out;
-        string election_path = std::tmpnam(nullptr);
+        string electionPath = std::tmpnam(nullptr);
 
-        EXPECT_NO_THROW({
-            AgoraAirgap::download(out, ballotPath, election_path, getConfig);
-        }) << "Unexpected Exception from AgoraAirgap::download(). Output: "
-           << out.str() << endl;
-
-        EXPECT_THAT(out.str(), Not(HasSubstr("!!! Error")))
-            << endl
-            << "Error found in output: " << out.str() << endl;
+        runExpectations(
+            [&](stringstream & out) {
+                AgoraAirgap::download(out, ballotPath, electionPath, getConfig);
+            },
+            expectationsDoc,
+            "MockDownload::Run");
 
         stringstream out2;
-        string read_election_str = AgoraAirgap::read_file(out, election_path);
-        string orig_election_str =
-            AgoraAirgap::read_file(out, examplePath + "/config");
-
-        EXPECT_THAT(out2.str(), Not(HasSubstr("!!! Error")))
-            << endl
-            << "Error found in output: " << out2.str() << endl;
-
-        EXPECT_EQ(read_election_str, orig_election_str)
-            << "Read election config does not match original" << endl;
+        runExpectations2(
+            [&]() { return AgoraAirgap::read_file(out, electionPath); },
+            [&]() {
+                return AgoraAirgap::read_file(out, examplePath + "/config");
+            },
+            expectationsDoc,
+            "MockDownload::Compare");
+        runExpectations(
+            [&](stringstream & out) { out << out2.str(); },
+            expectationsDoc,
+            "MockDownload::CompareOutput");
     }
 }
 
@@ -287,17 +344,19 @@ TEST_F(ExampleDirsTest, MockAudit)
 {
     for (string & examplePath: exampleDirs)
     {
+        SCOPED_TRACE(examplePath);
+        std::cout << "examplePath: " << examplePath << endl;
+        Document expectationsDoc;
+        getExpectationsDoc(examplePath, expectationsDoc);
         string ballotPath = examplePath + "/ballot.json";
         stringstream out;
-        string election_path = examplePath + "/config";
-        EXPECT_NO_THROW({ AgoraAirgap::audit(out, ballotPath, election_path); })
-            << "Unexpected Exception from AgoraAirgap::audit(). Output: "
-            << out.str() << endl;
-        EXPECT_EQ(out.str().find("Error"), string::npos)
-            << "Error found in output: " << out.str() << endl;
+        string electionPath = examplePath + "/config";
 
-        EXPECT_THAT(out.str(), HasSubstr("\n> Audit PASSED\n"))
-            << endl
-            << "Error found in output: " << out.str() << endl;
+        runExpectations(
+            [&](stringstream & out) {
+                AgoraAirgap::audit(out, ballotPath, electionPath);
+            },
+            expectationsDoc,
+            "MockAudit");
     }
 }

@@ -506,8 +506,8 @@ void check_ballot_hash(
         out << "> OK - hash verified" << endl;
     } else
     {
-        out << "!!! Error [check-ballot-hash-invalid]: Invalid hash: " +
-                   compare_hash
+        out << "!!! Error [check-ballot-hash-invalid]: Invalid hash: "
+            << compare_hash << " does not match expected hash: " << ballot_hash
             << endl;
         throw runtime_error(out.str());
     }
