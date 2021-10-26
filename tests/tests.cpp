@@ -150,6 +150,7 @@ class ExampleDirsTest : public ::testing::Test
     {
         this->exampleDirs = std::vector<std::string>(
             {"fixtures/example_1",
+             "fixtures/example_1__invalid_ballot_json",
              "fixtures/example_1__ballot_hash_error",
              "fixtures/example_1__invalid_choice_randomness",
              "fixtures/example_1__invalid_choice_plaintext",
@@ -192,7 +193,8 @@ void runExpectations2(
 void runExpectations(
     const function<void(stringstream &)> & lambda,
     const Document & document,
-    const string & testName)
+    const string & testName,
+    bool * hasAssertion = nullptr)
 {
     SCOPED_TRACE("run_expectations: " + testName);
     const Value & config = document[testName.c_str()];
@@ -212,6 +214,22 @@ void runExpectations(
             [&]() { lambda(out); },
             ThrowsMessage<std::runtime_error>(HasSubstr(matchString)))
             << runMessage << endl;
+    } else if (runType == string("ASSERT_ThrowsMessage_HasSubStr"))
+    {
+        const string & matchString = config["data"].GetString();
+        const string & runMessage = config["message"].GetString();
+        if (hasAssertion != nullptr)
+        {
+            *hasAssertion = true;
+        }
+        ASSERT_THAT(
+            [&]() { lambda(out); },
+            ThrowsMessage<std::runtime_error>(HasSubstr(matchString)))
+            << runMessage << endl;
+        if (hasAssertion != nullptr)
+        {
+            *hasAssertion = true;
+        }
     } else
     {
         FAIL() << "invalid run type: " << runType << endl;
@@ -311,21 +329,27 @@ TEST_F(ExampleDirsTest, MockDownload)
         auto getConfig = [&examplePath](stringstream & out, const string &) {
             return AgoraAirgap::read_file(out, examplePath + "/config");
         };
-        stringstream out;
         string electionPath = std::tmpnam(nullptr);
 
+        bool hasAssertion = false;
         runExpectations(
             [&](stringstream & out) {
                 AgoraAirgap::download(out, ballotPath, electionPath, getConfig);
             },
             expectationsDoc,
-            "MockDownload::Run");
+            "MockDownload::Run",
+            &hasAssertion);
+
+        if (hasAssertion)
+        {
+            return;
+        }
 
         stringstream out2;
         runExpectations2(
-            [&]() { return AgoraAirgap::read_file(out, electionPath); },
+            [&]() { return AgoraAirgap::read_file(out2, electionPath); },
             [&]() {
-                return AgoraAirgap::read_file(out, examplePath + "/config");
+                return AgoraAirgap::read_file(out2, examplePath + "/config");
             },
             expectationsDoc,
             "MockDownload::Compare");
