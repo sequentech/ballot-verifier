@@ -149,7 +149,12 @@ class ExampleDirsTest : public ::testing::Test
     void SetUp() override
     {
         this->exampleDirs = std::vector<std::string>(
-            {"fixtures/example_1", "fixtures/example_1__ballot_hash_error"});
+            {"fixtures/example_1",
+             "fixtures/example_1__ballot_hash_error",
+             "fixtures/example_1__invalid_choice_randomness",
+             "fixtures/example_1__invalid_choice_plaintext",
+             "fixtures/example_1__invalid_choice_alpha",
+             "fixtures/example_1__invalid_choice_beta"});
     }
     std::vector<string> exampleDirs;
 };
@@ -190,20 +195,15 @@ void runExpectations(
     const string & testName)
 {
     SCOPED_TRACE("run_expectations: " + testName);
-    std::cout << "run_expectations: " << testName << endl;
     const Value & config = document[testName.c_str()];
-    std::cout << "__1" << endl;
     const string & runType = config["type"].GetString();
-    std::cout << "__2" << endl;
     stringstream out;
     if (runType == string("NoThrow"))
     {
-        std::cout << "NoThrow" << endl;
         const string & runMessage = config["message"].GetString();
 
         EXPECT_NO_THROW({ lambda(out); }) << runMessage << endl;
 
-        std::cout << "NoThrow called" << endl;
     } else if (runType == string("ThrowsMessage_HasSubStr"))
     {
         const string & matchString = config["data"].GetString();
@@ -278,6 +278,7 @@ TEST_F(ExampleDirsTest, MockDownloadAudit)
     for (string & examplePath: exampleDirs)
     {
         SCOPED_TRACE(examplePath);
+        std::cout << "examplePath: " << examplePath << endl;
         Document expectationsDoc;
         getExpectationsDoc(examplePath, expectationsDoc);
         string ballotPath = examplePath + "/ballot.json";
@@ -345,7 +346,6 @@ TEST_F(ExampleDirsTest, MockAudit)
     for (string & examplePath: exampleDirs)
     {
         SCOPED_TRACE(examplePath);
-        std::cout << "examplePath: " << examplePath << endl;
         Document expectationsDoc;
         getExpectationsDoc(examplePath, expectationsDoc);
         string ballotPath = examplePath + "/ballot.json";
