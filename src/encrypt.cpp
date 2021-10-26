@@ -117,7 +117,11 @@ string encrypt_answer(
 
     out << "> Node: proof verified = " << (verified ? "true" : "false") << endl;
 
-    enc_answer.Parse(ss.str().c_str());
+    if (enc_answer.Parse(ss.str().c_str()).HasParseError())
+    {
+        out << "!!! Error [encrypt-answer-json]: Json format error" << endl;
+        throw runtime_error(out.str());
+    }
 
     return stringify(enc_answer);
 }
@@ -136,10 +140,20 @@ void encrypt_ballot(
         Document pk, ballots, votes;
 
         out << "> reading public keys" << endl;
-        pk.Parse(read_file(out, pk_path).c_str());
+        if (pk.Parse(read_file(out, pk_path).c_str()).HasParseError())
+        {
+            out << "!!! Error [reading-public-keys-json]: Json format error"
+                << endl;
+            throw runtime_error(out.str());
+        }
 
         out << "> reading plaintext ballot" << endl;
-        votes.Parse(read_file(out, votes_path).c_str());
+        if (votes.Parse(read_file(out, votes_path).c_str()).HasParseError())
+        {
+            out << "!!! Error [reading-plaintext-json]: Json format error"
+                << endl;
+            throw runtime_error(out.str());
+        }
 
         out << "> generating encrypted ballot" << endl;
 
@@ -190,8 +204,13 @@ void encrypt_ballot(
         }
 
         ssballot << "\n]";
-        ballots.Parse(ssballot.str().c_str());
-        // cout << "\n------------------\n" << stringify(ballots)<< endl;
+        if (ballots.Parse(ssballot.str().c_str()).HasParseError())
+        {
+            out << "!!! Error [encrypt-ballot-reading-generated-json]: Json "
+                   "format error"
+                << endl;
+            throw runtime_error(out.str());
+        }
 
         out << "> saving encrypted ballot to file..." << endl;
         if (!save_file(out, ballot_path, stringify(ballots)))
@@ -529,7 +548,12 @@ void download_audit_text(
     const DownloadFunc & download_func)
 {
     Document ballot, election, payload, pks;
-    ballot.Parse(auditable_ballot.c_str());
+    if (ballot.Parse(auditable_ballot.c_str()).HasParseError())
+    {
+        out << "!!! Error [download-audit-text-ballot-json]: Json format error"
+            << endl;
+        throw runtime_error(out.str());
+    }
 
     if (!ballot.IsObject())
     {
@@ -558,7 +582,13 @@ void download_audit_text(
 
     string election_data = download_func(out, election_url);
 
-    election.Parse(election_data.c_str());
+    if (election.Parse(election_data.c_str()).HasParseError())
+    {
+        out << "!!! Error [download-audit-text-election-json]: Json format "
+               "error"
+            << endl;
+        throw runtime_error(out.str());
+    }
 
     if (!election.HasMember("payload"))
     {
@@ -593,7 +623,12 @@ void download_audit_text(
         << ")" << endl;
 
     out << "> parsing... (" << payloads.length() << " characters)" << endl;
-    payload.Parse(payloads.c_str());
+    if (payload.Parse(payloads.c_str()).HasParseError())
+    {
+        out << "!!! Error [download-audit-payload-json]: Json format error"
+            << endl;
+        throw runtime_error(out.str());
+    }
 
     if (!election["payload"].HasMember("pks") ||
         !election["payload"]["pks"].IsString())
@@ -605,7 +640,11 @@ void download_audit_text(
     }
 
     string pkss = election["payload"]["pks"].GetString();
-    pks.Parse(pkss.c_str());
+    if (pks.Parse(pkss.c_str()).HasParseError())
+    {
+        out << "!!! Error [download-audit-pks-json]: Json format error" << endl;
+        throw runtime_error(out.str());
+    }
 
     const Value & choices = ballot["choices"];
     if (!pks.IsArray() || pks.Size() != ballot["choices"].Size())
@@ -656,7 +695,13 @@ void download(
 {
     Document ballot, pubkeys, election;
     out << "> reading auditable ballot" << endl;
-    ballot.Parse(read_file(out, auditable_ballot_path).c_str());
+    if (ballot.Parse(read_file(out, auditable_ballot_path).c_str())
+            .HasParseError())
+    {
+        out << "!!! Error [download-ballot-read-json]: Json format error"
+            << endl;
+        throw runtime_error(out.str());
+    }
 
     if (!ballot.IsObject())
     {
@@ -684,7 +729,12 @@ void download(
         << endl;
 
     out << "> parsing... (" << election_data.length() << " characters)" << endl;
-    election.Parse(election_data.c_str());
+    if (election.Parse(election_data.c_str()).HasParseError())
+    {
+        out << "!!! Error [download-election-parse-json]: Json format error"
+            << endl;
+        throw runtime_error(out.str());
+    }
 
     out << "> saving files..." << endl;
 
@@ -705,7 +755,12 @@ void audit(
 {
     Document ballot, election, payload, pks;
     out << "> reading auditable ballot" << endl;
-    ballot.Parse(read_file(out, auditable_ballot_path).c_str());
+    if (ballot.Parse(read_file(out, auditable_ballot_path).c_str())
+            .HasParseError())
+    {
+        out << "!!! Error [audit-ballot-parse-json]: Json format error" << endl;
+        throw runtime_error(out.str());
+    }
 
     if (!ballot.IsObject())
     {
@@ -732,7 +787,12 @@ void audit(
 
     out << "> parsing... (" << election_data.length() << " characters)" << endl;
 
-    election.Parse(election_data.c_str());
+    if (election.Parse(election_data.c_str()).HasParseError())
+    {
+        out << "!!! Error [audit-ballot-parse-election-json]: Json format error"
+            << endl;
+        throw runtime_error(out.str());
+    }
 
     if (!election.HasMember("payload"))
     {
@@ -772,7 +832,12 @@ void audit(
         << ")" << endl;
 
     out << "> parsing... (" << payloads.length() << " characters)" << endl;
-    payload.Parse(payloads.c_str());
+    if (payload.Parse(payloads.c_str()).HasParseError())
+    {
+        out << "!!! Error [audit-configuration-parse-json]: Json format error"
+            << endl;
+        throw runtime_error(out.str());
+    }
 
     if (!election["payload"].HasMember("pks") || election["payload"].IsString())
     {
@@ -782,7 +847,11 @@ void audit(
     }
 
     string pkss = election["payload"]["pks"].GetString();
-    pks.Parse(pkss.c_str());
+    if (pks.Parse(pkss.c_str()).HasParseError())
+    {
+        out << "!!! Error [audit-pks-parse-json]: Json format error" << endl;
+        throw runtime_error(out.str());
+    }
 
     const Value & choices = ballot["choices"];
     if (!pks.IsArray() || pks.Size() != ballot["choices"].Size())
