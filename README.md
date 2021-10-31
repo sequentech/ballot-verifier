@@ -77,7 +77,66 @@ project. Please make sure you:
 - All the tests in the [Contin uous Integration] github Actions pipeline are 
 green.
 
-## Code structure and introduction
+## Code structure
+
+The following is a brief explanation of the tree structure of the repository:
+
+```
+agora-airgap/
+├── CMakeLists.txt                          << Main Configuration file for CMake
+├── Format.cmake/                           << CMake config for clang-format
+│   └── ...
+├── LICENSE                                 << Main License (AGPL-v3.0)
+├── LICENSES/                               << License files used by reuse
+│   └── ...
+├── README.md                               << This file
+├── apps/                                   << The code of the app is here
+│   ├── CMakeLists.txt                      << CMake configuration for the app
+│   ├── interface.cpp                       << GUI source code
+│   ├── interface.h                         << GUI source code header
+│   └── main.cpp                            << CLI (Currently Unused)
+├── cmake/                                  << CMake files to find some deps
+│   ├── FindGMP.cmake
+│   └── FindGMPXX.cmake
+├── flake.nix                               << Build configuration file for Nix
+├── include/                                << Headers for our libraries
+│   └── agora-airgap/                       << Header for agora-airgap lib
+│       ├── ElGamal.h
+│       ├── ...
+│       └── sha256.h
+├── python/                                 << some currently unused python code
+├── src/                                    << source code of the library
+│   ├── CMakeLists.txt                      << CMake configuration for the app
+│   ├── ElGamal.cpp
+│   ├── Random.cpp
+│   ├── encrypt.cpp
+│   ├── screen.png                          << image used in the GUI
+│   ├── screen.png.license                  << reuse license header for screen.png file
+│   ├── sha256.cpp
+└── tests/                                  << Unit tests
+    ├── CMakeLists.txt
+    ├── fixtures/                           << Fixture used in some unit tests 
+    │   ├── example_1/                      << Each fixture has its own dir
+    │   │   ├── ballot.json                 << JSON Ballot of the fixture
+    │   │   ├── ballot.json.license         << reuse license header for ballots.json file
+    │   │   ├── config                      << election configuration
+    │   │   ├── config.license              << reuse license header for config
+    │   │   ├── expectations.json           << fixture expectations for unit tests
+    │   │   ├── expectations.json.license   
+    │   │   ├── pk_1                        << public keys of election 1
+    │   │   ├── pk_1.license
+    │   │   ├── pk_1110                     << public keys for election 1110
+    │   │   ├── pk_1110.license
+    │   │   ├── votes.json                  << currently unused
+    │   │   └── votes.json.license
+    |   └─── ...                            << more fixtures
+    ├── tests.cpp                           << unit tests
+    └── update_fixtures.sh                  <<| updates the fixtures, as some  
+                                              | are copies of example_1/ unit 
+                                              | test.
+```
+
+## Dependencies
 
 `agora-airgap` is developed in C++11. It uses the following tools:
 - [git] and [GitHub] for source code control.
