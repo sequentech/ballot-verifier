@@ -186,24 +186,23 @@ steps.
 The file `include/agora-airgap/screen.h` includes the PNG found in
 `src/screen.png` file. The `screen.h` has been generated with the [bin2c tool].
 
----
-[Ballot Casting Assurance via Voter-Initiated Poll Station Auditing](https://www.usenix.org/legacy/event/evt07/tech/full_papers/benaloh/benaloh.pdf)
-[Linux binary](https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-airgap-windows.zip)
-[Mac OS X binary](https://github.com/agoravoting/agora-airgap/releases/download/3.4.0/agora-airgap-linux-3.4.0.tar.gz)
-[Nix Package Manager](https://nixos.org/)
-[install Nix](https://nixos.org/)
-[bin2c tool](https://github.com/gwilymk/bin2c)
-[Contributor License Agreement](https://example.com)
-[whatrever](#continuous-integration)
-[reuse](https://reuse.software/)
-[clang-format](https://releases.llvm.org/7.1.0/tools/clang/docs/ClangFormatStyleOptions.html)
-[cppcheck](https://cppcheck.sourceforge.io)
-[flake](https://nixos.wiki/wiki/Flakes)
-[rapidjson](https://rapidjson.org/)
-[Crypto++](https://cryptopp.com/)
-[ninja](TODO)
-[gmplib](https://gmplib.org/)
-[googletest](https://github.com/google/googletest)
-[wxWidgets](TODO)
-[git](https://github.com/agoravoting/agora-airgap/)
-[GitHub](https://github.com/agoravoting/agora-airgap/)
+[Ballot Casting Assurance via Voter-Initiated Poll Station Auditing]: https://www.usenix.org/legacy/event/evt07/tech/full_papers/benaloh/benaloh.pdf
+[Linux binary]: https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-airgap-windows.zip
+[Mac OS X binary]: https://github.com/agoravoting/agora-airgap/releases/download/3.4.0agora-airgap-linux-3.4.0.tar.gz
+[Nix Package Manager]: https://nixos.org/
+[install Nix]: https://nixos.org/
+[bin2c tool]: https://github.com/gwilymk/bin2c
+[Contributor License Agreement]: https://example.com
+[whatrever]: #continuous-integration
+[reuse]: https://reuse.software/
+[clang-format]: https://releases.llvm.org/7.1.0/tools/clang/docs/ClangFormatStyleOptions.html
+[cppcheck]: https://cppcheck.sourceforge.io
+[flake]: https://nixos.wiki/wiki/Flakes
+[rapidjson]: https://rapidjson.org/
+[Crypto++]: https://cryptopp.com/
+[ninja]: TODO
+[gmplib]: https://gmplib.org/
+[googletest]: https://github.com/google/googletest
+[wxWidgets]: TODO
+[git]: https://github.com/agoravoting/agora-airgap/
+[GitHub]: https://github.com/agoravoting/agora-airgap/
