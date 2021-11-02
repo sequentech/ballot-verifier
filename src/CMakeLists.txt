@@ -31,8 +31,9 @@ include("${wxWidgets_USE_FILE}")
 # TODO: move header files to a include dir
 file(GLOB AGORA_AIRGAP_HEADER_LIST CONFIGURE_DEPENDS "*.h")
 
-add_library(agora-airgap-lib sha256.cpp ElGamal.cpp Random.cpp encrypt.cpp
-                             ${AGORA_AIRGAP_HEADER_LIST})
+add_library(
+  agora-airgap-lib sha256.cpp ElGamal.cpp Random.cpp encrypt.cpp MixedRadix.cpp
+                           ${AGORA_AIRGAP_HEADER_LIST})
 
 # All users of this library will need at least C++11
 target_compile_features(agora-airgap-lib PUBLIC cxx_std_11)
