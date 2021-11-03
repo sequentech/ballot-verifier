@@ -39,7 +39,6 @@ mpz_class encode(
     int32_t index = static_cast<int32_t>(valueList.size() - 1);
     while (index >= 0)
     {
-
         mpz_class value = valueList[index];
         mpz_class base = baseList[index];
         encodedValue = encodedValue * base + value;
@@ -62,8 +61,11 @@ vector<uint32_t> decode(
         mpz_class base;
         if (index >= baseList.size() && lastBase == nullptr)
         {
-            throw runtime_error(
-                "Error decoding: lastBase was needed but not provided");
+            stringstream errorMessage;
+            errorMessage << "Error decoding: lastBase was needed but not "
+                         << "provided, with index = " << index
+                         << " and decodedValues[index] = " << decodedValues[1];
+            throw runtime_error(errorMessage.str());
         }
 
         if (index < baseList.size())
@@ -81,7 +83,7 @@ vector<uint32_t> decode(
     }
 
     // If we didn't run all the bases, fill the rest with zeros
-    while (baseList.size() < index)
+    while (index < baseList.size())
     {
         decodedValues.push_back(0);
         index++;
