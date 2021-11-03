@@ -78,7 +78,8 @@
             pkgs.mkShell.override { stdenv = pkgs.clangStdenv; }
           ) { 
             buildInputs = packages.agora-airgap.nativeBuildInputs 
-              ++ packages.agora-airgap.buildInputs; 
+              ++ packages.agora-airgap.buildInputs
+              ++ [ pkgs.bash ]; 
           };
         }
     );
