@@ -56,3 +56,7 @@ DartConfiguration.tcl
 _deps
 Testing/
 tests/agora_*.cmake
+
+# vs code
+.vscode/
+build/
