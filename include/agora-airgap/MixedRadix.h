@@ -19,7 +19,7 @@ namespace MixedRadix {
  * It will encode using multiple different bases. The number of bases and
  * the number of values need to be equal.
  *
- * @param valueList List of positive integer number values to encode 
+ * @param valueList List of positive integer number values to encode
  * @param baseList  List of positive integer bases to use
  *
  * @returns the encoded number
@@ -30,13 +30,13 @@ mpz_class encode(
 
 /**
  * Mixed number decoding.
- * 
+ *
  * It will decode using multiple different bases.
- * 
+ *
  * @param baseList     List of positive integer bases to use
  * @param lastBase     Base to use if baseList is too short
  * @param encodedValue Integer value to decode
- * 
+ *
  * @returns the list of positive decoded integer values
  */
 std::vector<uint32_t> decode(
@@ -44,8 +44,8 @@ std::vector<uint32_t> decode(
     const mpz_class & encodedValue,
     const uint32_t * lastBase = nullptr);
 
-} // namespace MixedRadix
+}  // namespace MixedRadix
 
-} // namespace AgoraAirgap
+}  // namespace AgoraAirgap
 
 #endif /* MIXED_RADIX_H_ */

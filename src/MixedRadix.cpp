@@ -2,18 +2,22 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include <gmpxx.h>
 #include <agora-airgap/MixedRadix.h>
+#include <gmpxx.h>
 
-#include <vector>
+#include <iostream>
+#include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace AgoraAirgap {
 
 namespace MixedRadix {
 
-using std::vector;
 using std::runtime_error;
+using std::stringstream;
+using std::vector;
 
 mpz_class encode(
     const vector<uint32_t> & valueList,
@@ -22,16 +26,20 @@ mpz_class encode(
     // validate input
     if (valueList.size() != baseList.size())
     {
-        throw runtime_error(
-            "Invalid parameters: 'valueList' and 'baseList' must have the " \
-            "same length.");
+        stringstream errorMessage;
+        errorMessage << "Invalid parameters: 'valueList' (size = "
+                     << valueList.size()
+                     << ") and 'baseList' (size = " << baseList.size()
+                     << ") must have the same length.";
+        throw runtime_error(errorMessage.str());
     }
 
     // Encode
     mpz_class encodedValue(0);
-    uint32_t index = valueList.size() - 1;
+    int32_t index = static_cast<int32_t>(valueList.size() - 1);
     while (index >= 0)
     {
+
         mpz_class value = valueList[index];
         mpz_class base = baseList[index];
         encodedValue = encodedValue * base + value;
@@ -61,7 +69,8 @@ vector<uint32_t> decode(
         if (index < baseList.size())
         {
             base = baseList[index];
-        } else {
+        } else
+        {
             base = mpz_class(*lastBase);
         }
 
@@ -75,12 +84,12 @@ vector<uint32_t> decode(
     while (baseList.size() < index)
     {
         decodedValues.push_back(0);
-        index++;    
+        index++;
     }
 
     return decodedValues;
 }
 
-}
+}  // namespace MixedRadix
 
 }  // namespace AgoraAirgap

@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(googletest)
 # is used to inspect code quality set(CMAKE_CXX_CLANG_TIDY
 # "clang-tidy;-checks=*")
 
-add_executable(agora_airgap_tests tests.cpp)
+add_executable(agora_airgap_tests tests.cpp TestMixedRadix.cpp)
 
 # NOTE: we are not using target_include_directories() for cryptopp because it
 # does not support CMake by default and we're using nix anyway to add all the
