@@ -20,7 +20,7 @@ using std::vector;
 bool answerHasUrl(
     const Value & answer,
     const string & title,
-    const string url = "true")
+    const string & url = "true")
 {
     if (!answer.HasMember("urls") || !answer["urls"].IsArray())
     {
