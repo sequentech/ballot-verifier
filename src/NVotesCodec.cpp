@@ -68,7 +68,7 @@ vector<uint32_t> NVotesCodec::getBases()
         sortedAnswers.End(),
         [](const Value & left, const Value & right) {
             if (!left.HasMember("id") || !left["id"].IsUint() ||
-                right.HasMember("id") || !right["id"].IsUint())
+                !right.HasMember("id") || !right["id"].IsUint())
             {
                 throw runtime_error("some answer has no/invalid id");
             }
@@ -84,7 +84,7 @@ vector<uint32_t> NVotesCodec::getBases()
         }
     }
 
-    if (!question.HasMember("tally_type") || !question["tally_tye"].IsString())
+    if (!question.HasMember("tally_type") || !question["tally_type"].IsString())
     {
         throw runtime_error("invalid tally_type");
     }
@@ -118,7 +118,7 @@ vector<uint32_t> NVotesCodec::getBases()
     {
         if (!question.HasMember("max") || !question["max"].IsUint())
         {
-            throw runtime_error("invalid tally_type");
+            throw runtime_error("invalid max");
         }
         answerBase = question["max"].GetUint() + 1;
     }
