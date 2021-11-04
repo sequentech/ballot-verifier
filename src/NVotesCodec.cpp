@@ -5,6 +5,9 @@
 #include <agora-airgap/NVotesCodec.h>
 
 #include <algorithm>
+#include <cstdlib>
+#include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -15,7 +18,16 @@ using rapidjson::Type;
 using rapidjson::Value;
 using std::runtime_error;
 using std::string;
+using std::unique_ptr;
 using std::vector;
+
+string stringify(const Value & value)
+{
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    value.Accept(writer);
+    return buffer.GetString();
+}
 
 bool answerHasUrl(
     const Value & answer,
@@ -44,12 +56,33 @@ bool answerHasUrl(
     return false;
 }
 
+Value sortAnswers(
+    const Value & answers,
+    const char * fieldName,
+    Value::AllocatorType & allocator)
+{
+    Value sortedAnswers(Type::kArrayType);
+    sortedAnswers.CopyFrom(answers, allocator);
+    std::sort(
+        sortedAnswers.Begin(),
+        sortedAnswers.End(),
+        [fieldName](const Value & left, const Value & right) {
+            if (!left.HasMember(fieldName) || !left[fieldName].IsUint() ||
+                !right.HasMember(fieldName) || !right[fieldName].IsUint())
+            {
+                throw runtime_error("some answer has no/invalid id");
+            }
+            return left[fieldName].GetUint() < right[fieldName].GetUint();
+        });
+    return sortedAnswers;
+}
+
 NVotesCodec::NVotesCodec(const Document & question)
 {
     this->question.CopyFrom(question, this->question.GetAllocator());
 }
 
-vector<uint32_t> NVotesCodec::getBases()
+vector<uint32_t> NVotesCodec::getBases() const
 {
     vector<uint32_t> bases;
     Value::AllocatorType allocator;
@@ -61,26 +94,14 @@ vector<uint32_t> NVotesCodec::getBases()
     }
 
     // sort answers by id
-    Value sortedAnswers(Type::kArrayType);
-    sortedAnswers.CopyFrom(question["answers"], allocator);
-    std::sort(
-        sortedAnswers.Begin(),
-        sortedAnswers.End(),
-        [](const Value & left, const Value & right) {
-            if (!left.HasMember("id") || !left["id"].IsUint() ||
-                !right.HasMember("id") || !right["id"].IsUint())
-            {
-                throw runtime_error("some answer has no/invalid id");
-            }
-            return left["id"].GetUint() < right["id"].GetUint();
-        });
+    Value sortedAnswers = sortAnswers(question["answers"], "id", allocator);
 
-    vector<Value> validAnswers;
+    vector<rapidjson::Value> validAnswers;
     for (const Value & answer: sortedAnswers.GetArray())
     {
         if (!answerHasUrl(answer, "invalidVoteFlag"))
         {
-            validAnswers.push_back(Value(answer, allocator));
+            validAnswers.push_back(rapidjson::Value(answer, allocator));
         }
     }
 
@@ -150,6 +171,125 @@ vector<uint32_t> NVotesCodec::getBases()
     }
 
     return bases;
+}
+
+RawBallot NVotesCodec::encodeRawBallot() const
+{
+    Value::AllocatorType allocator;
+
+    // sort answers by id
+    Value sortedAnswers = sortAnswers(question["answers"], "id", allocator);
+
+    // perform some format checks in questionç
+    if (!question.HasMember("answers") || !question["answers"].IsArray())
+    {
+        throw runtime_error("invalid question format");
+    }
+
+    // Separate the answers between:
+    // - Invalid vote answer (if any)
+    // - Write-ins (if any)
+    // - Valid answers (normal answers + write-ins if any)
+    unique_ptr<Value> invalidVoteAnswer(nullptr);
+    uint32_t invalidVoteFlag = 0;
+    vector<Value> writeInAnswers;
+    vector<Value> validAnswers;
+    for (const Value & answer: sortedAnswers.GetArray())
+    {
+        if (answerHasUrl(answer, "invalidVoteFlag"))
+        {
+            invalidVoteAnswer = unique_ptr<Value>(new Value(answer, allocator));
+            if (invalidVoteAnswer->HasMember("selected") &&
+                (*invalidVoteAnswer)["selected"].IsInt() &&
+                (*invalidVoteAnswer)["selected"].GetInt() > -1)
+            {
+                invalidVoteFlag = 1;
+            }
+        } else
+        {
+            validAnswers.push_back(Value(answer, allocator));
+        }
+        if (answerHasUrl(answer, "isWriteIn"))
+        {
+            writeInAnswers.push_back(Value(answer, allocator));
+        }
+    }
+
+    // Set the initial bases and raw ballot. We will populate the rest next
+    vector<uint32_t> bases = getBases();
+    vector<uint32_t> choices;
+    choices.push_back(invalidVoteFlag);
+
+    // populate raw_ballot and bases using the valid answers list
+    if (!question.HasMember("tally_type") || !question["tally_type"].IsString())
+    {
+        throw runtime_error("invalid tally_type");
+    }
+    string tallyType = question["tally_type"].GetString();
+    for (const Value & answer: validAnswers)
+    {
+        if (tallyType == "plurality-at-large")
+        {
+            // We just flag if the candidate was selected or not with 1 for
+            // selected and 0 otherwise
+            uint32_t answerValue =
+                (answer.HasMember("selected") && answer["selected"].IsInt() &&
+                 answer["selected"].GetInt() > -1)
+                    ? 1
+                    : 0;
+            choices.push_back(answerValue);
+        } else
+        {
+            // we add 1 because the counting starts with 1, as zero means this
+            // answer was not voted / ranked
+            uint32_t answerValue =
+                (answer.HasMember("selected") && answer["selected"].IsInt())
+                    ? answer["selected"].GetInt() + 1
+                    : 0;
+            choices.push_back(answerValue);
+        }
+    }
+    // Populate the bases and the raw_ballot values with the write-ins
+    // if there's any. We will through each write-in (if any), and then
+    // encode the write-in answer.text string with UTF-8 and use for
+    // each byte a specific value with base 256 and end each write-in
+    // with a \0 byte. Note that even write-ins.
+    if (question.HasMember("extra_options") &&
+        question["extra_options"].IsObject() &&
+        question["extra_options"].HasMember("allow_writeins") &&
+        question["extra_options"]["allow_writeins"].IsBool() &&
+        question["extra_options"]["allow_writeins"].GetBool() == true)
+    {
+        for (const Value & answer: writeInAnswers)
+        {
+            if (!answer.HasMember("text") || !answer["text"].IsString())
+            {
+                throw runtime_error("invalid answer text");
+            }
+            string answerText = answer["text"].GetString();
+            if (answerText.length() == 0)
+            {
+                // we don't do a bases.push_back(256) as this is done in
+                // getBases() to end it with a zero
+                choices.push_back(0);
+                continue;
+            }
+
+            const char * encodedText = answerText.c_str();
+            for (size_t index = 0; index < strlen(encodedText); index++)
+            {
+                const char & byte = encodedText[index];
+                bases.push_back(256);
+                choices.push_back(static_cast<int>(byte));
+            }
+
+            // End it with a zero. we don't do a bases.push_back(256) as this is
+            // done in getBases()
+            choices.push_back(0);
+        }
+    }
+    return RawBallot{/* bases = */ bases,
+                     /* choices = */ choices};
 }
 
 }  // namespace AgoraAirgap
