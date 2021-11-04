@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
+#include <agora-airgap/MixedRadix.h>
 #include <agora-airgap/NVotesCodec.h>
 
 #include <algorithm>
@@ -290,6 +291,11 @@ RawBallot NVotesCodec::encodeRawBallot() const
     }
     return RawBallot{/* bases = */ bases,
                      /* choices = */ choices};
+}
+
+mpz_class NVotesCodec::encodeToInt(const RawBallot & rawBallot) const
+{
+    return MixedRadix::encode(rawBallot.choices, rawBallot.bases);
 }
 
 }  // namespace AgoraAirgap
