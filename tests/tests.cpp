@@ -15,7 +15,6 @@
 #include <gmock/gmock.h>
 #include <gmpxx.h>
 #include <gtest/gtest.h>
-#include <memory.h>
 
 #include <cstdio>
 #include <cstring>
