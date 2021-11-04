@@ -180,7 +180,7 @@ RawBallot NVotesCodec::encodeRawBallot() const
     // sort answers by id
     Value sortedAnswers = sortAnswers(question["answers"], "id", allocator);
 
-    // perform some format checks in questionç
+    // perform some format checks in question
     if (!question.HasMember("answers") || !question["answers"].IsArray())
     {
         throw runtime_error("invalid question format");
@@ -280,7 +280,7 @@ RawBallot NVotesCodec::encodeRawBallot() const
             {
                 const char & byte = encodedText[index];
                 bases.push_back(256);
-                choices.push_back(static_cast<int>(byte));
+                choices.push_back(static_cast<uint8_t>(byte));
             }
 
             // End it with a zero. we don't do a bases.push_back(256) as this is
