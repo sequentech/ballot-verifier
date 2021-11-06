@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -17,8 +18,10 @@ namespace AgoraAirgap {
 using rapidjson::Document;
 using rapidjson::Type;
 using rapidjson::Value;
+using std::endl;
 using std::runtime_error;
 using std::string;
+using std::stringstream;
 using std::unique_ptr;
 using std::vector;
 
@@ -57,7 +60,10 @@ bool answerHasUrl(
     return false;
 }
 
-Value sortAnswers(
+/**
+ * @returns a deep copy of an answer array sorted by fieldName
+ */
+Value cloneSortedAnswers(
     const Value & answers,
     const char * fieldName,
     Value::AllocatorType & allocator)
@@ -74,6 +80,32 @@ Value sortAnswers(
                 throw runtime_error("some answer has no/invalid id");
             }
             return left[fieldName].GetUint() < right[fieldName].GetUint();
+        });
+    return sortedAnswers;
+}
+
+/**
+ * Given a answer array and without making any deep copy of them, returns a
+ * vector of pointers to answers sorted by fieldName
+ */
+vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName)
+{
+    vector<Value *> sortedAnswers;
+    for (Value & answer: answers.GetArray())
+    {
+        sortedAnswers.push_back(&answer);
+    }
+
+    std::sort(
+        sortedAnswers.begin(),
+        sortedAnswers.end(),
+        [fieldName](const Value * left, const Value * right) {
+            if (!left->HasMember(fieldName) || !(*left)[fieldName].IsUint() ||
+                !right->HasMember(fieldName) || !(*right)[fieldName].IsUint())
+            {
+                throw runtime_error("some answer has no/invalid id");
+            }
+            return (*left)[fieldName].GetUint() < (*right)[fieldName].GetUint();
         });
     return sortedAnswers;
 }
@@ -95,7 +127,8 @@ vector<uint32_t> NVotesCodec::getBases() const
     }
 
     // sort answers by id
-    Value sortedAnswers = sortAnswers(question["answers"], "id", allocator);
+    Value sortedAnswers =
+        cloneSortedAnswers(question["answers"], "id", allocator);
 
     vector<rapidjson::Value> validAnswers;
     for (const Value & answer: sortedAnswers.GetArray())
@@ -179,7 +212,8 @@ RawBallot NVotesCodec::encodeRawBallot() const
     Value::AllocatorType allocator;
 
     // sort answers by id
-    Value sortedAnswers = sortAnswers(question["answers"], "id", allocator);
+    Value sortedAnswers =
+        cloneSortedAnswers(question["answers"], "id", allocator);
 
     // perform some format checks in question
     if (!question.HasMember("answers") || !question["answers"].IsArray())
@@ -191,7 +225,7 @@ RawBallot NVotesCodec::encodeRawBallot() const
     // - Invalid vote answer (if any)
     // - Write-ins (if any)
     // - Valid answers (normal answers + write-ins if any)
-    unique_ptr<Value> invalidVoteAnswer(nullptr);
+    Value * invalidVoteAnswer = nullptr;
     uint32_t invalidVoteFlag = 0;
     vector<Value> writeInAnswers;
     vector<Value> validAnswers;
@@ -199,7 +233,7 @@ RawBallot NVotesCodec::encodeRawBallot() const
     {
         if (answerHasUrl(answer, "invalidVoteFlag"))
         {
-            invalidVoteAnswer = unique_ptr<Value>(new Value(answer, allocator));
+            invalidVoteAnswer = new Value(answer, allocator);
             if (invalidVoteAnswer->HasMember("selected") &&
                 (*invalidVoteAnswer)["selected"].IsInt() &&
                 (*invalidVoteAnswer)["selected"].GetInt() > -1)
@@ -296,6 +330,252 @@ RawBallot NVotesCodec::encodeRawBallot() const
 mpz_class NVotesCodec::encodeToInt(const RawBallot & rawBallot) const
 {
     return MixedRadix::encode(rawBallot.choices, rawBallot.bases);
+}
+
+RawBallot NVotesCodec::decodeFromInt(const mpz_class & intBallot) const
+{
+    vector<uint32_t> bases = getBases();
+    size_t basesSize = bases.size();
+    uint32_t lastBase = 256;
+    std::vector<uint32_t> choices = MixedRadix::decode(
+        /* baseList = */ bases,
+        /* encodedValue = */ intBallot,
+        /* lastBase = */ &lastBase);
+
+    // apply changes required for the write-ins
+    if (question.HasMember("extra_options") &&
+        question["extra_options"].IsObject() &&
+        question["extra_options"].HasMember("allow_writeins") &&
+        question["extra_options"]["allow_writeins"].IsBool() &&
+        question["extra_options"]["allow_writeins"].GetBool() == true)
+    {
+        // make the number of bases equal to the number of choices
+        size_t index = basesSize + 1;
+        while (index <= choices.size())
+        {
+            bases.push_back(256);
+            index++;
+        }
+
+        // count number of write-ins
+        size_t numWriteInAnswers = 0;
+        for (const Value & answer: question["answers"].GetArray())
+        {
+            if (answerHasUrl(answer, "isWriteIn"))
+            {
+                numWriteInAnswers++;
+            }
+        }
+
+        // count number of empty writeIn choices
+        size_t numWriteInStrings = 0;
+        size_t writeInsTextStartIndex = basesSize - numWriteInAnswers;
+        size_t index2 = writeInsTextStartIndex;
+        while (index2 < choices.size())
+        {
+            if (choices[index2] == 0)
+            {
+                numWriteInStrings++;
+            }
+            index2++;
+        }
+
+        // Each non empty write-in needs another 0
+        size_t index3 = 0;
+        size_t numNonEmptyWriteIns = numWriteInAnswers - numWriteInStrings;
+        while (index3 < numNonEmptyWriteIns)
+        {
+            bases.push_back(256);
+            choices.push_back(0);
+            index3++;
+        }
+    }
+
+    return RawBallot{/* bases = */ bases,
+                     /* choices = */ choices};
+}
+
+Document NVotesCodec::decodeRawBallot(const RawBallot & rawBallot) const
+{
+    // 1. clone the question and reset the selections
+    Document question;
+    question.CopyFrom(this->question, question.GetAllocator());
+    vector<Value *> sortedAnswers =
+        sortedAnswersVector(question["answers"], "id");
+
+    // 1.1. perform some format checks in question
+    if (!question.HasMember("answers") || !question["answers"].IsArray())
+    {
+        throw runtime_error("invalid question format");
+    }
+
+    // 1.2. Initialize selection
+    for (Value & answer: question["answers"].GetArray())
+    {
+        answer.AddMember(
+            "selected", Value((int32_t) -1), question.GetAllocator());
+    }
+
+    // 2. sort & segment answers
+    Value * invalidVoteAnswer = nullptr;
+    vector<Value *> validAnswers;
+    vector<Value *> writeInAnswers;
+    for (Value * answer: sortedAnswers)
+    {
+        if (answerHasUrl(*answer, "invalidVoteFlag"))
+        {
+            invalidVoteAnswer = answer;
+            if (!invalidVoteAnswer->IsObject())
+            {
+                throw runtime_error("invalid answer is not an object");
+            }
+
+            if (rawBallot.choices[0] > 0)
+            {
+                (*invalidVoteAnswer)["selected"] = 0;
+            } else
+            {
+                (*invalidVoteAnswer)["selected"] = -1;
+            }
+        } else
+        {
+            validAnswers.push_back(answer);
+        }
+        if (answerHasUrl(*answer, "isWriteIn"))
+        {
+            writeInAnswers.push_back(answer);
+        }
+    }
+    // 4. Do some verifications on the number of choices: Checking that the
+    //    raw_ballot has as many choices as required
+    size_t minNumChoices = question["answers"].GetArray().Size();
+    if (rawBallot.choices.size() < minNumChoices)
+    {
+        throw runtime_error("Invalid Ballot: Not enough choices to decode");
+    }
+
+    // 5. Populate the valid answers. We asume they are in the same order as in
+    //    raw_ballot["choices"]
+    size_t index = 0;
+    for (Value * answer: validAnswers)
+    {
+        // we add 1 to the index because raw_ballot.choice[0] is just the
+        // invalidVoteFlag
+        size_t choiceIndex = index + 1;
+        int32_t choiceValue =
+            static_cast<int32_t>(rawBallot.choices[choiceIndex]);
+        (*answer)["selected"] = choiceValue - 1;
+
+        index++;
+    }
+    // 6. Decode the write-in texts into UTF-8 and split by the \0 character,
+    //    finally the text for the write-ins.
+    if (question.HasMember("extra_options") &&
+        question["extra_options"].IsObject() &&
+        question["extra_options"].HasMember("allow_writeins") &&
+        question["extra_options"]["allow_writeins"].IsBool() &&
+        question["extra_options"]["allow_writeins"].GetBool() == true)
+    {
+        // if no write ins, return
+        if (writeInAnswers.empty())
+        {
+            return question;
+        }
+        // 6.1. Slice the choices to get only the bytes related to the write ins
+        size_t writeInsStartIndex =
+            (invalidVoteAnswer == nullptr)
+                ? question["answers"].GetArray().Size() + 1
+                : question["answers"].GetArray().Size();
+
+        vector<uint8_t> writeInRawBytes(
+            rawBallot.choices.begin() + writeInsStartIndex,
+            rawBallot.choices.end());
+
+        // 6.2. Split the write-in bytes arrays in multiple sub-arrays using
+        // byte \0 as a separator.
+        vector<vector<uint8_t>> writeInsRawBytesArray;
+        size_t index2 = 0;
+
+        // initialize
+        writeInsRawBytesArray.push_back(vector<uint8_t>());
+
+        for (const uint8_t & byteElement: writeInRawBytes)
+        {
+            if (byteElement == 0)
+            {
+                // Start the next write-in byte array, but only if this is
+                // not the last one
+                if (index2 != writeInRawBytes.size() - 1)
+                {
+                    writeInsRawBytesArray.push_back(vector<uint8_t>());
+                }
+            } else
+            {
+                size_t lastIndex = writeInsRawBytesArray.size() - 1;
+                writeInsRawBytesArray[lastIndex].push_back(byteElement);
+            }
+            index2++;
+        }
+
+        if (writeInsRawBytesArray.size() != writeInAnswers.size())
+        {
+            stringstream error;
+            error << "Invalid Ballot: invalid number of write-in bytes,"
+                  << " len(writeInsRawBytesArray) = "
+                  << writeInsRawBytesArray.size()
+                  << ", len(writeInAnswers) = " << writeInAnswers.size()
+                  << ", question = " << stringify(question);
+            throw runtime_error(error.str());
+        }
+
+        // 6.3. Decode each write-in byte array
+        vector<string> writeInsDecoded;
+        for (const vector<uint8_t> & writeInEncodedUtf8: writeInsRawBytesArray)
+        {
+            const string writeInDecoded(
+                writeInEncodedUtf8.begin(), writeInEncodedUtf8.end());
+            writeInsDecoded.push_back(writeInDecoded);
+        }
+
+        // 6.4. Assign the write-in name for each write in
+        size_t index3 = 0;
+        for (Value * writeInAnswer: writeInAnswers)
+        {
+            if (!writeInAnswer->HasMember("text"))
+            {
+                writeInAnswer->AddMember(
+                    "text",
+                    Value().SetString(
+                        writeInsDecoded[index3].c_str(),
+                        question.GetAllocator()),
+                    question.GetAllocator());
+            } else
+            {
+                (*writeInAnswer)["text"].SetString(
+                    writeInsDecoded[index3].c_str(), question.GetAllocator());
+            }
+            index3++;
+        }
+    } else
+    {
+        // if there are no write-ins, we will check that there are no more
+        // choices set after the choice for the last answer, as they would not
+        // mean anything and thus it would be an invalid ballot, but one of a
+        // different type that just marking the ballot invalid or marking
+        // more/less options than required. It would be gibberish without any
+        // meaning, so we raise an exception on that use-case.
+        if (validAnswers.size() + 1 != rawBallot.choices.size())
+        {
+            stringstream error;
+            error << "Invalid Ballot: invalid number of choices,"
+                  << " len(raw_ballot[\"choices\"]) = "
+                  << rawBallot.choices.size()
+                  << ", len(valid_answers) + 1 = " << (validAnswers.size() + 1);
+            throw runtime_error(error.str());
+        }
+    }
+
+    return question;
 }
 
 }  // namespace AgoraAirgap

@@ -60,6 +60,13 @@ class NVotesCodec
     RawBallot encodeRawBallot() const;
 
     /**
+     * Does the opposite of `encode_raw_ballot`.
+     *
+     * @returns `self.questions` with the data from the raw ballot.
+     */
+    Document decodeRawBallot(const RawBallot & rawBallot) const;
+
+    /**
      * Converts a raw ballot into an encoded number ready to be encrypted.
      * A raw ballot is a list of positive integer numbers representing
      * the ballot, and can be obtained calling to `self.encode_raw_ballot()`.
@@ -220,6 +227,18 @@ class NVotesCodec
      * ```
      */
     mpz_class encodeToInt(const RawBallot & rawBallot) const;
+
+    /**
+     *
+     * Does exactly the reverse of of encode_from_int. It should be
+     * such as the following statement is always true:
+     *
+     * ```
+     * rawBallot == codec.decodeFromInt(
+     *   codec.encodeToInt(rawBallot))
+     * ```
+     */
+    RawBallot decodeFromInt(const mpz_class & int_ballot) const;
 };
 
 }  // namespace AgoraAirgap
