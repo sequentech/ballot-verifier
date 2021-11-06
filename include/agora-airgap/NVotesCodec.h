@@ -7,8 +7,8 @@
 
 #include <gmpxx.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "common.h"
 
@@ -16,8 +16,8 @@ namespace AgoraAirgap {
 
 using rapidjson::Document;
 using rapidjson::Value;
-using std::vector;
 using std::string;
+using std::vector;
 
 /**
  * Encodes a raw ballot.

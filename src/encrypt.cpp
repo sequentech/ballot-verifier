@@ -275,23 +275,22 @@ string to_string(T i)
 }
 
 /// @returns the ballot corresponding for the plaintext and the question
-Document parseBallot(
-    const Value & question, const string & plaintextString)
+Document parseBallot(const Value & question, const string & plaintextString)
 {
     mpz_class plaintext(plaintextString.c_str());
-    
+
     Document questionDoc;
     questionDoc.CopyFrom(question, questionDoc.GetAllocator());
 
     AgoraAirgap::NVotesCodec codec(questionDoc);
-    
+
     AgoraAirgap::RawBallot rawBallot = codec.decodeFromInt(plaintext);
     return codec.decodeRawBallot(rawBallot);
 }
 
 bool isInvalidBallot(const Document & ballot)
 {
-    for (const Value & answer : ballot["answers"].GetArray())
+    for (const Value & answer: ballot["answers"].GetArray())
     {
         if (AgoraAirgap::answerHasUrl(answer, "invalidVoteFlag"))
         {
@@ -335,9 +334,10 @@ void print_answer(
     }
 
     Document ballot;
-    try {
+    try
+    {
         ballot = parseBallot(question, choice["plaintext"].GetString());
-    } catch(std::exception & error)
+    } catch (std::exception & error)
     {
         out << "!!! Error [decoding-ballot]: " << error.what() << endl;
         throw runtime_error(out.str());
@@ -352,7 +352,7 @@ void print_answer(
     bool isBlank = true;
     size_t index = 1;
 
-    for (const Value * answer : answers)
+    for (const Value * answer: answers)
     {
         if ((*answer)["selected"].GetInt() == -1 ||
             AgoraAirgap::answerHasUrl(*answer, "invalidVoteFlag"))
@@ -361,10 +361,12 @@ void print_answer(
         }
         isBlank = false;
 
-        if (isSortedQuestion) {
+        if (isSortedQuestion)
+        {
             cout << index << ". " << (*answer)["text"].GetString();
             index++;
-        } else {
+        } else
+        {
             cout << " - " << (*answer)["text"].GetString();
         }
 
@@ -373,7 +375,8 @@ void print_answer(
             cout << " (write-in)";
         }
 
-        if (isInvalid) {
+        if (isInvalid)
+        {
             cout << " [invalid]";
         }
         cout << endl;
