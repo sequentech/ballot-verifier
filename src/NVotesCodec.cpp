@@ -91,10 +91,11 @@ Value cloneSortedAnswers(
 vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName)
 {
     vector<Value *> sortedAnswers;
-    for (Value & answer: answers.GetArray())
-    {
-        sortedAnswers.push_back(&answer);
-    }
+    std::transform(
+        answers.GetArray().Begin(),
+        answers.GetArray().End(),
+        std::back_inserter(sortedAnswers),
+        [](Value & answer) { return &answer; });
 
     std::sort(
         sortedAnswers.begin(),
@@ -358,14 +359,12 @@ RawBallot NVotesCodec::decodeFromInt(const mpz_class & intBallot) const
         }
 
         // count number of write-ins
-        size_t numWriteInAnswers = 0;
-        for (const Value & answer: question["answers"].GetArray())
-        {
-            if (answerHasUrl(answer, "isWriteIn"))
-            {
-                numWriteInAnswers++;
-            }
-        }
+        size_t numWriteInAnswers = std::count_if(
+            question["answers"].GetArray().Begin(),
+            question["answers"].GetArray().End(),
+            [](const Value & answer) {
+                return answerHasUrl(answer, "isWriteIn");
+            });
 
         // count number of empty writeIn choices
         size_t numWriteInStrings = 0;
