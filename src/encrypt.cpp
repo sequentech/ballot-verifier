@@ -89,7 +89,7 @@ bool save_file(stringstream & out, const string & path, const string & text)
     return ret;
 }
 
-string encrypt_answer(
+Document encryptAnswer(
     stringstream & out,
     const Value & pk_json,
     const mpz_class & plain_vote)
@@ -97,8 +97,8 @@ string encrypt_answer(
     ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json);
     ElGamal::Plaintext plaintext(plain_vote, pk, true);
     mpz_class randomness = Random::getRandomIntegerRange(pk.q);
-    out << "> plaintext = " << plain_vote.get_str(16)
-        << "\n> randomness = " << randomness.get_str(16) << endl;
+    out << "> plaintext = " << plain_vote.get_str(10)
+        << "\n> randomness = " << randomness.get_str(10) << endl;
     ElGamal::Ciphertext ctext = ElGamal::encrypt(pk, plaintext, randomness);
     ElGamal::Fiatshamir_dlog_challenge_generator
         fiatshamir_dlog_challenge_generator;
@@ -108,23 +108,47 @@ string encrypt_answer(
     bool verified =
         ctext.verifyPlaintextProof(proof, fiatshamir_dlog_challenge_generator);
 
-    Document enc_answer;
-    stringstream ss;
-    ss << "{\"alpha\":\"" << ctext.alpha.get_str(10) << "\","
-       << "\"beta\":\"" << ctext.beta.get_str(10) << "\","
-       << "\"commitment\":" << proof.commitment.toJSON() << ","     // arr,t, s
-       << "\"response\":\"" << proof.response.get_str(10) << "\","  //
-       << "\"challenge\":\"" << proof.challenge.get_str(10) << "\"}";  //
+    Document encryptedAnswer;
+    encryptedAnswer.SetObject();
+    encryptedAnswer.AddMember(
+        "alpha",
+        Value().SetString(
+            ctext.alpha.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
+        encryptedAnswer.GetAllocator());
+    encryptedAnswer.AddMember(
+        "beta",
+        Value().SetString(
+            ctext.beta.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
+        encryptedAnswer.GetAllocator());
+    encryptedAnswer.AddMember(
+        "commitment",
+        Value().SetString(
+            proof.commitment.toJSON().c_str(), encryptedAnswer.GetAllocator()),
+        encryptedAnswer.GetAllocator());
+    encryptedAnswer.AddMember(
+        "response",
+        Value().SetString(
+            proof.response.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
+        encryptedAnswer.GetAllocator());
+    encryptedAnswer.AddMember(
+        "challenge",
+        Value().SetString(
+            proof.challenge.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
+        encryptedAnswer.GetAllocator());
+    encryptedAnswer.AddMember(
+        "randomness",
+        Value().SetString(
+            randomness.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
+        encryptedAnswer.GetAllocator());
+    encryptedAnswer.AddMember(
+        "plaintext",
+        Value().SetString(
+            plain_vote.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
+        encryptedAnswer.GetAllocator());
 
     out << "> Node: proof verified = " << (verified ? "true" : "false") << endl;
 
-    if (enc_answer.Parse(ss.str().c_str()).HasParseError())
-    {
-        out << "!!! Error [encrypt-answer-json]: Json format error" << endl;
-        throw runtime_error(out.str());
-    }
-
-    return stringify(enc_answer);
+    return encryptedAnswer;
 }
 
 // See examples:
@@ -138,7 +162,7 @@ void encrypt_ballot(
 {
     try
     {
-        Document pk, ballots, votes;
+        Document pk, ballot, votes;
 
         out << "> reading public keys" << endl;
         if (pk.Parse(read_file(out, pk_path).c_str()).HasParseError())
@@ -163,58 +187,79 @@ void encrypt_ballot(
         const Value & votesArray = votes;
 
         assert(votesArray.IsArray());
-        ballots.SetArray();
-        string squestion;
+        ballot.SetObject();
+        ballot.AddMember(
+            "election_url",
+            "http://0.0.0.0:8000/config",
+            ballot.GetAllocator());
+        ballot.AddMember(
+            "issue_date",
+            Value().SetString(get_date().c_str(), ballot.GetAllocator()),
+            ballot.GetAllocator());
+        ballot.AddMember(
+            "choices",
+            Value().SetArray(),
+            ballot.GetAllocator());
+        ballot.AddMember(
+            "proofs",
+            Value().SetArray(),
+            ballot.GetAllocator());
 
-        stringstream ssballot;
-        ssballot << "[\n";
-        for (SizeType i = 0; i < votesArray.Size(); i++)
+        for (const Value & questionBallot : votesArray.GetArray())
         {
-            out << "> question " << i << endl;
-            mpz_class plain_vote;
-            if (votesArray[i].IsString())
-            {
-                plain_vote = votesArray[i].GetString();
-            } else if (votesArray[i].IsInt())
-            {
-                plain_vote = votesArray[i].GetInt();
-            }
+            // obtain plaintext big-int from the json ballot
+            Document questionDoc;
+            questionDoc.CopyFrom(questionBallot, questionDoc.GetAllocator());
+            AgoraAirgap::NVotesCodec codec(questionDoc);
+            RawBallot rawBallot = codec.encodeRawBallot();
+            mpz_class plaintext = codec.encodeToInt(rawBallot);
 
-            Document ballot;
-            ballot.SetObject();
-            // stringstream ssballot;
-
-            mpz_class bits, rand;
-            bits = "160";
-            rand = Random::getRandomIntegerBits(bits);
-            string date, answ;
-            date = get_date();
-            answ = encrypt_answer(out, pk[0], plain_vote);
-            if (i != 0)
-            {
-                ssballot << ",\n";
-            }
-
-            stringstream oneballot;
-            oneballot << "\"is_vote_secret\":true,\"action\":\"vote\","
-                      << "\"issue_date\":\"" << date << "\","
-                      << "\"unique_randomness\":\"" << rand.get_str(16) << "\","
-                      << "\"question0\":" << answ << "";
-
-            ssballot << "{" << oneballot.str() << "}";
-        }
-
-        ssballot << "\n]";
-        if (ballots.Parse(ssballot.str().c_str()).HasParseError())
-        {
-            out << "!!! Error [encrypt-ballot-reading-generated-json]: Json "
-                   "format error"
-                << endl;
-            throw runtime_error(out.str());
+            Document encryptedAnswer = encryptAnswer(out, pk[0], plaintext);
+            Value choice;
+            choice.SetObject();
+            choice.AddMember(
+                "alpha",
+                encryptedAnswer["alpha"],
+                ballot.GetAllocator()
+            );
+            choice.AddMember(
+                "beta",
+                encryptedAnswer["beta"],
+                ballot.GetAllocator()
+            );
+            choice.AddMember(
+                "plaintext",
+                encryptedAnswer["plaintext"],
+                ballot.GetAllocator()
+            );
+            choice.AddMember(
+                "randomness",
+                encryptedAnswer["randomness"],
+                ballot.GetAllocator()
+            );
+            Value proof;
+            proof.SetObject();
+            proof.AddMember(
+                "challenge",
+                encryptedAnswer["challenge"],
+                ballot.GetAllocator()
+            );
+            proof.AddMember(
+                "commitment",
+                encryptedAnswer["commitment"],
+                ballot.GetAllocator()
+            );
+            proof.AddMember(
+                "response",
+                encryptedAnswer["response"],
+                ballot.GetAllocator()
+            );
+            ballot["choices"].PushBack(choice, ballot.GetAllocator());
+            ballot["proofs"].PushBack(proof, ballot.GetAllocator());
         }
 
         out << "> saving encrypted ballot to file..." << endl;
-        if (!save_file(out, ballot_path, stringify(ballots)))
+        if (!save_file(out, ballot_path, stringify(ballot)))
         {
             out << "!!! Error [encrypt-ballot-save]: couldn't save encrypted "
                    "ballot to file path " +
