@@ -36,7 +36,7 @@ string stringify(const Value & value)
 bool answerHasUrl(
     const Value & answer,
     const string & title,
-    const string & url = "true")
+    const string & url)
 {
     if (!answer.HasMember("urls") || !answer["urls"].IsArray())
     {
@@ -84,10 +84,6 @@ Value cloneSortedAnswers(
     return sortedAnswers;
 }
 
-/**
- * Given a answer array and without making any deep copy of them, returns a
- * vector of pointers to answers sorted by fieldName
- */
 vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName)
 {
     vector<Value *> sortedAnswers;

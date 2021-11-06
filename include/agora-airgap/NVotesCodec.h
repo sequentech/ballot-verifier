@@ -8,13 +8,16 @@
 #include <gmpxx.h>
 
 #include <vector>
+#include <string>
 
 #include "common.h"
 
 namespace AgoraAirgap {
 
 using rapidjson::Document;
+using rapidjson::Value;
 using std::vector;
+using std::string;
 
 /**
  * Encodes a raw ballot.
@@ -25,6 +28,20 @@ class RawBallot
     vector<uint32_t> bases;
     vector<uint32_t> choices;
 };
+
+/**
+ * @returns true if the answer contains the given url.
+ */
+bool answerHasUrl(
+    const Value & answer,
+    const string & title,
+    const string & url = "true");
+
+/**
+ * Given a answer array and without making any deep copy of them, returns a
+ * vector of pointers to answers sorted by fieldName
+ */
+vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName);
 
 /**
  * Encodes/Decodes the answer to a question given the question type. The encoder

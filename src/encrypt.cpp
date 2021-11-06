@@ -24,6 +24,7 @@
 #define CURL_STATICLIB
 #endif
 #include <agora-airgap/ElGamal.h>
+#include <agora-airgap/NVotesCodec.h>
 #include <agora-airgap/Random.h>
 #include <agora-airgap/encrypt.h>
 #include <curl/curl.h>
@@ -273,50 +274,37 @@ string to_string(T i)
     return ss.str();
 }
 
-int to_int(string i)
+/// @returns the ballot corresponding for the plaintext and the question
+Document parseBallot(
+    const Value & question, const string & plaintextString)
 {
-    istringstream buffer(i);
-    int value;
-    buffer >> value;
-    return value;
+    mpz_class plaintext(plaintextString.c_str());
+    
+    Document questionDoc;
+    questionDoc.CopyFrom(question, questionDoc.GetAllocator());
+
+    AgoraAirgap::NVotesCodec codec(questionDoc);
+    
+    AgoraAirgap::RawBallot rawBallot = codec.decodeFromInt(plaintext);
+    return codec.decodeRawBallot(rawBallot);
 }
 
-vector<int> split_choices(string choices, const Value & question)
+bool isInvalidBallot(const Document & ballot)
 {
-    SizeType size = question["answers"].Size() + 2;
-    int tabsize = to_string(size).length();
-    vector<int> choicesV;
-    for (std::size_t i = 0; i < choices.length() / tabsize; i++)
+    for (const Value & answer : ballot["answers"].GetArray())
     {
-        int choice = to_int(choices.substr(i * tabsize, tabsize)) - 1;
-        choicesV.push_back(choice);
-    }
-    return choicesV;
-}
-
-const Value &
-find_value(stringstream & out, const Value & arr, string field, string value)
-{
-    for (SizeType i = 0; i < arr.Size(); i++)
-    {
-        const Value & el = arr[i];
-        if (el.IsObject() && el.HasMember(field.c_str()))
+        if (AgoraAirgap::answerHasUrl(answer, "invalidVoteFlag"))
         {
-            if (el[field.c_str()].IsString() &&
-                string(el[field.c_str()].GetString()).compare(value) == 0)
-            {
-                return el;
-            } else if (
-                el[field.c_str()].IsInt() &&
-                to_string(el[field.c_str()].GetInt()).compare(value) == 0)
-            {
-                return el;
-            }
+            return true;
         }
     }
-    out << "!!! Error [find-value-not-found]: value not found, exiting.."
-        << endl;
-    throw runtime_error(out.str());
+    return false;
+}
+
+bool isSortedQuestionType(const Document & ballot)
+{
+    const string tallyType = ballot["tally_type"].GetString();
+    return tallyType != "cumulative" && tallyType != "plurality-at-large";
 }
 
 // prints the options selected on the ballot from the plaintext
@@ -346,33 +334,57 @@ void print_answer(
         throw runtime_error(out.str());
     }
 
-    out << "Q: " << question["title"].GetString() << endl;
-    SizeType size = question["answers"].Size() + 2;
-    vector<int> choices =
-        split_choices(choice["plaintext"].GetString(), question);
-    out << "user answers:" << endl;
-    for (std::size_t i = 0; i < choices.size(); i++)
+    Document ballot;
+    try {
+        ballot = parseBallot(question, choice["plaintext"].GetString());
+    } catch(std::exception & error)
     {
-        if (choices.at(i) >= 0 && choices.at(i) < static_cast<int>(size - 1))
+        out << "!!! Error [decoding-ballot]: " << error.what() << endl;
+        throw runtime_error(out.str());
+    }
+
+    out << "Q: " << question["title"].GetString() << endl;
+    out << "user answers:" << endl;
+
+    vector<Value *> answers = sortedAnswersVector(ballot, "selected");
+    bool isInvalid = isInvalidBallot(ballot);
+    bool isSortedQuestion = isSortedQuestionType(ballot);
+    bool isBlank = true;
+    size_t index = 1;
+
+    for (const Value * answer : answers)
+    {
+        if ((*answer)["selected"].GetInt() == -1 ||
+            AgoraAirgap::answerHasUrl(*answer, "invalidVoteFlag"))
         {
-            out << "choice " << to_string(choices.at(i)) << endl;
-            out << " - "
-                << find_value(
-                       out,
-                       question["answers"],
-                       "id",
-                       to_string(choices.at(i)))["text"]
-                       .GetString()
-                << endl;
-        } else if (choices.at(i) == static_cast<int>(size - 1))
-        {
-            out << "choice " << to_string(choices.at(i)) << endl;
-            out << "- BLANK vote" << endl;
-        } else
-        {
-            out << "choice " << to_string(choices.at(i)) << endl;
-            out << "- NULL vote" << endl;
+            continue;
         }
+        isBlank = false;
+
+        if (isSortedQuestion) {
+            cout << index << ". " << (*answer)["text"].GetString();
+            index++;
+        } else {
+            cout << " - " << (*answer)["text"].GetString();
+        }
+
+        if (AgoraAirgap::answerHasUrl(*answer, "isWriteIn"))
+        {
+            cout << " (write-in)";
+        }
+
+        if (isInvalid) {
+            cout << " [invalid]";
+        }
+        cout << endl;
+    }
+
+    if (isInvalid)
+    {
+        cout << "- INVALID vote" << endl;
+    } else if (isBlank)
+    {
+        cout << "- BLANK vote" << endl;
     }
 }
 
