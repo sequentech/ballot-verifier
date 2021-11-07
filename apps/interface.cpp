@@ -54,8 +54,6 @@ MainFrame::MainFrame(
 
     ballot_text = new wxTextCtrl(
         this, -1, wxT(""), wxDefaultPosition, wxSize(220, 250), wxTE_MULTILINE);
-    // ballot_text = new wxTextCtrl(this, -1, wxT(""), wxDefaultPosition,
-    // wxSize(220,300) , wxTE_MULTILINE);
 
     ballot_text->SetEditable(true);
 
@@ -109,7 +107,7 @@ MainFrame::MainFrame(
     rightSizer->Add(sb, wxSizerFlags(0).Left().Border(wxALL, 5));
 
     state_text = new wxStaticText(
-        this, -1, wxT("State: -"), wxDefaultPosition, wxSize(50, 20));
+        this, -1, wxT("State: -"), wxDefaultPosition, wxSize(100, 20));
 
     rightSizer->Add(state_text, wxSizerFlags(0).Left().Border(wxALL, 5));
 
