@@ -59,37 +59,10 @@
                 "type": "HasSubstr",
                 "data": "> Audit PASSED",
                 "message": "Audit did not pass"
-            }
-        ]
-    },
-    "EncryptAndAudit::Encrypt": {
-        "type": "NoThrow",
-        "message": "Exception",
-        "expectations": [
-            {
-                "type": "Not_HasSubstr",
-                "data": "!!! Error",
-                "message": "Contains an error"
-            }
-        ]
-    },
-    "EncryptAndAudit::Audit": {
-        "type": "NoThrow",
-        "message": "Exception",
-        "expectations": [
-            {
-                "type": "Not_HasSubstr",
-                "data": "!!! Error",
-                "message": "Contains an error"
             },
             {
                 "type": "HasSubstr",
-                "data": "> Audit PASSED",
-                "message": "Audit did not pass"
-            },
-            {
-                "type": "HasSubstr",
-                "data": "> please check that the showed options are the ones you chose:\n\nQ: Secretario General\nBallot choices:\n - Mari Pili Hernández Ordoñez\n - Juan Y Medio\n\n\nQ: Consejo Ciudadano\nBallot choices:\n - Vicente Bizancio Castillo\n - Argos de la Cruz\n - Gorrión Turrón Pastel\n\n",
+                "data": "> please check that the showed options are the ones you chose:\n\nQ: Pregunta 1\nBallot choices:\n - El gran Verger\n\n\nQ: Pregunta 2\nBallot choices:\n - Option 1\n\n",
                 "message": "Invalid plaintext ballot parsing"
             }
         ]
