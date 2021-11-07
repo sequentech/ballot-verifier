@@ -89,12 +89,21 @@ vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName)
         sortedAnswers.begin(),
         sortedAnswers.end(),
         [fieldName](const Value * left, const Value * right) {
-            if (!left->HasMember(fieldName) || !(*left)[fieldName].IsUint() ||
-                !right->HasMember(fieldName) || !(*right)[fieldName].IsUint())
+            if (!right->HasMember(fieldName) || !(*right)[fieldName].IsInt())
             {
-                throw runtime_error("some answer has no/invalid id");
+                stringstream error;
+                error << "right answer has no/invalid field" << fieldName
+                      << ": " << stringify(*right);
+                throw runtime_error(error.str());
             }
-            return (*left)[fieldName].GetUint() < (*right)[fieldName].GetUint();
+            if (!left->HasMember(fieldName) || !(*left)[fieldName].IsInt())
+            {
+                stringstream error;
+                error << "left answer has no/invalid field " << fieldName
+                      << ": " << stringify(*left);
+                throw runtime_error(error.str());
+            }
+            return (*left)[fieldName].GetInt() < (*right)[fieldName].GetInt();
         });
     return sortedAnswers;
 }

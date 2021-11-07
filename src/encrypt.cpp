@@ -111,38 +111,31 @@ Document encryptAnswer(
     encryptedAnswer.SetObject();
     encryptedAnswer.AddMember(
         "alpha",
-        Value().SetString(
-            ctext.alpha.get_str(10).c_str(), allocator),
+        Value().SetString(ctext.alpha.get_str(10).c_str(), allocator),
         allocator);
     encryptedAnswer.AddMember(
         "beta",
-        Value().SetString(
-            ctext.beta.get_str(10).c_str(), allocator),
+        Value().SetString(ctext.beta.get_str(10).c_str(), allocator),
         allocator);
     encryptedAnswer.AddMember(
         "commitment",
-        Value().SetString(
-            proof.commitment.a.get_str(10).c_str(), allocator),
+        Value().SetString(proof.commitment.a.get_str(10).c_str(), allocator),
         allocator);
     encryptedAnswer.AddMember(
         "response",
-        Value().SetString(
-            proof.response.get_str(10).c_str(), allocator),
+        Value().SetString(proof.response.get_str(10).c_str(), allocator),
         allocator);
     encryptedAnswer.AddMember(
         "challenge",
-        Value().SetString(
-            proof.challenge.get_str(10).c_str(), allocator),
+        Value().SetString(proof.challenge.get_str(10).c_str(), allocator),
         allocator);
     encryptedAnswer.AddMember(
         "randomness",
-        Value().SetString(
-            randomness.get_str(10).c_str(), allocator),
+        Value().SetString(randomness.get_str(10).c_str(), allocator),
         allocator);
     encryptedAnswer.AddMember(
         "plaintext",
-        Value().SetString(
-            plain_vote.get_str(10).c_str(), allocator),
+        Value().SetString(plain_vote.get_str(10).c_str(), allocator),
         allocator);
 
     out << "> Node: proof verified = " << (verified ? "true" : "false") << endl;
@@ -199,8 +192,8 @@ void encrypt_ballot(
         Document electionConfig, ballot, plaintextVotes, publicKeys;
 
         out << "> reading plaintext ballot" << endl;
-        if (plaintextVotes.Parse(
-            read_file(out, plaintextVotesPath).c_str()).HasParseError() ||
+        if (plaintextVotes.Parse(read_file(out, plaintextVotesPath).c_str())
+                .HasParseError() ||
             !plaintextVotes.IsArray())
         {
             out << "!!! Error [reading-plaintext-json]: Json format error"
@@ -209,14 +202,14 @@ void encrypt_ballot(
         }
 
         out << "> reading config file" << endl;
-        if (electionConfig.Parse(
-            read_file(out, configPath).c_str()).HasParseError())
+        if (electionConfig.Parse(read_file(out, configPath).c_str())
+                .HasParseError())
         {
             out << "!!! Error [reading-config-json]: Parse Json format error"
                 << endl;
             throw runtime_error(out.str());
         }
-        if  (!electionConfig.IsObject() ||
+        if (!electionConfig.IsObject() ||
             !electionConfig.HasMember("payload") ||
             !electionConfig["payload"].IsObject() ||
             !electionConfig["payload"].HasMember("pks"))
@@ -227,8 +220,9 @@ void encrypt_ballot(
             throw runtime_error(out.str());
         }
 
-        if (electionConfig["payload"]["pks"].IsString()) {
-            const string publicKeysString = 
+        if (electionConfig["payload"]["pks"].IsString())
+        {
+            const string publicKeysString =
                 electionConfig["payload"]["pks"].GetString();
             if (publicKeys.Parse(publicKeysString.c_str()).HasParseError())
             {
@@ -240,13 +234,13 @@ void encrypt_ballot(
         {
             publicKeys.CopyFrom(
                 electionConfig["payload"]["pks"], publicKeys.GetAllocator());
-        } else {
-                out << "!!! Error [parsing-pks-json2]: Json format error"
-                    << endl;
-                throw runtime_error(out.str());
+        } else
+        {
+            out << "!!! Error [parsing-pks-json2]: Json format error" << endl;
+            throw runtime_error(out.str());
         }
 
-        if(plaintextVotes.GetArray().Size() != publicKeys.GetArray().Size())
+        if (plaintextVotes.GetArray().Size() != publicKeys.GetArray().Size())
         {
             out << "!!! Error [reading-pks-size]: Invalid size" << endl;
             throw runtime_error(out.str());
@@ -265,14 +259,8 @@ void encrypt_ballot(
             "issue_date",
             Value().SetString(get_date().c_str(), ballot.GetAllocator()),
             ballot.GetAllocator());
-        ballot.AddMember(
-            "choices",
-            Value().SetArray(),
-            ballot.GetAllocator());
-        ballot.AddMember(
-            "proofs",
-            Value().SetArray(),
-            ballot.GetAllocator());
+        ballot.AddMember("choices", Value().SetArray(), ballot.GetAllocator());
+        ballot.AddMember("proofs", Value().SetArray(), ballot.GetAllocator());
 
         size_t index = 0;
         for (const Value & plaintextQuestion: plaintextVotesArray.GetArray())
@@ -287,54 +275,38 @@ void encrypt_ballot(
 
             const Value & publicKey = publicKeys[index];
 
-            Document encryptedAnswer = encryptAnswer(out, publicKey, plaintext,
-                ballot.GetAllocator());
+            Document encryptedAnswer =
+                encryptAnswer(out, publicKey, plaintext, ballot.GetAllocator());
             Value choice;
             choice.SetObject();
             choice.AddMember(
-                "alpha",
-                encryptedAnswer["alpha"],
-                ballot.GetAllocator()
-            );
+                "alpha", encryptedAnswer["alpha"], ballot.GetAllocator());
             choice.AddMember(
-                "beta",
-                encryptedAnswer["beta"],
-                ballot.GetAllocator()
-            );
+                "beta", encryptedAnswer["beta"], ballot.GetAllocator());
             choice.AddMember(
                 "plaintext",
                 encryptedAnswer["plaintext"],
-                ballot.GetAllocator()
-            );
+                ballot.GetAllocator());
             choice.AddMember(
                 "randomness",
                 encryptedAnswer["randomness"],
-                ballot.GetAllocator()
-            );
+                ballot.GetAllocator());
             Value proof;
             proof.SetObject();
             proof.AddMember(
                 "challenge",
                 encryptedAnswer["challenge"],
-                ballot.GetAllocator()
-            );
+                ballot.GetAllocator());
             proof.AddMember(
                 "commitment",
                 encryptedAnswer["commitment"],
-                ballot.GetAllocator()
-            );
+                ballot.GetAllocator());
             proof.AddMember(
-                "response",
-                encryptedAnswer["response"],
-                ballot.GetAllocator()
-            );
-            out << "\n- ballot = " << stringify(ballot) << endl;
+                "response", encryptedAnswer["response"], ballot.GetAllocator());
             ballot["choices"].PushBack(choice.Move(), ballot.GetAllocator());
             ballot["proofs"].PushBack(proof.Move(), ballot.GetAllocator());
             index++;
         }
-
-        out << "\n- ballot = " << stringify(ballot) << endl;
 
         // Only after everything has been set in the ballot, we calculate the
         // ballot hash
@@ -343,7 +315,7 @@ void encrypt_ballot(
             "ballot_hash",
             Value().SetString(ballotHash.c_str(), ballot.GetAllocator()),
             ballot.GetAllocator());
-        
+
         out << "> saving encrypted ballot to file..." << endl;
         if (!save_file(out, ballotPath, stringify(ballot)))
         {
@@ -472,10 +444,11 @@ void print_answer(
         throw runtime_error(out.str());
     }
 
-    out << "Q: " << question["title"].GetString() << endl;
-    out << "user answers:" << endl;
+    out << endl << "Q: " << question["title"].GetString() << endl;
+    out << "Ballot choices:" << endl;
 
-    vector<Value *> answers = sortedAnswersVector(ballot, "selected");
+    vector<Value *> answers =
+        sortedAnswersVector(ballot["answers"], "selected");
     bool isInvalid = isInvalidBallot(ballot);
     bool isSortedQuestion = isSortedQuestionType(ballot);
     bool isBlank = true;
@@ -492,32 +465,33 @@ void print_answer(
 
         if (isSortedQuestion)
         {
-            cout << index << ". " << (*answer)["text"].GetString();
+            out << index << ". " << (*answer)["text"].GetString();
             index++;
         } else
         {
-            cout << " - " << (*answer)["text"].GetString();
+            out << " - " << (*answer)["text"].GetString();
         }
 
         if (AgoraAirgap::answerHasUrl(*answer, "isWriteIn"))
         {
-            cout << " (write-in)";
+            out << " (write-in)";
         }
 
         if (isInvalid)
         {
-            cout << " [invalid]";
+            out << " [invalid]";
         }
-        cout << endl;
+        out << endl;
     }
 
     if (isInvalid)
     {
-        cout << "- INVALID vote" << endl;
+        out << "- INVALID vote" << endl;
     } else if (isBlank)
     {
-        cout << "- BLANK vote" << endl;
+        out << "- BLANK vote" << endl;
     }
+    out << endl;
 }
 
 void check_encrypted_answer(
@@ -640,8 +614,8 @@ void check_ballot_hash(
     } else
     {
         out << "!!! Error [check-ballot-hash-invalid]: Invalid hash: "
-            << generatedHash << " does not match expected hash: "
-            << expectedHash << endl;
+            << generatedHash
+            << " does not match expected hash: " << expectedHash << endl;
         throw runtime_error(out.str());
     }
 }
@@ -869,8 +843,8 @@ void audit(
 {
     Document ballot, election, payload, pks;
     out << "> reading auditable ballot" << endl;
-    if (ballot.Parse(read_file(out, auditable_ballot_path).c_str())
-            .HasParseError())
+    string auditableBallot = read_file(out, auditable_ballot_path);
+    if (ballot.Parse(auditableBallot.c_str()).HasParseError())
     {
         out << "!!! Error [audit-ballot-parse-json]: Json format error" << endl;
         throw runtime_error(out.str());

@@ -9,6 +9,7 @@ CURRENT_DIR=$PWD
 echo -e "<dirs>\n${FIXTURE_SUBDIRS}\n</dirs>\n"
 for FIXTURE_SUBDIR in ${FIXTURE_SUBDIRS}
 do
+    [ -d ${CURRENT_DIR}/${FIXTURE_SUBDIR} ] || continue
     echo -e "cd \"${CURRENT_DIR}/${FIXTURE_SUBDIR}\""
     cd "${CURRENT_DIR}/${FIXTURE_SUBDIR}"
     [ -f ./update_fixture.sh ] && ./update_fixture.sh

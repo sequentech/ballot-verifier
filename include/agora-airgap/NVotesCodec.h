@@ -44,7 +44,7 @@ bool answerHasUrl(
 vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName);
 
 /**
- * @returns value as a string 
+ * @returns value as a string
  */
 string stringify(const Value & d);
 

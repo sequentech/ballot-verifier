@@ -203,7 +203,8 @@ void runExpectations(
     {
         const string & runMessage = config["message"].GetString();
 
-        EXPECT_NO_THROW({ lambda(out); }) << runMessage << endl;
+        EXPECT_NO_THROW({ lambda(out); }) << runMessage << endl
+                                          << "out = " << out.str() << endl;
 
     } else if (runType == string("ThrowsMessage_HasSubStr"))
     {
@@ -389,22 +390,32 @@ TEST_F(ExampleDirsTest, MockAudit)
  */
 // Supress warnings related to using the google test macro
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
-TEST_F(ExampleDirsTest, MockAudit)
+TEST_F(ExampleDirsTest, EncryptAndAudit)
 {
+    this->exampleDirs = std::vector<std::string>({"fixtures/example_1"});
+
     for (string & examplePath: exampleDirs)
     {
         SCOPED_TRACE(examplePath);
         Document expectationsDoc;
         getExpectationsDoc(examplePath, expectationsDoc);
-        string ballotPath = examplePath + "/ballot.json";
-        stringstream out;
+        string plainTextVotesPath = examplePath + "/plaintext_vote.json";
         string electionPath = examplePath + "/config";
+        string encryptedBallotPath = std::tmpnam(nullptr);
 
         runExpectations(
             [&](stringstream & out) {
-                AgoraAirgap::audit(out, ballotPath, electionPath);
+                AgoraAirgap::encrypt_ballot(
+                    out, plainTextVotesPath, electionPath, encryptedBallotPath);
             },
             expectationsDoc,
-            "MockAudit");
+            "EncryptAndAudit::Encrypt");
+
+        runExpectations(
+            [&](stringstream & out) {
+                AgoraAirgap::audit(out, encryptedBallotPath, electionPath);
+            },
+            expectationsDoc,
+            "EncryptAndAudit::Audit");
     }
 }

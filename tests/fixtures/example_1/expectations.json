@@ -61,5 +61,32 @@
                 "message": "Audit did not pass"
             }
         ]
+    },
+    "EncryptAndAudit::Encrypt": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            }
+        ]
+    },
+    "EncryptAndAudit::Audit": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
     }
 }
