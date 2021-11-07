@@ -25,14 +25,6 @@ using std::stringstream;
 using std::unique_ptr;
 using std::vector;
 
-string stringify(const Value & value)
-{
-    rapidjson::StringBuffer buffer;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-    value.Accept(writer);
-    return buffer.GetString();
-}
-
 bool answerHasUrl(
     const Value & answer,
     const string & title,

@@ -44,6 +44,11 @@ bool answerHasUrl(
 vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName);
 
 /**
+ * @returns value as a string 
+ */
+string stringify(const Value & d);
+
+/**
  * Encodes/Decodes the answer to a question given the question type. The encoder
  * function always receives answer as a list of answer ids.
  */

@@ -183,9 +183,10 @@ int main(int argc, char * argv[])
         {
             cout << "!!! Error [encrypt-nargs]: You need to supply more "
                     "arguments. Example: "
+                 << endl
                  << vargs.at(0)
                  << " encrypt <file_with_plaintext_ballot.json> "
-                    "<public_key_file> "
+                    "<config_file> "
                     "<encrypted_ballot_file>"
                  << endl;
             exit(1);
@@ -201,7 +202,7 @@ int main(int argc, char * argv[])
             exit(1);
         } else if (!check_file_exists(vargs.at(3)))
         {
-            cout << "!!! Error [encrypt-file2]: public key file not found at "
+            cout << "!!! Error [encrypt-file2]: config file not found at "
                     "path "
                  << vargs.at(3) << endl;
             exit(1);
@@ -215,11 +216,11 @@ int main(int argc, char * argv[])
         {
             try
             {
-                const string & votes_path = vargs.at(2);
-                const string & pk_path = vargs.at(2);
-                const string & ballot_path = vargs.at(2);
+                const string & plainTextVotesPath = vargs.at(2);
+                const string & configPath = vargs.at(3);
+                const string & ballotPath = vargs.at(4);
                 stringstream out;
-                encrypt_ballot(out, votes_path, pk_path, ballot_path);
+                encrypt_ballot(out, plainTextVotesPath, configPath, ballotPath);
                 cout << out.str() << endl;
             } catch (std::runtime_error & error)
             {

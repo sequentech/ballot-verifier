@@ -37,14 +37,12 @@ string get_date()
 {
     time_t now = time(0);
     tm * gmtm = gmtime(&now);
-    stringstream ss;  //"2014-11-24T19:47:13+00:00"
-    ss << (1900 + gmtm->tm_year) << "-" << gmtm->tm_mon << "-" << gmtm->tm_mday
-       << "T" << gmtm->tm_hour << ":" << gmtm->tm_min << ":" << gmtm->tm_sec
-       << "+00:00";
+    stringstream ss;  //"2014-11-24"
+    ss << gmtm->tm_mday << "/" << gmtm->tm_mon << "/" << (1900 + gmtm->tm_year);
     return ss.str();
 }
 
-string stringify(const Document & d)
+string stringify(const Value & d)
 {
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
@@ -92,7 +90,8 @@ bool save_file(stringstream & out, const string & path, const string & text)
 Document encryptAnswer(
     stringstream & out,
     const Value & pk_json,
-    const mpz_class & plain_vote)
+    const mpz_class & plain_vote,
+    rapidjson::Value::AllocatorType & allocator)
 {
     ElGamal::PublicKey pk = ElGamal::PublicKey::fromJSONObject(pk_json);
     ElGamal::Plaintext plaintext(plain_vote, pk, true);
@@ -113,80 +112,150 @@ Document encryptAnswer(
     encryptedAnswer.AddMember(
         "alpha",
         Value().SetString(
-            ctext.alpha.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
-        encryptedAnswer.GetAllocator());
+            ctext.alpha.get_str(10).c_str(), allocator),
+        allocator);
     encryptedAnswer.AddMember(
         "beta",
         Value().SetString(
-            ctext.beta.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
-        encryptedAnswer.GetAllocator());
+            ctext.beta.get_str(10).c_str(), allocator),
+        allocator);
     encryptedAnswer.AddMember(
         "commitment",
         Value().SetString(
-            proof.commitment.toJSON().c_str(), encryptedAnswer.GetAllocator()),
-        encryptedAnswer.GetAllocator());
+            proof.commitment.a.get_str(10).c_str(), allocator),
+        allocator);
     encryptedAnswer.AddMember(
         "response",
         Value().SetString(
-            proof.response.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
-        encryptedAnswer.GetAllocator());
+            proof.response.get_str(10).c_str(), allocator),
+        allocator);
     encryptedAnswer.AddMember(
         "challenge",
         Value().SetString(
-            proof.challenge.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
-        encryptedAnswer.GetAllocator());
+            proof.challenge.get_str(10).c_str(), allocator),
+        allocator);
     encryptedAnswer.AddMember(
         "randomness",
         Value().SetString(
-            randomness.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
-        encryptedAnswer.GetAllocator());
+            randomness.get_str(10).c_str(), allocator),
+        allocator);
     encryptedAnswer.AddMember(
         "plaintext",
         Value().SetString(
-            plain_vote.get_str(10).c_str(), encryptedAnswer.GetAllocator()),
-        encryptedAnswer.GetAllocator());
+            plain_vote.get_str(10).c_str(), allocator),
+        allocator);
 
     out << "> Node: proof verified = " << (verified ? "true" : "false") << endl;
 
     return encryptedAnswer;
 }
 
-// See examples:
-// http://www.thomaswhitton.com/blog/2013/06/28/json-c-plus-plus-examples/
+string generateBallotHash(const rapidjson::Document & originalBallot)
+{
+    rapidjson::Document ballot;
+    ballot.CopyFrom(originalBallot, ballot.GetAllocator());
+
+    ballot.RemoveMember("election_url");
+    ballot.RemoveMember("ballot_hash");
+    for (SizeType i = 0; i < ballot["choices"].Size(); ++i)
+    {
+        ballot["choices"][i].RemoveMember("plaintext");
+        ballot["choices"][i].RemoveMember("randomness");
+    }
+
+    stringstream ballotss;
+    string partial;
+
+    Document choices_doc;
+    choices_doc.SetObject();
+    choices_doc.AddMember(
+        "choices", ballot["choices"], choices_doc.GetAllocator());
+    partial = stringify(choices_doc);
+    partial = partial.substr(1, partial.size() - 2);
+
+    ballotss << "{" << partial << ","
+             << "\"issue_date\":\"" << ballot["issue_date"].GetString()
+             << "\",";
+
+    Document proofs_doc;
+    proofs_doc.SetObject();
+    proofs_doc.AddMember("proofs", ballot["proofs"], proofs_doc.GetAllocator());
+    partial = stringify(proofs_doc);
+    partial = partial.substr(1, partial.size() - 2);
+
+    ballotss << partial << "}";
+
+    return sha256::hex_sha256(ballotss.str());
+}
 
 void encrypt_ballot(
     stringstream & out,
-    const string & votes_path,
-    const string & pk_path,
-    const string & ballot_path)
+    const string & plaintextVotesPath,
+    const string & configPath,
+    const string & ballotPath)
 {
     try
     {
-        Document pk, ballot, votes;
-
-        out << "> reading public keys" << endl;
-        if (pk.Parse(read_file(out, pk_path).c_str()).HasParseError())
-        {
-            out << "!!! Error [reading-public-keys-json]: Json format error"
-                << endl;
-            throw runtime_error(out.str());
-        }
+        Document electionConfig, ballot, plaintextVotes, publicKeys;
 
         out << "> reading plaintext ballot" << endl;
-        if (votes.Parse(read_file(out, votes_path).c_str()).HasParseError())
+        if (plaintextVotes.Parse(
+            read_file(out, plaintextVotesPath).c_str()).HasParseError() ||
+            !plaintextVotes.IsArray())
         {
             out << "!!! Error [reading-plaintext-json]: Json format error"
                 << endl;
             throw runtime_error(out.str());
         }
 
+        out << "> reading config file" << endl;
+        if (electionConfig.Parse(
+            read_file(out, configPath).c_str()).HasParseError())
+        {
+            out << "!!! Error [reading-config-json]: Parse Json format error"
+                << endl;
+            throw runtime_error(out.str());
+        }
+        if  (!electionConfig.IsObject() ||
+            !electionConfig.HasMember("payload") ||
+            !electionConfig["payload"].IsObject() ||
+            !electionConfig["payload"].HasMember("pks"))
+        {
+            out << "electionConfig = " << stringify(electionConfig)
+                << "!!! Error [reading-config-json2]: Json payload format error"
+                << endl;
+            throw runtime_error(out.str());
+        }
+
+        if (electionConfig["payload"]["pks"].IsString()) {
+            const string publicKeysString = 
+                electionConfig["payload"]["pks"].GetString();
+            if (publicKeys.Parse(publicKeysString.c_str()).HasParseError())
+            {
+                out << "!!! Error [parsing-pks-json]: Json format error"
+                    << endl;
+                throw runtime_error(out.str());
+            }
+        } else if (electionConfig["payload"]["pks"].IsArray())
+        {
+            publicKeys.CopyFrom(
+                electionConfig["payload"]["pks"], publicKeys.GetAllocator());
+        } else {
+                out << "!!! Error [parsing-pks-json2]: Json format error"
+                    << endl;
+                throw runtime_error(out.str());
+        }
+
+        if(plaintextVotes.GetArray().Size() != publicKeys.GetArray().Size())
+        {
+            out << "!!! Error [reading-pks-size]: Invalid size" << endl;
+            throw runtime_error(out.str());
+        }
+
         out << "> generating encrypted ballot" << endl;
 
-        assert(votes.IsArray());
+        const Value & plaintextVotesArray = plaintextVotes;
 
-        const Value & votesArray = votes;
-
-        assert(votesArray.IsArray());
         ballot.SetObject();
         ballot.AddMember(
             "election_url",
@@ -205,16 +274,21 @@ void encrypt_ballot(
             Value().SetArray(),
             ballot.GetAllocator());
 
-        for (const Value & questionBallot : votesArray.GetArray())
+        size_t index = 0;
+        for (const Value & plaintextQuestion: plaintextVotesArray.GetArray())
         {
             // obtain plaintext big-int from the json ballot
-            Document questionDoc;
-            questionDoc.CopyFrom(questionBallot, questionDoc.GetAllocator());
-            AgoraAirgap::NVotesCodec codec(questionDoc);
+            Document plaintextQuestionDoc;
+            plaintextQuestionDoc.CopyFrom(
+                plaintextQuestion, plaintextQuestionDoc.GetAllocator());
+            AgoraAirgap::NVotesCodec codec(plaintextQuestionDoc);
             RawBallot rawBallot = codec.encodeRawBallot();
             mpz_class plaintext = codec.encodeToInt(rawBallot);
 
-            Document encryptedAnswer = encryptAnswer(out, pk[0], plaintext);
+            const Value & publicKey = publicKeys[index];
+
+            Document encryptedAnswer = encryptAnswer(out, publicKey, plaintext,
+                ballot.GetAllocator());
             Value choice;
             choice.SetObject();
             choice.AddMember(
@@ -254,17 +328,27 @@ void encrypt_ballot(
                 encryptedAnswer["response"],
                 ballot.GetAllocator()
             );
-            ballot["choices"].PushBack(choice, ballot.GetAllocator());
-            ballot["proofs"].PushBack(proof, ballot.GetAllocator());
+            out << "\n- ballot = " << stringify(ballot) << endl;
+            ballot["choices"].PushBack(choice.Move(), ballot.GetAllocator());
+            ballot["proofs"].PushBack(proof.Move(), ballot.GetAllocator());
+            index++;
         }
 
+        out << "\n- ballot = " << stringify(ballot) << endl;
+
+        // Only after everything has been set in the ballot, we calculate the
+        // ballot hash
+        const string ballotHash = generateBallotHash(ballot);
+        ballot.AddMember(
+            "ballot_hash",
+            Value().SetString(ballotHash.c_str(), ballot.GetAllocator()),
+            ballot.GetAllocator());
+        
         out << "> saving encrypted ballot to file..." << endl;
-        if (!save_file(out, ballot_path, stringify(ballot)))
+        if (!save_file(out, ballotPath, stringify(ballot)))
         {
             out << "!!! Error [encrypt-ballot-save]: couldn't save encrypted "
-                   "ballot to file path " +
-                       ballot_path
-                << endl;
+                << "ballot to file path " << ballotPath << endl;
         }
     } catch (...)
     {
@@ -532,10 +616,10 @@ void check_encrypted_answer(
 
 void check_ballot_hash(
     stringstream & out,
-    const rapidjson::Document & original_ballot)
+    const rapidjson::Document & originalBallot)
 {
     rapidjson::Document ballot;
-    ballot.CopyFrom(original_ballot, ballot.GetAllocator());
+    ballot.CopyFrom(originalBallot, ballot.GetAllocator());
 
     if (!ballot.HasMember("ballot_hash") || !ballot["ballot_hash"].IsString())
     {
@@ -545,49 +629,19 @@ void check_ballot_hash(
         throw runtime_error(out.str());
     }
 
-    string ballot_hash = ballot["ballot_hash"].GetString();
+    string expectedHash = ballot["ballot_hash"].GetString();
+    string generatedHash = generateBallotHash(originalBallot);
 
-    ballot.RemoveMember("election_url");
-    ballot.RemoveMember("ballot_hash");
-    for (SizeType i = 0; i < ballot["choices"].Size(); ++i)
-    {
-        ballot["choices"][i].RemoveMember("plaintext");
-        ballot["choices"][i].RemoveMember("randomness");
-    }
+    out << "> verifying generated ballot hash: " << generatedHash << endl;
 
-    stringstream ballotss;
-    string partial;
-
-    Document choices_doc;
-    choices_doc.SetObject();
-    choices_doc.AddMember(
-        "choices", ballot["choices"], choices_doc.GetAllocator());
-    partial = stringify(choices_doc);
-    partial = partial.substr(1, partial.size() - 2);
-
-    ballotss << "{" << partial << ","
-             << "\"issue_date\":\"" << ballot["issue_date"].GetString()
-             << "\",";
-
-    Document proofs_doc;
-    proofs_doc.SetObject();
-    proofs_doc.AddMember("proofs", ballot["proofs"], proofs_doc.GetAllocator());
-    partial = stringify(proofs_doc);
-    partial = partial.substr(1, partial.size() - 2);
-
-    ballotss << partial << "}";
-
-    string compare_hash = sha256::hex_sha256(ballotss.str());
-
-    out << "> verifying ballot hash: " << compare_hash << endl;
-    if (compare_hash.compare(ballot_hash) == 0)
+    if (generatedHash == expectedHash)
     {
         out << "> OK - hash verified" << endl;
     } else
     {
         out << "!!! Error [check-ballot-hash-invalid]: Invalid hash: "
-            << compare_hash << " does not match expected hash: " << ballot_hash
-            << endl;
+            << generatedHash << " does not match expected hash: "
+            << expectedHash << endl;
         throw runtime_error(out.str());
     }
 }

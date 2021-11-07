@@ -383,3 +383,28 @@ TEST_F(ExampleDirsTest, MockAudit)
             "MockAudit");
     }
 }
+
+/**
+ * Executes audit only
+ */
+// Supress warnings related to using the google test macro
+// NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
+TEST_F(ExampleDirsTest, MockAudit)
+{
+    for (string & examplePath: exampleDirs)
+    {
+        SCOPED_TRACE(examplePath);
+        Document expectationsDoc;
+        getExpectationsDoc(examplePath, expectationsDoc);
+        string ballotPath = examplePath + "/ballot.json";
+        stringstream out;
+        string electionPath = examplePath + "/config";
+
+        runExpectations(
+            [&](stringstream & out) {
+                AgoraAirgap::audit(out, ballotPath, electionPath);
+            },
+            expectationsDoc,
+            "MockAudit");
+    }
+}
