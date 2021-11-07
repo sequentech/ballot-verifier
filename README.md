@@ -7,8 +7,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 # agora-airgap
 
-agora-airgap is nVotes cast-as-intended verifier. It allows a voter to audit a
-spoiled ballot.
+The agora-airgap project is nVotes cast-as-intended verifier. It allows a voter
+to audit a spoiled ballot.
 
 This software implements the 'cast or cancel' procedure described on the paper
 [Ballot Casting Assurance via Voter-Initiated Poll Station Auditing] by Josh
@@ -19,12 +19,12 @@ Benaloh.
 agora-airgap works in Linux and Mac OS X 64 bits systems. You can download the
 latest compiled version here:
 
-- [Linux binary]
-- [Mac OS X binary]
+- Linux binary (TODO)
+- Mac OS X binary (TOD)
 
 ## How to use
 
-The agora-airgap tool has a textbox on the upper left side where you should copy
+The `agora-airgap-gui` tool has a textbox on the upper left side where you should copy
 the ballot. Before you cast your vote in nVotes voting booth, you are allowed to
 audit the ballot. Note that this also discards the ballot for security reasons.
 The upper right side of agora-airgap shows you a screen capture of the audit
@@ -51,8 +51,8 @@ command in the agora-airgap main directory:
 nix build -L
 ```
 
-After a succesful build, you can find the built `agora-airgap` binary in the
-`result/bin/agora-airgap` output directory.
+After a succesful build, you can find the built `agora-airgap-gui` and 
+`agora-airgap` binaries in the `result/bin/` output directory.
 
 ```bash
 $ ls -lah result/bin/  
@@ -63,10 +63,138 @@ dr-xr-xr-x  3 root  wheel    96B Jan  1  1970 ..
 -r-xr-xr-x  1 root  wheel   356K Jan  1  1970 agora-airgap-gui
 ```
 
-You can just execute this binary from the command line with:
+#  agora-airgap-gui tool
+
+You can just execute any of these binaries from the command line. For example,
+you can use the GUI utility with:
 
 ```bash
-./result/bin/agora-airgap
+./result/bin/agora-airgap-gui
+```
+# agora-airgap tool
+
+The `agora-airgap` binary is a command line utility that includes a set of
+commands:
+ 
+- **download-audit**: This command needs a file with an auditable ballot as an
+  argument. It will download the public keys and the election data for that
+  voting and then it will audit the ballot.
+
+- **download**: This command needs a file with an auditable ballot as an
+  argument, as well as the paths where the public keys and election data files
+  will be stored. It will download the public keys and the election data for
+  that voting.
+
+- **audit**: This command needs a file with an auditable ballot, the public keys
+  file and the election data file as arguments. It will audit the ballot
+  offline, without the need of an internet connection.
+
+- **encrypt**: This command needs a file with a plaintext ballot, the public
+  keys file and the election data file as arguments. 
+
+Executing the download and audit commands achieve the same result as only
+executing the single command download-audit, but the strength of separating the
+steps is that the audit command can be executed in a separate, secure computer
+that doesn't need to have an internet connection. 
+
+The audit command is useful to audit a ballot from the 'cast or cancel'
+paradigm. That auditable ballot is obtained from a cancelled vote from that
+procedure and you are not auditing the votes that are being casted, but the
+software that creates them: the 'cast or cancel' is a statistical verification
+procedure.
+
+On the other hand, the encrypt command lets you encrypt a ballot that you can
+cast afterwards and it lets you encrypt that ballot in a computer without
+internet connection, on your own trustworthy airgap computer. While the security
+scheme of nVotes is quite strong, in the end the election authorities cannot
+control the end-user computer. By encrypting the ballot on an airgap computer
+the risks are minimized, and the aim here is to ease the task of encrypting the
+vote in a safe environment, but it is your responsability to ensure that the
+computer you are using to encrypt your vote is not compromised.
+
+## Audit example
+
+To audit the auditable ballot `tests/fixtures/example_1/auditable_ballot.json`
+whose election configuration is in `tests/fixtures/example_1/config`, just
+execute:
+
+```bash
+./result/bin/agora-airgap audit \
+  tests/fixtures/example_1/auditable_ballot.json \
+  tests/fixtures/example_1/config
+```
+
+You should see the following output:
+
+```
+> reading auditable ballot
+> election data loaded (hash: 995cbc4c68fcba699f2f19ee08b5bca5827f89723667b7473efa444c121acbb6)
+> parsing... (12766 characters)
+> election data configuration (hash: 8d63d93b4011269d625631656e61fbe6515a97a7afa54902faceff7e932410f5)
+> parsing... (2139 characters)
+> please check that the showed options are the ones you chose:
+
+Q: Secretario General
+Ballot choices:
+ - Mari Pili Hernández Ordoñez
+ - Juan Y Medio
+
+
+Q: Consejo Ciudadano
+Ballot choices:
+ - Vicente Bizancio Castillo
+ - Argos de la Cruz
+ - Gorrión Turrón Pastel
+
+> verifying encrypted question: Secretario General
+> OK - Encrypted question verified
+> verifying encrypted question: Consejo Ciudadano
+> OK - Encrypted question verified
+> verifying generated ballot hash: 0ed250df1c2183f01a1485ade9deb5bba192234f148b1c40d309ada774eaea02
+> OK - hash verified
+> --------------------
+> Audit PASSED
+```
+
+## Generating auditable ballot
+
+You could generate an auditable ballot with `agora-airgap encrypt` utility. This
+is useful for testing, and you can even use it to generate some of the fixtures
+in the unit tests. The input for the encrypt command are three file paths:
+
+1. The path to the JSON plaintext ballot. You can see an example in 
+   `tests/fixtures/example_1/plaintext_vote.json`.
+2. The path to the JSON election configuration. An example is available in
+    `tests/fixtures/example_1/config`.
+3. The path where to write the auditable encrypted ballot. An example is
+    available in `tests/fixtures/example_1/auditable_ballot.json`, but you need
+    to use a path to a file that does not yet exist because it's the output of
+    the command.
+
+For example you could execute:
+
+```bash
+./result/bin/agora-airgap encrypt \
+  tests/fixtures/example_1/plaintext_vote.json \
+  tests/fixtures/example_1/config \
+  auditable_ballot.json
+```
+
+This will write the auditable ballot into the `auditable_ballot.json` file. The
+command output will be something like:
+
+```
+> reading plaintext ballot
+> reading config file
+> generating encrypted ballot
+> plaintext = 48
+> randomness = 20697118667460294289329131926842862371260858718961622542390394128577965883462065464726476265621500584422101090324880590478894205064526853437187125765172491285762485391331954466581845397077420580593627651323516780475733067117136022933691007420276684081952396408441155446026400666835986702419934866824441890364774228140899158959010059757494492005981153055872187442495482411745134646120584804555929554183515697922429188623722060569894871268972465008089744410453542328276620895938777704297176988032776203315585798048230323891888933392698520362991482313522285535354701685917388200178015927229730825614585660545884722373680
+> Node: proof verified = true
+> plaintext = 14
+> randomness = 3456911345997611543186335774236642630390842020472509711960786133719991332236726819176112979051362607948915758116037716151903284624481210739245853172134120897860726118582645515585212567439994880303292970782861566292504471353287509073429239770291906349190705539953101260197845807846471263353036654426734634504378976678634863792508644960200468286363612768956980083081802293861845114229879669587192461023056157772744159354341811340475380918027646382465164417974193141204220125606518846729681559895493110140973562320152361785050101010897028087514924680564956680724209020115799073793869391224843341653567950726461756196000
+> Node: proof verified = true
+> saving encrypted ballot to file...
+> writing to file auditable_ballot.json
 ```
 
 # Contributing
@@ -117,8 +245,8 @@ agora-airgap/
     ├── CMakeLists.txt
     ├── fixtures/                           << Fixture used in some unit tests 
     │   ├── example_1/                      << Each fixture has its own dir
-    │   │   ├── ballot.json                 << JSON Ballot of the fixture
-    │   │   ├── ballot.json.license         << reuse license header for ballots.json file
+    │   │   ├── auditable_ballot.json       << Auditable Ballot of the fixture
+    │   │   ├── auditable_ballot.json.license
     │   │   ├── config                      << election configuration
     │   │   ├── config.license              << reuse license header for config
     │   │   ├── expectations.json           << fixture expectations for unit tests
@@ -181,6 +309,18 @@ The CI pipeline includes the following tasks:
 Refer to the `.github/workflows/build.yml` for more information on each of the
 steps.
 
+## Fixtures and unit tests
+
+Some of the fixtures are based on other fixtures. For example
+`example_1__invalid_choice_alpha` is based on `example_1`. The changes are
+applied by the `update_fixture.sh` on the example directory, resetting the
+fixture directory to be a copy of the source fixture and applying the 
+corresponding changes. Typically, the `expectations.json` file is not copied
+from the source fixture and instead is taylored for the specific fixture.
+
+The `expectations.json` file is used within the unit test as the source for
+expectations specific to that fixture for a given unit test.
+
 ## The screen.h file
 
 The file `include/agora-airgap/screen.h` includes the PNG found in
@@ -192,17 +332,16 @@ The file `include/agora-airgap/screen.h` includes the PNG found in
 [Nix Package Manager]: https://nixos.org/
 [install Nix]: https://nixos.org/
 [bin2c tool]: https://github.com/gwilymk/bin2c
-[Contributor License Agreement]: https://example.com
-[whatrever]: #continuous-integration
+[Contributor License Agreement]: https://agoravoting.github.io/admin-manual/docs/contribute/guide
 [reuse]: https://reuse.software/
 [clang-format]: https://releases.llvm.org/7.1.0/tools/clang/docs/ClangFormatStyleOptions.html
 [cppcheck]: https://cppcheck.sourceforge.io
 [flake]: https://nixos.wiki/wiki/Flakes
 [rapidjson]: https://rapidjson.org/
 [Crypto++]: https://cryptopp.com/
-[ninja]: TODO
+[ninja]: https://ninja-build.org/
 [gmplib]: https://gmplib.org/
 [googletest]: https://github.com/google/googletest
-[wxWidgets]: TODO
+[wxWidgets]: https://www.wxwidgets.org/
 [git]: https://github.com/agoravoting/agora-airgap/
 [GitHub]: https://github.com/agoravoting/agora-airgap/

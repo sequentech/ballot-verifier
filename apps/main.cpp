@@ -128,7 +128,7 @@ int main(int argc, char * argv[])
             try
             {
                 const string & ballot_path = vargs.at(2);
-                const string & election_path = vargs.at(2);
+                const string & election_path = vargs.at(3);
                 stringstream out;
                 download(out, ballot_path, election_path);
                 cout << out.str() << endl;
