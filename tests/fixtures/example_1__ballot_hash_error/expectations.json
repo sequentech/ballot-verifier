@@ -1,17 +1,23 @@
 {
     "MockDownloadAudit": {
-        "type": "NoThrow",
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "Error [check-ballot-hash-invalid]: Invalid hash",
         "message": "Exception",
         "expectations": [
             {
-                "type": "Not_HasSubstr",
+                "type": "HasSubstr",
                 "data": "!!! Error",
                 "message": "Contains an error"
             },
             {
-                "type": "HasSubstr",
+                "type": "Not_HasSubstr",
                 "data": "> Audit PASSED",
                 "message": "Audit did not pass"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "does not match expected hash: badhash",
+                "message": "Invalid expected hash"
             }
         ]
     },
@@ -47,45 +53,24 @@
         ]
     },
     "MockAudit": {
-        "type": "NoThrow",
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "Error [check-ballot-hash-invalid]: Invalid hash",
         "message": "Exception",
         "expectations": [
             {
-                "type": "Not_HasSubstr",
+                "type": "HasSubstr",
                 "data": "!!! Error",
                 "message": "Contains an error"
             },
             {
-                "type": "HasSubstr",
+                "type": "Not_HasSubstr",
                 "data": "> Audit PASSED",
                 "message": "Audit did not pass"
-            }
-        ]
-    },
-    "EncryptAndAudit::Encrypt": {
-        "type": "NoThrow",
-        "message": "Exception",
-        "expectations": [
-            {
-                "type": "Not_HasSubstr",
-                "data": "!!! Error",
-                "message": "Contains an error"
-            }
-        ]
-    },
-    "EncryptAndAudit::Audit": {
-        "type": "NoThrow",
-        "message": "Exception",
-        "expectations": [
-            {
-                "type": "Not_HasSubstr",
-                "data": "!!! Error",
-                "message": "Contains an error"
             },
             {
                 "type": "HasSubstr",
-                "data": "> Audit PASSED",
-                "message": "Audit did not pass"
+                "data": "does not match expected hash: badhash",
+                "message": "Invalid expected hash"
             }
         ]
     }

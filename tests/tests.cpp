@@ -127,7 +127,7 @@ TEST(AgoraUnitTest, SmallMessageEncryption)
 TEST(Example1, MockBadDownloadAudit)
 {
     string examplePath = "example_1";
-    string ballotPath = examplePath + "/ballot.json";
+    string ballotPath = examplePath + "/auditable_ballot.json";
     auto getConfig = [&examplePath](stringstream & out, const string &) {
         return AgoraAirgap::read_file(out, examplePath + "/config-bad");
     };
@@ -299,7 +299,7 @@ TEST_F(ExampleDirsTest, MockDownloadAudit)
         std::cout << "examplePath: " << examplePath << endl;
         Document expectationsDoc;
         getExpectationsDoc(examplePath, expectationsDoc);
-        string ballotPath = examplePath + "/ballot.json";
+        string ballotPath = examplePath + "/auditable_ballot.json";
         auto getConfig = [&examplePath](stringstream & out, const string &) {
             return AgoraAirgap::read_file(out, examplePath + "/config");
         };
@@ -325,7 +325,7 @@ TEST_F(ExampleDirsTest, MockDownload)
     {
         Document expectationsDoc;
         getExpectationsDoc(examplePath, expectationsDoc);
-        string ballotPath = examplePath + "/ballot.json";
+        string ballotPath = examplePath + "/auditable_ballot.json";
         auto getConfig = [&examplePath](stringstream & out, const string &) {
             return AgoraAirgap::read_file(out, examplePath + "/config");
         };
@@ -372,7 +372,7 @@ TEST_F(ExampleDirsTest, MockAudit)
         SCOPED_TRACE(examplePath);
         Document expectationsDoc;
         getExpectationsDoc(examplePath, expectationsDoc);
-        string ballotPath = examplePath + "/ballot.json";
+        string ballotPath = examplePath + "/auditable_ballot.json";
         stringstream out;
         string electionPath = examplePath + "/config";
 
