@@ -1,0 +1,67 @@
+{
+    "MockDownloadAudit": {
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "!!! Error [check-encrypted-answer-invalid]: INVALID - Encrypted question does not agree with plaintext vote",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "HasSubstr",
+                "data": "!!! Error [check-encrypted-answer-invalid]: INVALID - Encrypted question does not agree with plaintext vote",
+                "message": "Contains an error"
+            },
+            {
+                "type": "Not_HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "MockDownload::Run": {
+        "type": "NoThrow",
+        "message": "Exception downloading",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Error downloading"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> writing to file",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "MockDownload::Compare": {
+        "type": "Equals",
+        "message": "Both config files should be equal"
+    },
+    "MockDownload::CompareOutput": {
+        "type": "NoThrow",
+        "message": "Output should not throw",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Error reading file"
+            }
+        ]
+    },
+    "MockAudit": {
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "!!! Error [check-encrypted-answer-invalid]: INVALID - Encrypted question does not agree with plaintext vote",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "HasSubstr",
+                "data": "!!! Error [check-encrypted-answer-invalid]: INVALID - Encrypted question does not agree with plaintext vote",
+                "message": "Contains an error"
+            },
+            {
+                "type": "Not_HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    }
+}

@@ -1,0 +1,118 @@
+[
+  {
+    "layout": "",
+    "description": "Elige quien quieres que sea tu Secretario General en tu municipio",
+    "min": 0,
+    "max": 1,
+    "tally_type": "plurality-at-large",
+    "answers": [
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "José Rabano Pimiento",
+        "sort_order": 0,
+        "details": "",
+        "urls": [],
+        "selected": -1,
+        "id": 0
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Miguel Pimentel Inventado",
+        "sort_order": 1,
+        "details": "",
+        "urls": [],
+        "selected": -1,
+        "id": 1
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Juan Iglesias Torquemada",
+        "sort_order": 2,
+        "details": "",
+        "urls": [],
+        "selected": -1,
+        "id": 2
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Mari Pili Hernández Ordoñez",
+        "sort_order": 3,
+        "details": "",
+        "urls": [],
+        "selected": 0,
+        "id": 3
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Juan Y Medio",
+        "sort_order": 4,
+        "details": "",
+        "urls": [],
+        "selected": 0,
+        "id": 4
+      }
+    ],
+    "num_winners": 1,
+    "title": "Secretario General",
+    "randomize_answer_order": true,
+    "answer_total_votes_percentage": "over-total-valid-votes"
+  },
+  {
+    "layout": "-",
+    "description": "Elige los miembros del Consejo Ciudadano",
+    "min": 0,
+    "max": 5,
+    "tally_type": "plurality-at-large",
+    "answers": [
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Vicente Bizancio Castillo",
+        "sort_order": 0,
+        "details": "",
+        "urls": [],
+        "selected": 0,
+        "id": 0
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Argos de la Cruz",
+        "sort_order": 1,
+        "details": "",
+        "urls": [],
+        "selected": 0,
+        "id": 1
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Gorrión Turrón Pastel",
+        "sort_order": 2,
+        "details": "",
+        "urls": [],
+        "selected": 0,
+        "id": 2
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Mari Pili de la Estrella",
+        "sort_order": 3,
+        "details": "",
+        "urls": [],
+        "selected": -1,
+        "id": 3
+      },
+      {
+        "category": "Candidaturas no agrupadas",
+        "text": "Zubiarreta Renata Atade",
+        "sort_order": 4,
+        "details": "",
+        "urls": [],
+        "selected": -1,
+        "id": 4
+      }
+    ],
+    "num_winners": 5,
+    "title": "Consejo Ciudadano",
+    "randomize_answer_order": true,
+    "answer_total_votes_percentage": "over-total-valid-votes"
+  }
+]

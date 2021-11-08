@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
 
 import copy
 from pprint import pprint

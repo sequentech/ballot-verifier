@@ -1,0 +1,53 @@
+{
+    "MockDownloadAudit": {
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "!!! Error [download-audit-text-ballot-json]: Json format error",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "HasSubstr",
+                "data": "!!! Error [download-audit-text-ballot-json]: Json format error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "Not_HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "MockDownload::Run": {
+        "type": "ASSERT_ThrowsMessage_HasSubStr",
+        "data": "!!! Error [download-ballot-read-json]: Json format error",
+        "message": "Exception",
+        "expectations": []
+    },
+    "MockDownload::CompareOutput": {
+        "type": "NoThrow",
+        "message": "Output should not throw",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Error reading file"
+            }
+        ]
+    },
+    "MockAudit": {
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "!!! Error [audit-ballot-parse-json]: Json format error",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "HasSubstr",
+                "data": "!!! Error [audit-ballot-parse-json]: Json format error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "Not_HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    }
+}

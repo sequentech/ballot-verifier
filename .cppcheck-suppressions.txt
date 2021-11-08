@@ -1,0 +1,3 @@
+unusedFunction:apps/interface.cpp
+unusedFunction:tests/tests.cpp
+unusedFunction:src/encrypt.cpp

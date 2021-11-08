@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 # Compiled Object files
 *.slo
 *.lo
@@ -23,19 +27,36 @@
 
 #other files and folders
 log
-or1ksim/
-src/rapidjson
 src/x64
 src/w64
 linux/
 gmock/
-build-gcc/
-uClibc-or1k/
-build-or1k-src/
-bld-or1k-gcc/
-bld-or1k-src/
-or1k-gcc/
-or1k-src/
-src/agora-airgap
 Debug/
 .directory
+
+#nix things
+result
+
+
+# CMake files
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+Makefile
+CMakeFiles
+out/
+.ninja_deps
+.ninja_log
+build.ninja
+CPM_modules
+
+# testing
+CTestTestfile.cmake
+DartConfiguration.tcl
+_deps
+Testing/
+tests/agora_*.cmake
+
+# vs code
+.vscode/
+build/
