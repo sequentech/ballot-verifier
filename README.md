@@ -19,11 +19,12 @@ Benaloh.
 ## Install
 
 agora-airgap works in Linux and Mac OS X 64 bits systems. You can download the
-latest (4.0.1 version) compiled version for the GUI utility (agora-airgap-gui)
-here:
+latest compiled release for the GUI utility (agora-airgap-gui) here:
 
-- [Linux binary]
-- [Mac OS X binary]
+- [Linux binary] (x86, 64 bits)
+
+It also works in Mac OS X, but you need to compile the binary yourself (see
+below) due to the Mac OS X code signing requirements to run an external binary.
 
 ## How to use
 
@@ -330,8 +331,6 @@ The file `include/agora-airgap/screen.h` includes the PNG found in
 `src/screen.png` file. The `screen.h` has been generated with the [bin2c tool].
 
 [Ballot Casting Assurance via Voter-Initiated Poll Station Auditing]: https://www.usenix.org/legacy/event/evt07/tech/full_papers/benaloh/benaloh.pdf
-[Linux binary]: https://github.com/agoravoting/agora-airgap/releases/download/0.50/agora-airgap-windows.zip
-[Mac OS X binary]: https://github.com/agoravoting/agora-airgap/releases/download/3.4.0agora-airgap-linux-3.4.0.tar.gz
 [Nix Package Manager]: https://nixos.org/
 [install Nix]: https://nixos.org/
 [bin2c tool]: https://github.com/gwilymk/bin2c
