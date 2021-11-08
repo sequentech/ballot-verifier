@@ -205,7 +205,7 @@ command output will be something like:
 Contributions are welcome! We'd love to include your improvements to our
 project. Please make sure you:
 - Sign the [Contributor License Agreement].
-- All the tests in the [Contin uous Integration] github Actions pipeline are 
+- All the tests in the [Continuous Integration] github Actions pipeline are 
 green.
 
 ## Code structure
@@ -336,6 +336,7 @@ The file `include/agora-airgap/screen.h` includes the PNG found in
 [install Nix]: https://nixos.org/
 [bin2c tool]: https://github.com/gwilymk/bin2c
 [Contributor License Agreement]: https://agoravoting.github.io/admin-manual/docs/contribute/guide
+[Continuous Integration]: https://github.com/agoravoting/agora-airgap/blob/master/.github/workflows/build.yml
 [reuse]: https://reuse.software/
 [clang-format]: https://releases.llvm.org/7.1.0/tools/clang/docs/ClangFormatStyleOptions.html
 [cppcheck]: https://cppcheck.sourceforge.io
