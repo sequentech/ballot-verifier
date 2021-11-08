@@ -7,6 +7,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 # agora-airgap
 
+![agora-airgap-gui screenshot](./images/agora-airgap-gui.png)
+
 The agora-airgap project is nVotes cast-as-intended verifier. It allows a voter
 to audit a spoiled ballot.
 
@@ -17,10 +19,11 @@ Benaloh.
 ## Install
 
 agora-airgap works in Linux and Mac OS X 64 bits systems. You can download the
-latest compiled version here:
+latest (4.0.1 version) compiled version for the GUI utility (agora-airgap-gui)
+here:
 
-- Linux binary (TODO)
-- Mac OS X binary (TOD)
+- [Linux binary]
+- [Mac OS X binary]
 
 ## How to use
 
@@ -345,3 +348,5 @@ The file `include/agora-airgap/screen.h` includes the PNG found in
 [wxWidgets]: https://www.wxwidgets.org/
 [git]: https://github.com/agoravoting/agora-airgap/
 [GitHub]: https://github.com/agoravoting/agora-airgap/
+[Linux binary]: https://github.com/agoravoting/agora-airgap/releases/download/4.0.1/agora-airgap-gui-linux
+[Mac OS X binary]: https://github.com/agoravoting/agora-airgap/releases/download/4.0.1/agora-airgap-gui-mac
