@@ -335,7 +335,7 @@ drwxr-xr-x  45 edulix  staff   1.4K Nov 11 08:40 ..
 ```
 
 You can apply the code formatting tool to ensure that any commit will pass the
-[#continuous-integration] pipelines code-quality tests successfully:
+[CI](#continuous-integration) pipelines code-quality tests successfully:
 
 
 ```bash
