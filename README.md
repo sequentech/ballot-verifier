@@ -9,12 +9,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 ![agora-airgap-gui screenshot](./images/agora-airgap-gui.png)
 
-The agora-airgap project is nVotes cast-as-intended verifier. It allows a voter
-to audit a spoiled ballot.
-
-This software implements the 'cast or cancel' procedure described on the paper
-[Ballot Casting Assurance via Voter-Initiated Poll Station Auditing] by Josh
-Benaloh.
+nVotes cast-as-intended verifier. It allows a voter to audit an (spoiled)
+ballot. `agora-airgap` implements the 'cast or cancel' procedure described on
+the paper [Ballot Casting Assurance via Voter-Initiated Poll Station Auditing]
+by Josh Benaloh.
 
 ## Install
 
@@ -28,22 +26,25 @@ below) due to the Mac OS X code signing requirements to run an external binary.
 
 ## How to use
 
-The `agora-airgap-gui` tool has a textbox on the upper left side where you should copy
-the ballot. Before you cast your vote in nVotes voting booth, you are allowed to
-audit the ballot. Note that this also discards the ballot for security reasons.
-The upper right side of agora-airgap shows you a screen capture of the audit
-ballot screen and marks the place where you will find the auditable ballot
-enclosed with a red box.
+The `agora-airgap-gui` tool has a textbox on the upper left side where you
+should copy the ballot. Before you cast your vote in nVotes voting booth, you
+are allowed to audit the ballot. 
 
-Once you have copied and pasted the auditable ballot to agora-airgap, you should
-click the **Verify Ballot** button. If the ballot is verified, the state
-indicator below should change to State: VERIFIED. There is also a console below
-the Details label that shows more information.
+Auditing the ballot requires also discarding it for security reasons. The upper
+right side of agora-airgap-gui shows you a screen capture of the audit ballot
+screen and marks the place where you will find the auditable ballot enclosed
+with a red box.
+
+Once you have copied and pasted the auditable ballot to agora-airgap-gui, you
+should click the **Verify Ballot** button. If the ballot is verified, the state
+indicator below should change to `State: VERIFIED`. There is also a console
+below the Details label that shows more information.
 
 ## Compiling
 
 As an alternative to just downloading the pre-compiled tool, you can compile it
-yourself from the source code. 
+yourself from the source code. This is currently required for Mac OS X, for 
+example, as we don't (yet) provide a compiled binary.
 
 agora-airgap uses [Nix Package Manager] as its package builder. To build 
 agora-airgap, **first [install Nix]** correctly in your system.
@@ -55,7 +56,7 @@ command in the agora-airgap main directory:
 nix build -L
 ```
 
-After a succesful build, you can find the built `agora-airgap-gui` and 
+After a succesful Nix build, you can find the built `agora-airgap-gui` and 
 `agora-airgap` binaries in the `result/bin/` output directory.
 
 ```bash
@@ -67,7 +68,7 @@ dr-xr-xr-x  3 root  wheel    96B Jan  1  1970 ..
 -r-xr-xr-x  1 root  wheel   356K Jan  1  1970 agora-airgap-gui
 ```
 
-#  agora-airgap-gui tool
+## agora-airgap-gui tool
 
 You can just execute any of these binaries from the command line. For example,
 you can use the GUI utility with:
@@ -75,48 +76,8 @@ you can use the GUI utility with:
 ```bash
 ./result/bin/agora-airgap-gui
 ```
-# agora-airgap tool
 
-The `agora-airgap` binary is a command line utility that includes a set of
-commands:
- 
-- **download-audit**: This command needs a file with an auditable ballot as an
-  argument. It will download the public keys and the election data for that
-  voting and then it will audit the ballot.
-
-- **download**: This command needs a file with an auditable ballot as an
-  argument, as well as the paths where the public keys and election data files
-  will be stored. It will download the public keys and the election data for
-  that voting.
-
-- **audit**: This command needs a file with an auditable ballot, the public keys
-  file and the election data file as arguments. It will audit the ballot
-  offline, without the need of an internet connection.
-
-- **encrypt**: This command needs a file with a plaintext ballot, the public
-  keys file and the election data file as arguments. 
-
-Executing the download and audit commands achieve the same result as only
-executing the single command download-audit, but the strength of separating the
-steps is that the audit command can be executed in a separate, secure computer
-that doesn't need to have an internet connection. 
-
-The audit command is useful to audit a ballot from the 'cast or cancel'
-paradigm. That auditable ballot is obtained from a cancelled vote from that
-procedure and you are not auditing the votes that are being casted, but the
-software that creates them: the 'cast or cancel' is a statistical verification
-procedure.
-
-On the other hand, the encrypt command lets you encrypt a ballot that you can
-cast afterwards and it lets you encrypt that ballot in a computer without
-internet connection, on your own trustworthy airgap computer. While the security
-scheme of nVotes is quite strong, in the end the election authorities cannot
-control the end-user computer. By encrypting the ballot on an airgap computer
-the risks are minimized, and the aim here is to ease the task of encrypting the
-vote in a safe environment, but it is your responsability to ensure that the
-computer you are using to encrypt your vote is not compromised.
-
-## Audit example
+## Commnd line audit example
 
 To audit the auditable ballot `tests/fixtures/example_1/auditable_ballot.json`
 whose election configuration is in `tests/fixtures/example_1/config`, just
@@ -159,6 +120,47 @@ Ballot choices:
 > --------------------
 > Audit PASSED
 ```
+
+# agora-airgap tool
+
+The `agora-airgap` binary is a command line utility that includes a set of
+commands:
+
+- **audit**: This command needs a file with an auditable ballot, the public keys
+  file and the election data file as arguments. It will audit the ballot
+  offline, without the need of an internet connection.
+
+- **encrypt**: This command needs a file with a plaintext ballot, the public
+  keys file and the election data file as arguments.
+ 
+- **download-audit**: This command needs a file with an auditable ballot as an
+  argument. It will download the public keys and the election data for that
+  voting and then it will audit the ballot.
+
+- **download**: This command needs a file with an auditable ballot as an
+  argument, as well as the paths where the public keys and election data files
+  will be stored. It will download the public keys and the election data for
+  that voting.
+
+Executing the download and audit commands achieve the same result as only
+executing the single command download-audit, but the strength of separating the
+steps is that the audit command can be executed in a separate, secure computer
+that doesn't need to have an internet connection. 
+
+The audit command is useful to audit a ballot from the 'cast or cancel'
+paradigm. That auditable ballot is obtained from a cancelled vote from that
+procedure and you are not auditing the votes that are being casted, but the
+software that creates them: the 'cast or cancel' is a statistical verification
+procedure.
+
+On the other hand, the encrypt command lets you encrypt a ballot that you can
+cast afterwards and it lets you encrypt that ballot in a computer without
+Internet connection, on your own trustworthy airgap computer. While the security
+scheme of nVotes is quite strong, in the end the election authorities cannot
+control the end-user computer. By encrypting the ballot on an airgap computer
+the risks are minimized, and the aim here is to ease the task of encrypting the
+vote in a safe environment, but it is your responsability to ensure that the
+computer you are using to encrypt your vote is not compromised.
 
 ## Generating auditable ballot
 
@@ -206,7 +208,7 @@ command output will be something like:
 Contributions are welcome! We'd love to include your improvements to our
 project. Please make sure you:
 - Sign the [Contributor License Agreement].
-- All the tests in the [Continuous Integration] github Actions pipeline are 
+- All the tests in the [Continuous Integration] Github Actions pipeline are 
 green.
 
 ## Code structure
@@ -239,33 +241,37 @@ agora-airgap/
 ├── python/                                 << some currently unused python code
 ├── src/                                    << source code of the library
 │   ├── CMakeLists.txt                      << CMake configuration for the app
-│   ├── ElGamal.cpp
-│   ├── Random.cpp
-│   ├── encrypt.cpp
+│   ├── ElGamal.cpp                         << ElGamal encryption library
+│   ├── MixedRadix.cpp                      << Mixed Radix Integer codec
+│   ├── NVotesCodec.cpp                     << Nvotes Ballot codec
+│   ├── Random.cpp                          << Random number function
+│   ├── encrypt.cpp                         <<| Ballot encryption related
+|   |                                       <<| functions
 │   ├── screen.png                          << image used in the GUI
-│   ├── screen.png.license                  << reuse license header for screen.png file
-│   ├── sha256.cpp
+│   ├── screen.png.license                  <<| reuse license header for 
+|   |                                       <<| screen.png file
+│   └── sha256.cpp
 └── tests/                                  << Unit tests
     ├── CMakeLists.txt
     ├── fixtures/                           << Fixture used in some unit tests 
-    │   ├── example_1/                      << Each fixture has its own dir
+    │   ├── example_1__ballot_hash_error/  << Each fixture has its own dir
     │   │   ├── auditable_ballot.json       << Auditable Ballot of the fixture
     │   │   ├── auditable_ballot.json.license
     │   │   ├── config                      << election configuration
     │   │   ├── config.license              << reuse license header for config
     │   │   ├── expectations.json           << fixture expectations for unit tests
     │   │   ├── expectations.json.license   
-    │   │   ├── pk_1                        << public keys of election 1
-    │   │   ├── pk_1.license
-    │   │   ├── pk_1110                     << public keys for election 1110
-    │   │   ├── pk_1110.license
-    │   │   ├── votes.json                  << currently unused
-    │   │   └── votes.json.license
+    │   │   ├── plaintext_votes.json        << plaintext version of the vote
+    │   │   └── plaintext_votes.json.license
+    │   ├────── update_fixtures.sh          <<| updates the fixture, as some  
+    │   │                                     | are copies of example_1/ unit 
+    │   │                                     | test.
     |   └─── ...                            << more fixtures
-    ├── tests.cpp                           << unit tests
-    └── update_fixtures.sh                  <<| updates the fixtures, as some  
-                                              | are copies of example_1/ unit 
-                                              | test.
+    ├── TestNVotesCodec.cpp                 << Unit tests for ballot encoding
+    ├── TestMixedRadix.cpp                  <<| Unit tests for mixed radix
+    |                                         | for mixed radix integer encoding
+    ├── tests.cpp                           << unit tests for the tool
+    └── update_fixtures.sh                  <<| updates all the fixtures
 ```
 
 ## Dependencies
@@ -273,7 +279,7 @@ agora-airgap/
 `agora-airgap` is developed in C++11. It uses the following tools:
 - [git] and [GitHub] for source code control.
 - [Nix Package Manager] for building a Nix [flake].
-- [cmake] as the C++ code building tool.
+- [CMake] as the C++ code building tool.
 - [ninja] as a building tool and target for cmake.
 - [reuse] to checks that all files have a correct copyright headers (for code
   quality).
@@ -287,15 +293,73 @@ agora-airgap/
 - [googletest] as a library to create unit tests.
 - [wxWidgets] as the GUI library.
 
-## Configuring the Development
+## Configuring the Development Environment
 
-agora-airgap uses [Nix Package Manager] as its package builder. To build 
-agora-airgap, **first [install Nix]** correctly in your system.
+For development you can use Nix together with CMake and Ninja. You can execute
+first the following Nix command, that will launch a bash shell containing all
+the dependencies needed during development:
 
-After you have installed Nix, you can build agora-airgap executing the following
-command in the agora-airgap main directory:
+```bash
+nix develop
+```
 
-## Continuous Integration
+Within that bash session, you can directly use the development tools to develop.
+For example, you can first launch [CMake] to generate the [ninja] files:
+
+```bash
+cmake -G Ninja .
+```
+
+Then build the project with ninja:
+
+```bash
+ninja -v
+```
+
+Afterwards, you can execute the unit tests:
+
+```bash
+ctest -VV
+```
+
+Or execute the compiled binaries, which you will find in the `out/` directory:
+
+```bash
+$ ls -lah out/                                                                                                               ~/proyectos/nvotes/agora-airgap
+total 3360
+drwxr-xr-x   5 edulix  staff   160B Nov  7 19:51 .
+drwxr-xr-x  45 edulix  staff   1.4K Nov 11 08:40 ..
+-rwxr-xr-x   1 edulix  staff   290K Nov  7 11:37 agora-airgap
+-rwxr-xr-x   1 edulix  staff   419K Nov  7 19:51 agora-airgap-gui
+-rwxr-xr-x   1 edulix  staff   967K Nov  7 18:18 agora_airgap_tests
+```
+
+You can apply the code formatting tool to ensure that any commit will pass the
+[CI](#continuous-integration) pipelines code-quality tests successfully:
+
+
+```bash
+ninja fix-format
+```
+
+Or just check the format:
+
+```bash
+ninja check-format
+```
+
+Or maybe execute `cppcheck` to test the code quality, also need for passing the
+CI tests:
+
+```bash
+cppcheck \
+    --enable=all \
+    --suppressions-list=.cppcheck-suppressions.txt \
+    --error-exitcode=1 \
+    src include apps tests
+```
+
+## Continuous Integration
 
 A Continuous Integration (CI) pipeline has been setup to be executed everytime
 someone pushes into master or a stable branch or into a branch that should be
@@ -303,7 +367,7 @@ merged into those.
 
 The CI pipeline includes the following tasks:
 - Builds the Nix Flake for Linux and Mac OS X.
-- Compiles the code with -Wall and any warning will fail.
+- Compiles the code with `-Wall` and any warning will fail.
 - Executes all unit tests in Linux and Mac OS X.
 - Archives the generated artifacts (the flake).
 - Checks that all files have a correct copyright header with [reuse].
@@ -342,6 +406,7 @@ The file `include/agora-airgap/screen.h` includes the PNG found in
 [flake]: https://nixos.wiki/wiki/Flakes
 [rapidjson]: https://rapidjson.org/
 [Crypto++]: https://cryptopp.com/
+[CMake]: https://cmake.org/
 [ninja]: https://ninja-build.org/
 [gmplib]: https://gmplib.org/
 [googletest]: https://github.com/google/googletest
