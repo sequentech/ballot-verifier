@@ -17,7 +17,6 @@ on:
 
 jobs:
   ort:
-    runs-on: ubuntu-20.04
     name: Run ORT
     steps:
     strategy:
