@@ -48,10 +48,7 @@ jobs:
       shell: bash
       run: |
         sudo apt-get install -y wget git python3
-        cd ..
-        ls -lah "$GITHUB_WORKSPACE/.cmake/api/v1/reply"
-        wget https://github.com/swinslow/cmake-spdx.git
-        cd $GITHUB_WORKSPACE
+        git clone https://github.com/swinslow/cmake-spdx.git ../cmake-spdx
         python3 \
           ../cmake-spdx/main.py \
           $GITHUB_WORKSPACE/.cmake/api/v1/reply/index*.json \
