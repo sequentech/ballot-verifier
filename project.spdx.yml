@@ -80,6 +80,18 @@ packages:
   name: "wxwidgets"
   packageFileName: "./"
   versionInfo: "3.1.4"
+- SPDXID: "SPDXRef-Package-curl"
+  description: "A command line tool for transferring files with URL syntax"
+  copyrightText: "Copyright (c) 1996 - 2021, Daniel Stenberg, <daniel@haxx.se>, and many
+contributors."
+  downloadLocation: "https://github.com/curl/curl/releases/download/curl-7_76_1/curl-7.76.1.tar.bz2"
+  filesAnalyzed: false
+  homepage: "https://www.curl.org/"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "curl"
+  name: "curl"
+  packageFileName: "./"
+  versionInfo: "7.76.1"
 relationships:
 - spdxElementId: "SPDXRef-Package-agora-airgap"
   relatedSpdxElement: "SPDXRef-Package-cmake"
@@ -95,4 +107,7 @@ relationships:
   relationshipType: "DEPENDS_ON"
 - spdxElementId: "SPDXRef-Package-agora-airgap"
   relatedSpdxElement: "SPDXRef-Package-wxwidgets"
+  relationshipType: "DEPENDS_ON"
+- spdxElementId: "SPDXRef-Package-agora-airgap"
+  relatedSpdxElement: "SPDXRef-Package-curl"
   relationshipType: "DEPENDS_ON"
