@@ -77,6 +77,10 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
+- id: "BSL-1.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
 - id: "Artistic-1.0"
   categories:
   - "copyleft-limited"
