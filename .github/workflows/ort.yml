@@ -51,15 +51,15 @@ jobs:
         sudo apt-get install -y wget git python3
         cd ..
         wget https://github.com/swinslow/cmake-spdx.git
-        cd ${{ github.workspace }}
+        cd $GITHUB_WORKSPACE
         mkdir -p .cmake/api/v1/query
         touch .cmake/api/v1/query/codemodel-v2
         python3 \
           ../cmake-spdx/main.py \
-          .cmake/api/v1/reply/index*.json \
-          ${{ github.workspace }} \
-          ${{ github.workspace }} \
-          http://nvotes.com/spdxdocs/
+          $GITHUB_WORKSPACE/.cmake/api/v1/reply/index*.json \
+          $GITHUB_WORKSPACE \
+          $GITHUB_WORKSPACE \
+          "http://nvotes.com/spdxdocs/"
 
       - uses: actions/setup-java@v1
         with:
