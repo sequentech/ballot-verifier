@@ -57,6 +57,7 @@
                 pkgs.git
                 pkgs.cppcheck
                 pkgs.reuse
+                pkgs.lldb
             ];
             buildInputs = [
                 # the overlayed libraries
