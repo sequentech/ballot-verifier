@@ -4,7 +4,7 @@
 SPDXID: "SPDXRef-DOCUMENT"
 spdxVersion: "SPDX-2.2"
 creationInfo:
-  created: "2022-01-05T12:07:54Z"
+  created: "2022-01-06T10:24:06Z"
   creators:
   - "Organization: Agora Voting SL."
   - "Person: Eduardo Robles"
@@ -18,13 +18,13 @@ packages:
 - SPDXID: "SPDXRef-Package-agora-airgap"
   summary: "nVotes cast-as-intended verifier"
   copyrightText: "Copyright 2014-2021 Agora Voting SL"
-  downloadLocation: "git+https://github.com/agoravoting/agora-airgap.git@5.0.3"
+  downloadLocation: "git+https://github.com/agoravoting/agora-airgap.git@5.0.4"
   filesAnalyzed: false
   homepage: "https://github.com/agoravoting/agora-airgap"
   licenseConcluded:  "NOASSERTION"
   licenseDeclared: "AGPL-3.0-only"
   name: "agora-airgap"
-  versionInfo: "5.0.3"
+  versionInfo: "5.0.4"
 - SPDXID: "SPDXRef-Package-cmake"
   description: "Cross Platform Makefile Generator"
   copyrightText: "Copyright (c) 2000-2021 Kitware, Inc. and Contributors"
