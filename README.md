@@ -413,5 +413,5 @@ The file `include/agora-airgap/screen.h` includes the PNG found in
 [wxWidgets]: https://www.wxwidgets.org/
 [git]: https://github.com/agoravoting/agora-airgap/
 [GitHub]: https://github.com/agoravoting/agora-airgap/
-[Linux binary]: https://github.com/agoravoting/agora-airgap/releases/download/5.0.8/agora-airgap-gui-linux
-[Mac OS X binary]: https://github.com/agoravoting/agora-airgap/releases/download/5.0.8/agora-airgap-gui-mac
+[Linux binary]: https://github.com/agoravoting/agora-airgap/releases/download/5.0.9/agora-airgap-gui-linux
+[Mac OS X binary]: https://github.com/agoravoting/agora-airgap/releases/download/5.0.9/agora-airgap-gui-mac
