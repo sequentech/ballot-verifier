@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
-// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
 #include "interface.h"
 
-#include <agora-airgap/encrypt.h>
-#include <agora-airgap/screen.h>
-#include <agora-airgap/sha256.h>
+#include <ballot-verifier/encrypt.h>
+#include <ballot-verifier/screen.h>
+#include <ballot-verifier/sha256.h>
 #include <wx/filename.h>
 #include <wx/generic/statbmpg.h>
 

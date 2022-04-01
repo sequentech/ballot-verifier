@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
@@ -12,19 +12,19 @@ find_package(
   REQUIRED)
 include("${wxWidgets_USE_FILE}")
 
-# Create the agora-airgap-gui binary ########################################
+# Create the ballot-verifier-gui binary ########################################
 
-add_executable(agora-airgap-gui interface.cpp interface.h)
+add_executable(ballot-verifier-gui interface.cpp interface.h)
 
-target_link_libraries(agora-airgap-gui PRIVATE agora-airgap-lib stdc++
+target_link_libraries(ballot-verifier-gui PRIVATE ballot-verifier-lib stdc++
                                                ${wxWidgets_LIBRARIES})
 
-install(TARGETS agora-airgap-gui DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+install(TARGETS ballot-verifier-gui DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 
-# Create the agora-airgap command line utility binary #######################
+# Create the ballot-verifier command line utility binary #######################
 
-add_executable(agora-airgap main.cpp)
+add_executable(ballot-verifier main.cpp)
 
-target_link_libraries(agora-airgap PRIVATE agora-airgap-lib stdc++)
+target_link_libraries(ballot-verifier PRIVATE ballot-verifier-lib stdc++)
 
-install(TARGETS agora-airgap DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+install(TARGETS ballot-verifier DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

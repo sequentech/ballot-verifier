@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
-// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-// Based on Eduardo Robles's agora-api:
-// https://github.com/agoravoting/agora-api
+// Based on Eduardo Robles's sequent-api:
+// https://github.com/sequent/sequent-api
 
 #include <gmpxx.h>
 
@@ -23,10 +23,10 @@
 #if defined(_WIN32)
 #define CURL_STATICLIB
 #endif
-#include <agora-airgap/ElGamal.h>
-#include <agora-airgap/NVotesCodec.h>
-#include <agora-airgap/Random.h>
-#include <agora-airgap/encrypt.h>
+#include <ballot-verifier/ElGamal.h>
+#include <ballot-verifier/NVotesCodec.h>
+#include <ballot-verifier/Random.h>
+#include <ballot-verifier/encrypt.h>
 #include <curl/curl.h>
 
 using namespace rapidjson;

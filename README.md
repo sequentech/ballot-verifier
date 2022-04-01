@@ -1,23 +1,23 @@
 <!--
 SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
-SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
-# agora-airgap
+# ballot-verifier
 
-![agora-airgap-gui screenshot](./images/agora-airgap-gui.png)
+![ballot-verifier-gui screenshot](./images/ballot-verifier-gui.png)
 
-nVotes cast-as-intended verifier. It allows a voter to audit an (spoiled)
-ballot. `agora-airgap` implements the 'cast or cancel' procedure described on
+Sequent cast-as-intended verifier. It allows a voter to audit an (spoiled)
+ballot. `ballot-verifier` implements the 'cast or cancel' procedure described on
 the paper [Ballot Casting Assurance via Voter-Initiated Poll Station Auditing]
 by Josh Benaloh.
 
 ## Install
 
-agora-airgap works in Linux and Mac OS X 64 bits systems. You can download the
-latest compiled release for the GUI utility (agora-airgap-gui) here:
+ballot-verifier works in Linux and Mac OS X 64 bits systems. You can download the
+latest compiled release for the GUI utility (ballot-verifier-gui) here:
 
 - [Linux binary] (x86, 64 bits)
 
@@ -26,16 +26,16 @@ below) due to the Mac OS X code signing requirements to run an external binary.
 
 ## How to use
 
-The `agora-airgap-gui` tool has a textbox on the upper left side where you
-should copy the ballot. Before you cast your vote in nVotes voting booth, you
+The `ballot-verifier-gui` tool has a textbox on the upper left side where you
+should copy the ballot. Before you cast your vote in Sequent voting booth, you
 are allowed to audit the ballot. 
 
 Auditing the ballot requires also discarding it for security reasons. The upper
-right side of agora-airgap-gui shows you a screen capture of the audit ballot
+right side of ballot-verifier-gui shows you a screen capture of the audit ballot
 screen and marks the place where you will find the auditable ballot enclosed
 with a red box.
 
-Once you have copied and pasted the auditable ballot to agora-airgap-gui, you
+Once you have copied and pasted the auditable ballot to ballot-verifier-gui, you
 should click the **Verify Ballot** button. If the ballot is verified, the state
 indicator below should change to `State: VERIFIED`. There is also a console
 below the Details label that shows more information.
@@ -46,35 +46,35 @@ As an alternative to just downloading the pre-compiled tool, you can compile it
 yourself from the source code. This is currently required for Mac OS X, for 
 example, as we don't (yet) provide a compiled binary.
 
-agora-airgap uses [Nix Package Manager] as its package builder. To build 
-agora-airgap, **first [install Nix]** correctly in your system.
+ballot-verifier uses [Nix Package Manager] as its package builder. To build 
+ballot-verifier, **first [install Nix]** correctly in your system.
 
-After you have installed Nix, you can build agora-airgap executing the following
-command in the agora-airgap main directory:
+After you have installed Nix, you can build ballot-verifier executing the following
+command in the ballot-verifier main directory:
 
 ```bash
 nix build -L
 ```
 
-After a succesful Nix build, you can find the built `agora-airgap-gui` and 
-`agora-airgap` binaries in the `result/bin/` output directory.
+After a succesful Nix build, you can find the built `ballot-verifier-gui` and 
+`ballot-verifier` binaries in the `result/bin/` output directory.
 
 ```bash
 $ ls -lah result/bin/  
 total 1176
 dr-xr-xr-x  4 root  wheel   128B Jan  1  1970 .
 dr-xr-xr-x  3 root  wheel    96B Jan  1  1970 ..
--r-xr-xr-x  1 root  wheel   227K Jan  1  1970 agora-airgap
--r-xr-xr-x  1 root  wheel   356K Jan  1  1970 agora-airgap-gui
+-r-xr-xr-x  1 root  wheel   227K Jan  1  1970 ballot-verifier
+-r-xr-xr-x  1 root  wheel   356K Jan  1  1970 ballot-verifier-gui
 ```
 
-## agora-airgap-gui tool
+## ballot-verifier-gui tool
 
 You can just execute any of these binaries from the command line. For example,
 you can use the GUI utility with:
 
 ```bash
-./result/bin/agora-airgap-gui
+./result/bin/ballot-verifier-gui
 ```
 
 ## Commnd line audit example
@@ -84,7 +84,7 @@ whose election configuration is in `tests/fixtures/example_1/config`, just
 execute:
 
 ```bash
-./result/bin/agora-airgap audit \
+./result/bin/ballot-verifier audit \
   tests/fixtures/example_1/auditable_ballot.json \
   tests/fixtures/example_1/config
 ```
@@ -121,9 +121,9 @@ Ballot choices:
 > Audit PASSED
 ```
 
-# agora-airgap tool
+# ballot-verifier tool
 
-The `agora-airgap` binary is a command line utility that includes a set of
+The `ballot-verifier` binary is a command line utility that includes a set of
 commands:
 
 - **audit**: This command needs a file with an auditable ballot, the public keys
@@ -156,7 +156,7 @@ procedure.
 On the other hand, the encrypt command lets you encrypt a ballot that you can
 cast afterwards and it lets you encrypt that ballot in a computer without
 Internet connection, on your own trustworthy airgap computer. While the security
-scheme of nVotes is quite strong, in the end the election authorities cannot
+scheme of Sequent is quite strong, in the end the election authorities cannot
 control the end-user computer. By encrypting the ballot on an airgap computer
 the risks are minimized, and the aim here is to ease the task of encrypting the
 vote in a safe environment, but it is your responsability to ensure that the
@@ -164,7 +164,7 @@ computer you are using to encrypt your vote is not compromised.
 
 ## Generating auditable ballot
 
-You could generate an auditable ballot with `agora-airgap encrypt` utility. This
+You could generate an auditable ballot with `ballot-verifier encrypt` utility. This
 is useful for testing, and you can even use it to generate some of the fixtures
 in the unit tests. The input for the encrypt command are three file paths:
 
@@ -180,7 +180,7 @@ in the unit tests. The input for the encrypt command are three file paths:
 For example you could execute:
 
 ```bash
-./result/bin/agora-airgap encrypt \
+./result/bin/ballot-verifier encrypt \
   tests/fixtures/example_1/plaintext_vote.json \
   tests/fixtures/example_1/config \
   auditable_ballot.json
@@ -216,7 +216,7 @@ green.
 The following is a brief explanation of the tree structure of the repository:
 
 ```
-agora-airgap/
+ballot-verifier/
 ├── CMakeLists.txt                          << Main Configuration file for CMake
 ├── Format.cmake/                           << CMake config for clang-format
 │   └── ...
@@ -234,7 +234,7 @@ agora-airgap/
 │   └── FindGMPXX.cmake
 ├── flake.nix                               << Build configuration file for Nix
 ├── include/                                << Headers for our libraries
-│   └── agora-airgap/                       << Header for agora-airgap lib
+│   └── ballot-verifier/                       << Header for ballot-verifier lib
 │       ├── ElGamal.h
 │       ├── ...
 │       └── sha256.h
@@ -276,7 +276,7 @@ agora-airgap/
 
 ## Dependencies
 
-`agora-airgap` is developed in C++11. It uses the following tools:
+`ballot-verifier` is developed in C++11. It uses the following tools:
 - [git] and [GitHub] for source code control.
 - [Nix Package Manager] for building a Nix [flake].
 - [CMake] as the C++ code building tool.
@@ -286,7 +286,7 @@ agora-airgap/
 - [clang-format] to check code styling (for code quality).
 - [cppcheck] to run C++ static code analysis (for code quality).
 
-`agora-airgap` uses the following libraries:
+`ballot-verifier` uses the following libraries:
 - [rapidjson] as a library for processing JSON data.
 - [Crypto++] as a library to execute cryptographic operations.
 - [gmplib] as a library for modular exponentiation.
@@ -325,13 +325,13 @@ ctest -VV
 Or execute the compiled binaries, which you will find in the `out/` directory:
 
 ```bash
-$ ls -lah out/                                                                                                               ~/proyectos/nvotes/agora-airgap
+$ ls -lah out/                                                                                                               ~/proyectos/sequent/ballot-verifier
 total 3360
 drwxr-xr-x   5 edulix  staff   160B Nov  7 19:51 .
 drwxr-xr-x  45 edulix  staff   1.4K Nov 11 08:40 ..
--rwxr-xr-x   1 edulix  staff   290K Nov  7 11:37 agora-airgap
--rwxr-xr-x   1 edulix  staff   419K Nov  7 19:51 agora-airgap-gui
--rwxr-xr-x   1 edulix  staff   967K Nov  7 18:18 agora_airgap_tests
+-rwxr-xr-x   1 edulix  staff   290K Nov  7 11:37 ballot-verifier
+-rwxr-xr-x   1 edulix  staff   419K Nov  7 19:51 ballot-verifier-gui
+-rwxr-xr-x   1 edulix  staff   967K Nov  7 18:18 ballot_verifier_tests
 ```
 
 You can apply the code formatting tool to ensure that any commit will pass the
@@ -391,15 +391,15 @@ expectations specific to that fixture for a given unit test.
 
 ## The screen.h file
 
-The file `include/agora-airgap/screen.h` includes the PNG found in
+The file `include/ballot-verifier/screen.h` includes the PNG found in
 `src/screen.png` file. The `screen.h` has been generated with the [bin2c tool].
 
 [Ballot Casting Assurance via Voter-Initiated Poll Station Auditing]: https://www.usenix.org/legacy/event/evt07/tech/full_papers/benaloh/benaloh.pdf
 [Nix Package Manager]: https://nixos.org/
 [install Nix]: https://nixos.org/
 [bin2c tool]: https://github.com/gwilymk/bin2c
-[Contributor License Agreement]: https://agoravoting.github.io/admin-manual/docs/contribute/guide
-[Continuous Integration]: https://github.com/agoravoting/agora-airgap/blob/master/.github/workflows/build.yml
+[Contributor License Agreement]: https://sequent.github.io/documentation/docs/contribute/guide
+[Continuous Integration]: https://github.com/sequentech/ballot-verifier/blob/master/.github/workflows/build.yml
 [reuse]: https://reuse.software/
 [clang-format]: https://releases.llvm.org/7.1.0/tools/clang/docs/ClangFormatStyleOptions.html
 [cppcheck]: https://cppcheck.sourceforge.io
@@ -411,7 +411,7 @@ The file `include/agora-airgap/screen.h` includes the PNG found in
 [gmplib]: https://gmplib.org/
 [googletest]: https://github.com/google/googletest
 [wxWidgets]: https://www.wxwidgets.org/
-[git]: https://github.com/agoravoting/agora-airgap/
-[GitHub]: https://github.com/agoravoting/agora-airgap/
-[Linux binary]: https://github.com/agoravoting/agora-airgap/releases/download/4.0.1/agora-airgap-gui-linux
-[Mac OS X binary]: https://github.com/agoravoting/agora-airgap/releases/download/4.0.1/agora-airgap-gui-mac
+[git]: https://github.com/sequentech/ballot-verifier/
+[GitHub]: https://github.com/sequentech/ballot-verifier/
+[Linux binary]: https://github.com/sequentech/ballot-verifier/releases/download/4.0.1/ballot-verifier-gui-linux
+[Mac OS X binary]: https://github.com/sequentech/ballot-verifier/releases/download/4.0.1/ballot-verifier-gui-mac
