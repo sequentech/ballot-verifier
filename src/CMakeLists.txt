@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
@@ -29,31 +29,31 @@ include("${wxWidgets_USE_FILE}")
 # Create the common library #################################################
 
 # TODO: move header files to a include dir
-file(GLOB AGORA_AIRGAP_HEADER_LIST CONFIGURE_DEPENDS "*.h")
+file(GLOB SEQUENT_AIRGAP_HEADER_LIST CONFIGURE_DEPENDS "*.h")
 
 add_library(
-  agora-airgap-lib sha256.cpp ElGamal.cpp Random.cpp encrypt.cpp MixedRadix.cpp
-                           NVotesCodec.cpp ${AGORA_AIRGAP_HEADER_LIST})
+  ballot-verifier-lib sha256.cpp ElGamal.cpp Random.cpp encrypt.cpp MixedRadix.cpp
+                           NVotesCodec.cpp ${SEQUENT_AIRGAP_HEADER_LIST})
 
 # All users of this library will need at least C++11
-target_compile_features(agora-airgap-lib PUBLIC cxx_std_11)
+target_compile_features(ballot-verifier-lib PUBLIC cxx_std_11)
 
 target_include_directories(
-  agora-airgap-lib PRIVATE ${GMP_INCLUDES} ${GMPXX_INCLUDES}
+  ballot-verifier-lib PRIVATE ${GMP_INCLUDES} ${GMPXX_INCLUDES}
                            ${CURL_INCLUDE_DIRS})
 
 # We need this directory in the and users of this library and users of the
 # library needs them too
 target_include_directories(
-  agora-airgap-lib
+  ballot-verifier-lib
   PUBLIC "../include" SYSTEM
   PUBLIC "../include")
 
 target_link_libraries(
-  agora-airgap-lib PRIVATE stdc++ ${GMP_LIBRARIES} ${GMPXX_LIBRARIES}
+  ballot-verifier-lib PRIVATE stdc++ ${GMP_LIBRARIES} ${GMPXX_LIBRARIES}
                            ${CURL_LIBRARIES})
 
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/include"
   PREFIX "Header Files"
-  FILES ${AGORA_AIRGAP_HEADER_LIST})
+  FILES ${SEQUENT_AIRGAP_HEADER_LIST})

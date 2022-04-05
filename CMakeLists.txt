@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.14)
 project(
   AgoraAirgap
   VERSION 4.0.2
-  DESCRIPTION "cast-as-intended verifier for nVotes platform"
+  DESCRIPTION "cast-as-intended verifier for Sequent platform"
   LANGUAGES CXX)
 
 set(CMAKE_FORMAT_EXCLUDE "(cmake/.*|_deps/.*|cpm-package-lock\.cmake|CMakeLists.txt)")

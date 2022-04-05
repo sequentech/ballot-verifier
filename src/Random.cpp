@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
-// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
 // Loosely based on Ben Adida's jscrypto:
 // https://github.com/benadida/jscrypto/blob/master/elgamal.js
 
-#include <agora-airgap/Random.h>
+#include <ballot-verifier/Random.h>
 #include <fcntl.h>
 #include <unistd.h>
 

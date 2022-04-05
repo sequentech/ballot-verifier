@@ -1,9 +1,9 @@
-# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
 {
-  description = "Flake for agora-airgap, a cast-as-intended verifier for nVotes platform";
+  description = "Flake for ballot-verifier, a cast-as-intended verifier for Sequent platform";
 
   # input
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
@@ -40,9 +40,9 @@
 
         # resulting packages of the flake
         in rec {
-          # Derivation for agora-airgap
-          packages.agora-airgap = pkgs.clangStdenv.mkDerivation {
-            name = "agora-airgap";
+          # Derivation for ballot-verifier
+          packages.ballot-verifier = pkgs.clangStdenv.mkDerivation {
+            name = "ballot-verifier";
             version = "4.0.2";
             src = self;
             type = "git"; 
@@ -70,15 +70,15 @@
                 pkgs.pkgs.darwin.apple_sdk.frameworks.Cocoa
               ];
           };
-          # agora-airgap is the default package
-          defaultPackage = packages.agora-airgap;
+          # ballot-verifier is the default package
+          defaultPackage = packages.ballot-verifier;
 
           # configure the dev shell
           devShell = (
             pkgs.mkShell.override { stdenv = pkgs.clangStdenv; }
           ) { 
-            buildInputs = packages.agora-airgap.nativeBuildInputs 
-              ++ packages.agora-airgap.buildInputs
+            buildInputs = packages.ballot-verifier.nativeBuildInputs 
+              ++ packages.ballot-verifier.buildInputs
               ++ [ pkgs.bash ]; 
           };
         }

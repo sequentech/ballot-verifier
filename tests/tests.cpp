@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
-// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include <agora-airgap/ElGamal.h>
-#include <agora-airgap/common.h>
-#include <agora-airgap/encrypt.h>
-#include <agora-airgap/sha256.h>
+#include <ballot-verifier/ElGamal.h>
+#include <ballot-verifier/common.h>
+#include <ballot-verifier/encrypt.h>
+#include <ballot-verifier/sha256.h>
 #include <cryptopp/cryptlib.h>
 #include <cryptopp/elgamal.h>
 #include <cryptopp/files.h>

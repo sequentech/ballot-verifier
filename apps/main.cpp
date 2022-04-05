@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2014 Félix Robles <felrobelv@gmail.com>
-// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include <agora-airgap/encrypt.h>
-#include <agora-airgap/sha256.h>
+#include <ballot-verifier/encrypt.h>
+#include <ballot-verifier/sha256.h>
 
 #include <fstream>
 #include <iostream>
@@ -32,7 +32,7 @@ bool check_file_exists(string file_path)
 
 void show_help()
 {
-    cout << "Usage: agora-airgap [option] file..." << endl
+    cout << "Usage: ballot-verifier [option] file..." << endl
          << "Options:" << endl
          << "\tdownload-audit\t\t\tdownload election data and audit the ballot"
          << endl

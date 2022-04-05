@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+# SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
@@ -72,8 +72,8 @@ jobs:
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
-        name: agora-airgap-${{ matrix.os }}
-        path: /nix/store/*-agora-airgap*
+        name: ballot-verifier-${{ matrix.os }}
+        path: /nix/store/*-ballot-verifier*
 
   testing:
     name: Run unit tests

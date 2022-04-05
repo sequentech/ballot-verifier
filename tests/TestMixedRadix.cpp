@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@nvotes.com>
+// SPDX-FileCopyrightText: 2021 Eduardo Robles <edulix@sequentech.io>
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include <agora-airgap/MixedRadix.h>
+#include <ballot-verifier/MixedRadix.h>
 #include <gmock/gmock.h>
 #include <gmpxx.h>
 #include <gtest/gtest.h>
