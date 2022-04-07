@@ -23,8 +23,8 @@
 #if defined(_WIN32)
 #define CURL_STATICLIB
 #endif
-#include <ballot-verifier/ElGamal.h>
 #include <ballot-verifier/BallotCodec.h>
+#include <ballot-verifier/ElGamal.h>
 #include <ballot-verifier/Random.h>
 #include <ballot-verifier/encrypt.h>
 #include <curl/curl.h>

@@ -335,7 +335,8 @@ TEST_F(ExampleDirsTest, MockDownload)
         bool hasAssertion = false;
         runExpectations(
             [&](stringstream & out) {
-                BallotVerifier::download(out, ballotPath, electionPath, getConfig);
+                BallotVerifier::download(
+                    out, ballotPath, electionPath, getConfig);
             },
             expectationsDoc,
             "MockDownload::Run",

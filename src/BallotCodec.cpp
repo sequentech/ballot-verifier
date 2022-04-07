@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include <ballot-verifier/MixedRadix.h>
 #include <ballot-verifier/BallotCodec.h>
+#include <ballot-verifier/MixedRadix.h>
 
 #include <algorithm>
 #include <cstdlib>
