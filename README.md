@@ -243,7 +243,7 @@ ballot-verifier/
 │   ├── CMakeLists.txt                      << CMake configuration for the app
 │   ├── ElGamal.cpp                         << ElGamal encryption library
 │   ├── MixedRadix.cpp                      << Mixed Radix Integer codec
-│   ├── NVotesCodec.cpp                     << Nvotes Ballot codec
+│   ├── BallotCodec.cpp                     << Sequent Ballot codec
 │   ├── Random.cpp                          << Random number function
 │   ├── encrypt.cpp                         <<| Ballot encryption related
 |   |                                       <<| functions
@@ -267,7 +267,7 @@ ballot-verifier/
     │   │                                     | are copies of example_1/ unit 
     │   │                                     | test.
     |   └─── ...                            << more fixtures
-    ├── TestNVotesCodec.cpp                 << Unit tests for ballot encoding
+    ├── TestBallotCodec.cpp                 << Unit tests for ballot encoding
     ├── TestMixedRadix.cpp                  <<| Unit tests for mixed radix
     |                                         | for mixed radix integer encoding
     ├── tests.cpp                           << unit tests for the tool

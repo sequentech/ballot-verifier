@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-using AgoraAirgap::Random;
+using BallotVerifier::Random;
 
 #if defined(_WIN32) || defined(WIN32)
 #include <wincrypt.h>

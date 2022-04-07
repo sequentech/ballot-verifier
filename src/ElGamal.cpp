@@ -12,7 +12,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 ElGamal::PublicKey::PublicKey(
     const mpz_class & ap,
@@ -201,4 +201,4 @@ ElGamal::DLogProof::DLogProof(
     : commitment(commitment_), challenge(challenge_), response(response_)
 {}
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier

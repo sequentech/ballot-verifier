@@ -9,7 +9,7 @@
 
 #include <vector>
 
-using namespace AgoraAirgap;
+using namespace BallotVerifier;
 using std::endl;
 using std::runtime_error;
 using std::vector;

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 #include <ballot-verifier/MixedRadix.h>
-#include <ballot-verifier/NVotesCodec.h>
+#include <ballot-verifier/BallotCodec.h>
 
 #include <algorithm>
 #include <cstdlib>
@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 using rapidjson::Document;
 using rapidjson::Type;
@@ -108,12 +108,12 @@ vector<Value *> sortedAnswersVector(Value & answers, const char * fieldName)
     return sortedAnswers;
 }
 
-NVotesCodec::NVotesCodec(const Document & question)
+BallotCodec::BallotCodec(const Document & question)
 {
     this->question.CopyFrom(question, this->question.GetAllocator());
 }
 
-vector<uint32_t> NVotesCodec::getBases() const
+vector<uint32_t> BallotCodec::getBases() const
 {
     vector<uint32_t> bases;
     Value::AllocatorType allocator;
@@ -205,7 +205,7 @@ vector<uint32_t> NVotesCodec::getBases() const
     return bases;
 }
 
-RawBallot NVotesCodec::encodeRawBallot() const
+RawBallot BallotCodec::encodeRawBallot() const
 {
     Value::AllocatorType allocator;
 
@@ -325,12 +325,12 @@ RawBallot NVotesCodec::encodeRawBallot() const
                      /* choices = */ choices};
 }
 
-mpz_class NVotesCodec::encodeToInt(const RawBallot & rawBallot) const
+mpz_class BallotCodec::encodeToInt(const RawBallot & rawBallot) const
 {
     return MixedRadix::encode(rawBallot.choices, rawBallot.bases);
 }
 
-RawBallot NVotesCodec::decodeFromInt(const mpz_class & intBallot) const
+RawBallot BallotCodec::decodeFromInt(const mpz_class & intBallot) const
 {
     vector<uint32_t> bases = getBases();
     size_t basesSize = bases.size();
@@ -391,7 +391,7 @@ RawBallot NVotesCodec::decodeFromInt(const mpz_class & intBallot) const
                      /* choices = */ choices};
 }
 
-Document NVotesCodec::decodeRawBallot(const RawBallot & rawBallot) const
+Document BallotCodec::decodeRawBallot(const RawBallot & rawBallot) const
 {
     // 1. clone the question and reset the selections
     Document question;
@@ -574,4 +574,4 @@ Document NVotesCodec::decodeRawBallot(const RawBallot & rawBallot) const
     return question;
 }
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier

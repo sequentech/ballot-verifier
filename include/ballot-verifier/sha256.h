@@ -20,7 +20,7 @@
 #include "Random.h"
 using namespace std;
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 namespace sha256 {
 
@@ -48,6 +48,6 @@ void sha256_final(SHA256_CTX * ctx, BYTE hash[]);
 
 }  // namespace sha256
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier
 
 #endif  // SHA256_H

@@ -24,14 +24,14 @@
 #define CURL_STATICLIB
 #endif
 #include <ballot-verifier/ElGamal.h>
-#include <ballot-verifier/NVotesCodec.h>
+#include <ballot-verifier/BallotCodec.h>
 #include <ballot-verifier/Random.h>
 #include <ballot-verifier/encrypt.h>
 #include <curl/curl.h>
 
 using namespace rapidjson;
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 string get_date()
 {
@@ -269,7 +269,7 @@ void encrypt_ballot(
             Document plaintextQuestionDoc;
             plaintextQuestionDoc.CopyFrom(
                 plaintextQuestion, plaintextQuestionDoc.GetAllocator());
-            AgoraAirgap::NVotesCodec codec(plaintextQuestionDoc);
+            BallotVerifier::BallotCodec codec(plaintextQuestionDoc);
             RawBallot rawBallot = codec.encodeRawBallot();
             mpz_class plaintext = codec.encodeToInt(rawBallot);
 
@@ -383,9 +383,9 @@ Document parseBallot(const Value & question, const string & plaintextString)
     Document questionDoc;
     questionDoc.CopyFrom(question, questionDoc.GetAllocator());
 
-    AgoraAirgap::NVotesCodec codec(questionDoc);
+    BallotVerifier::BallotCodec codec(questionDoc);
 
-    AgoraAirgap::RawBallot rawBallot = codec.decodeFromInt(plaintext);
+    BallotVerifier::RawBallot rawBallot = codec.decodeFromInt(plaintext);
     return codec.decodeRawBallot(rawBallot);
 }
 
@@ -393,7 +393,7 @@ bool isInvalidBallot(const Document & ballot)
 {
     for (const Value & answer: ballot["answers"].GetArray())
     {
-        if (AgoraAirgap::answerHasUrl(answer, "invalidVoteFlag"))
+        if (BallotVerifier::answerHasUrl(answer, "invalidVoteFlag"))
         {
             return true;
         }
@@ -457,7 +457,7 @@ void print_answer(
     for (const Value * answer: answers)
     {
         if ((*answer)["selected"].GetInt() == -1 ||
-            AgoraAirgap::answerHasUrl(*answer, "invalidVoteFlag"))
+            BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag"))
         {
             continue;
         }
@@ -472,7 +472,7 @@ void print_answer(
             out << " - " << (*answer)["text"].GetString();
         }
 
-        if (AgoraAirgap::answerHasUrl(*answer, "isWriteIn"))
+        if (BallotVerifier::answerHasUrl(*answer, "isWriteIn"))
         {
             out << " (write-in)";
         }
@@ -979,4 +979,4 @@ void audit(
     out << "> --------------------\n> Audit PASSED" << endl;
 }
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier

@@ -16,7 +16,7 @@
 
 using namespace rapidjson;
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 class ElGamal
 {
@@ -116,6 +116,6 @@ class ElGamal
         const mpz_class & r);
 };
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier
 
 #endif  // ELGAMAL_H

@@ -18,7 +18,7 @@ using std::function;
 using std::string;
 using std::stringstream;
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 typedef function<string(stringstream &, const string &)> DownloadFunc;
 
@@ -52,6 +52,6 @@ void audit(
     const string & auditable_ballot_path,
     const string & election_path);
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier
 
 #endif  // ENCRYPT_H

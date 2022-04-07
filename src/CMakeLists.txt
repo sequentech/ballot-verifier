@@ -33,7 +33,7 @@ file(GLOB SEQUENT_AIRGAP_HEADER_LIST CONFIGURE_DEPENDS "*.h")
 
 add_library(
   ballot-verifier-lib sha256.cpp ElGamal.cpp Random.cpp encrypt.cpp MixedRadix.cpp
-                           NVotesCodec.cpp ${SEQUENT_AIRGAP_HEADER_LIST})
+                           BallotCodec.cpp ${SEQUENT_AIRGAP_HEADER_LIST})
 
 # All users of this library will need at least C++11
 target_compile_features(ballot-verifier-lib PUBLIC cxx_std_11)

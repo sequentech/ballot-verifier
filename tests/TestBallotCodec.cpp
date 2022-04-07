@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include <ballot-verifier/NVotesCodec.h>
+#include <ballot-verifier/BallotCodec.h>
 #include <ballot-verifier/common.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-using namespace AgoraAirgap;
-using AgoraAirgap::NVotesCodec;
-using AgoraAirgap::RawBallot;
+using namespace BallotVerifier;
+using BallotVerifier::BallotCodec;
+using BallotVerifier::RawBallot;
 using rapidjson::Document;
 using rapidjson::StringBuffer;
 using rapidjson::Writer;
@@ -33,7 +33,7 @@ string stringify(const Document & doc)
 
 // Supress warnings related to using the google test macro
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
-TEST(NVotesCodec, Bases)
+TEST(BallotCodec, Bases)
 {
     class TestData
     {
@@ -90,14 +90,14 @@ TEST(NVotesCodec, Bases)
             questionDoc.Parse(testData.question.c_str()).HasParseError())
             << "Parse error in the fixture" << endl;
 
-        NVotesCodec codec(questionDoc);
+        BallotCodec codec(questionDoc);
         EXPECT_EQ(codec.getBases(), testData.bases) << "Invalid bases" << endl;
     }
 }
 
 // Supress warnings related to using the google test macro
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
-TEST(NVotesCodec, EncodeRawBallot)
+TEST(BallotCodec, EncodeRawBallot)
 {
     class TestData
     {
@@ -254,7 +254,7 @@ TEST(NVotesCodec, EncodeRawBallot)
             questionDoc.Parse(testData.question.c_str()).HasParseError())
             << "Parse error in the fixture" << endl;
 
-        NVotesCodec codec(questionDoc);
+        BallotCodec codec(questionDoc);
         RawBallot rawBallot = codec.encodeRawBallot();
         EXPECT_EQ(rawBallot.bases, testData.bases) << "Invalid bases" << endl;
 
@@ -265,7 +265,7 @@ TEST(NVotesCodec, EncodeRawBallot)
 
 // Supress warnings related to using the google test macro
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
-TEST(NVotesCodec, DecodeRawBallot)
+TEST(BallotCodec, DecodeRawBallot)
 {
     class TestData
     {
@@ -509,7 +509,7 @@ TEST(NVotesCodec, DecodeRawBallot)
                          .HasParseError())
             << "Parse error in the fixture decodedBallot" << endl;
 
-        NVotesCodec codec(questionDoc);
+        BallotCodec codec(questionDoc);
 
         // check raw ballot getter
         Document decodedBallot =
