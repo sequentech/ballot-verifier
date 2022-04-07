@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-using namespace AgoraAirgap::sha256;
+using namespace BallotVerifier::sha256;
 using namespace CryptoPP;
 using ::rapidjson::Document;
 using ::rapidjson::Value;
@@ -92,7 +92,7 @@ TEST(Sha256Test, StringLoopTest)
 
 // Supress warnings related to using the google test macro
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
-TEST(AgoraUnitTest, SmallMessageEncryption)
+TEST(VerifierUnitTest, SmallMessageEncryption)
 {
     mpz_t p, q, g, y, x, m, rand;
 
@@ -106,10 +106,10 @@ TEST(AgoraUnitTest, SmallMessageEncryption)
 
     mpz_class p_c(p), q_c(q), g_c(g), x_c(x), y_c(y), rand_c(rand), m_c(m);
 
-    AgoraAirgap::ElGamal::PublicKey pk(p_c, q_c, g_c, y_c);
-    AgoraAirgap::ElGamal::Plaintext plaintext(m_c, pk, true);
-    AgoraAirgap::ElGamal::Ciphertext ciphertext =
-        AgoraAirgap::ElGamal::encrypt(pk, plaintext, rand_c);
+    BallotVerifier::ElGamal::PublicKey pk(p_c, q_c, g_c, y_c);
+    BallotVerifier::ElGamal::Plaintext plaintext(m_c, pk, true);
+    BallotVerifier::ElGamal::Ciphertext ciphertext =
+        BallotVerifier::ElGamal::encrypt(pk, plaintext, rand_c);
     // alpha = (g^random) mod p  = (3^4) mod 1019 = 81
     // U = (y^random) mod p = (770^4) mod 1019 = 508
     // M = m+1 = 134
@@ -129,11 +129,11 @@ TEST(Example1, MockBadDownloadAudit)
     string examplePath = "example_1";
     string ballotPath = examplePath + "/auditable_ballot.json";
     auto getConfig = [&examplePath](stringstream & out, const string &) {
-        return AgoraAirgap::read_file(out, examplePath + "/config-bad");
+        return BallotVerifier::read_file(out, examplePath + "/config-bad");
     };
     stringstream out;
     EXPECT_THAT(
-        [&]() { AgoraAirgap::download_audit(out, ballotPath, getConfig); },
+        [&]() { BallotVerifier::download_audit(out, ballotPath, getConfig); },
         ThrowsMessage<std::runtime_error>(HasSubstr("!!! Error [read-file]")))
         << endl
         << "Error found in output: " << out.str() << endl;
@@ -275,7 +275,7 @@ void getExpectationsDoc(const string & examplePath, Document & expectationsDoc)
     const string expectationsPath = examplePath + "/expectations.json";
     stringstream out;
     const string expectationsData =
-        AgoraAirgap::read_file(out, expectationsPath.c_str());
+        BallotVerifier::read_file(out, expectationsPath.c_str());
 
     if (expectationsDoc.Parse(expectationsData.c_str()).HasParseError())
     {
@@ -302,12 +302,12 @@ TEST_F(ExampleDirsTest, MockDownloadAudit)
         getExpectationsDoc(examplePath, expectationsDoc);
         string ballotPath = examplePath + "/auditable_ballot.json";
         auto getConfig = [&examplePath](stringstream & out, const string &) {
-            return AgoraAirgap::read_file(out, examplePath + "/config");
+            return BallotVerifier::read_file(out, examplePath + "/config");
         };
 
         runExpectations(
             [&](stringstream & out) {
-                AgoraAirgap::download_audit(out, ballotPath, getConfig);
+                BallotVerifier::download_audit(out, ballotPath, getConfig);
             },
             expectationsDoc,
             "MockDownloadAudit");
@@ -328,14 +328,15 @@ TEST_F(ExampleDirsTest, MockDownload)
         getExpectationsDoc(examplePath, expectationsDoc);
         string ballotPath = examplePath + "/auditable_ballot.json";
         auto getConfig = [&examplePath](stringstream & out, const string &) {
-            return AgoraAirgap::read_file(out, examplePath + "/config");
+            return BallotVerifier::read_file(out, examplePath + "/config");
         };
         string electionPath = std::tmpnam(nullptr);
 
         bool hasAssertion = false;
         runExpectations(
             [&](stringstream & out) {
-                AgoraAirgap::download(out, ballotPath, electionPath, getConfig);
+                BallotVerifier::download(
+                    out, ballotPath, electionPath, getConfig);
             },
             expectationsDoc,
             "MockDownload::Run",
@@ -348,9 +349,9 @@ TEST_F(ExampleDirsTest, MockDownload)
 
         stringstream out2;
         runExpectations2(
-            [&]() { return AgoraAirgap::read_file(out2, electionPath); },
+            [&]() { return BallotVerifier::read_file(out2, electionPath); },
             [&]() {
-                return AgoraAirgap::read_file(out2, examplePath + "/config");
+                return BallotVerifier::read_file(out2, examplePath + "/config");
             },
             expectationsDoc,
             "MockDownload::Compare");
@@ -379,7 +380,7 @@ TEST_F(ExampleDirsTest, MockAudit)
 
         runExpectations(
             [&](stringstream & out) {
-                AgoraAirgap::audit(out, ballotPath, electionPath);
+                BallotVerifier::audit(out, ballotPath, electionPath);
             },
             expectationsDoc,
             "MockAudit");
@@ -406,7 +407,7 @@ TEST_F(ExampleDirsTest, EncryptAndAudit)
 
         runExpectations(
             [&](stringstream & out) {
-                AgoraAirgap::encrypt_ballot(
+                BallotVerifier::encrypt_ballot(
                     out, plainTextVotesPath, electionPath, encryptedBallotPath);
             },
             expectationsDoc,
@@ -414,7 +415,7 @@ TEST_F(ExampleDirsTest, EncryptAndAudit)
 
         runExpectations(
             [&](stringstream & out) {
-                AgoraAirgap::audit(out, encryptedBallotPath, electionPath);
+                BallotVerifier::audit(out, encryptedBallotPath, electionPath);
             },
             expectationsDoc,
             "EncryptAndAudit::Audit");

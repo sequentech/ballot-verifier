@@ -13,7 +13,7 @@
 
 #include <string>
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 class Random
 {
     protected:
@@ -29,6 +29,6 @@ class Random
     static mpz_class getRandomIntegerRange(const mpz_class & max);
 };
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier
 
 #endif /* RANDOM_H_ */

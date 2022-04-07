@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 namespace MixedRadix {
 
@@ -46,6 +46,6 @@ std::vector<uint32_t> decode(
 
 }  // namespace MixedRadix
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier
 
 #endif /* MIXED_RADIX_H_ */

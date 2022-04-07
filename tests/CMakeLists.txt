@@ -21,7 +21,7 @@ FetchContent_MakeAvailable(googletest)
 # "clang-tidy;-checks=*")
 
 add_executable(ballot_verifier_tests tests.cpp TestMixedRadix.cpp
-                                                 TestNVotesCodec.cpp)
+                                                 TestBallotCodec.cpp)
 
 # NOTE: we are not using target_include_directories() for cryptopp because it
 # does not support CMake by default and we're using nix anyway to add all the

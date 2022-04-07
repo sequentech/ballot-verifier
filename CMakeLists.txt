@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.14)
 
 # Project name and a few useful settings. Other commands can pick up the results
 project(
-  AgoraAirgap
+  BallotVerifier
   VERSION 4.0.2
   DESCRIPTION "cast-as-intended verifier for Sequent platform"
   LANGUAGES CXX)

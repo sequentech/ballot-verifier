@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#ifndef NVOTES_CODEC_H_
-#define NVOTES_CODEC_H_
+#ifndef BALLOT_CODEC_H_
+#define BALLOT_CODEC_H_
 
 #include <gmpxx.h>
 
@@ -12,7 +12,7 @@
 
 #include "common.h"
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 using rapidjson::Document;
 using rapidjson::Value;
@@ -52,13 +52,13 @@ string stringify(const Value & d);
  * Encodes/Decodes the answer to a question given the question type. The encoder
  * function always receives answer as a list of answer ids.
  */
-class NVotesCodec
+class BallotCodec
 {
     private:
     Document question;
 
     public:
-    NVotesCodec(const Document & question);
+    BallotCodec(const Document & question);
 
     /**
      * @returns the bases related to this question.
@@ -76,7 +76,7 @@ class NVotesCodec
      * )
      * ```
      *
-     * Please read the description of the NVotesCodec::encode function for
+     * Please read the description of the BallotCodec::encode function for
      * details on the output format of the raw ballot.
      */
     RawBallot encodeRawBallot() const;
@@ -263,6 +263,6 @@ class NVotesCodec
     RawBallot decodeFromInt(const mpz_class & int_ballot) const;
 };
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier
 
-#endif /* NVOTES_CODEC_H_ */
+#endif /* BALLOT_CODEC_H_ */

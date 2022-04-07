@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 
 namespace MixedRadix {
 
@@ -94,4 +94,4 @@ vector<uint32_t> decode(
 
 }  // namespace MixedRadix
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier

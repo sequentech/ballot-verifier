@@ -25,7 +25,7 @@
 #include <iomanip>
 #include <sstream>
 
-namespace AgoraAirgap {
+namespace BallotVerifier {
 namespace sha256 {
 
 /****************************** MACROS ******************************/
@@ -200,4 +200,4 @@ void sha256_final(SHA256_CTX * ctx, BYTE hash[])
 
 }  // namespace sha256
 
-}  // namespace AgoraAirgap
+}  // namespace BallotVerifier

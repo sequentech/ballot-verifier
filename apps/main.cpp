@@ -13,7 +13,7 @@
 
 using namespace rapidjson;
 using namespace std;
-using namespace AgoraAirgap;
+using namespace BallotVerifier;
 
 bool check_file_exists(string file_path)
 {

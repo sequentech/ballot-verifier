@@ -11,7 +11,7 @@
 #include <wx/filename.h>
 #include <wx/generic/statbmpg.h>
 
-using namespace AgoraAirgap;
+using namespace BallotVerifier;
 
 bool MyApp::OnInit()
 {
