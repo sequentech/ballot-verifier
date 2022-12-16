@@ -39,5 +39,5 @@ jobs:
           fail-on: issues,violations
           report-formats: SpdxDocument,Excel,StaticHtml,WebApp
           ort-cli-evaluate-args: >
-            --rules-file ${ORT_CONFIG_DIR}/rules.kts
-            --license-classifications-file /home/runner/.ort/config/license-classifications.yml
+            --rules-file /home/ort/.ort/config/rules.kts
+            --license-classifications-file /home/ort/.ort/config/license-classifications.yml
