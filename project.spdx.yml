@@ -52,7 +52,7 @@ packages:
   copyrightText: "Copyright (c) 1995-2013 by Wei Dai.  All rights reserved."
   downloadLocation: "https://github.com/Tencent/cryptopp/archive/refs/tags/v1.1.0.tar.gz"
   filesAnalyzed: false
-  homepage: "https://cryptopp.org/"
+  homepage: "https://cryptopp.com/"
   licenseConcluded: "NOASSERTION"
   licenseDeclared: "BSL-1.0"
   name: "cryptopp"
