@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or the definition README at
+// https://github.com/microsoft/vscode-dev-containers/tree/master/containers/docker-existing-dockerfile
+{
+	"name": "ballot-verifier",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "dev",
+	"workspaceFolder": "/workspace",
+	"forwardPorts": [3000],
+	
+	"userEnvProbe": "loginShell",
+	"updateRemoteUserUID": false,
+  
+	// build development environment on creation
+    "onCreateCommand": "nix develop --command bash -c 'nix build -vvv -L && echo Environment Built' || true",
+    "updateContentCommand": "nix develop --command bash -c 'nix build -vvv -L && echo Environment Built' || true",
+  
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+        // run commands on save
+        // https://marketplace.visualstudio.com/items?itemName=fsevenm.run-it-on
+		"fsevenm.run-it-on",
+
+        // Docker for Visual Studio Code
+		"ms-azuretools.vscode-docker",
+
+        // select nix environment
+		"arrterian.nix-env-selector",
+
+        // Nix language support
+		"jnoortheen.nix-ide",
+
+        // Rust language support
+		"rust-lang.rust-analyzer",
+
+        // Markdown support and previsualization
+		"yzhang.markdown-all-in-one",
+
+        // Toml support
+		"tamasfe.even-better-toml",
+
+        // Debugging
+		"vadimcn.vscode-lldb",
+
+        // Allows to use Alt+Q (or Option+Q in mac) to rewrap lines
+        "stkb.rewrap"
+	]
+  }
