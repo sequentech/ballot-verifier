@@ -148,7 +148,8 @@ class ExampleDirsTest : public ::testing::Test
     void SetUp() override
     {
         this->exampleDirs = std::vector<std::string>(
-            {"fixtures/example_1",
+            {"fixtures/example_3",
+             "fixtures/example_1",
              "fixtures/example_2",
              "fixtures/example_1__invalid_ballot_json",
              "fixtures/example_1__ballot_hash_error",
