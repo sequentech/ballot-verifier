@@ -395,7 +395,10 @@ TEST_F(ExampleDirsTest, MockAudit)
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
 TEST_F(ExampleDirsTest, EncryptAndAudit)
 {
-    this->exampleDirs = std::vector<std::string>({"fixtures/example_1"});
+    this->exampleDirs = std::vector<std::string>({
+        "fixtures/example_1",
+        "fixtures/example_3"
+    });
 
     for (string & examplePath: exampleDirs)
     {

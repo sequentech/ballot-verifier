@@ -89,7 +89,7 @@
             },
             {
                 "type": "HasSubstr",
-                "data": "> please check that the showed options are the ones you chose:\n\nQ: Secretario General\nBallot choices:\n - Mari Pili Hernández Ordoñez\n - Juan Y Medio\n\n\nQ: Consejo Ciudadano\nBallot choices:\n - Vicente Bizancio Castillo\n - Argos de la Cruz\n - Gorrión Turrón Pastel\n\n",
+                "data": "> please check that the showed options are the ones you chose:\n\nQ: Poste de maire(sse)\nBallot choices:\n - Helen KURGANSKY\n\n\nQ: Poste de conseiller(-ère) municipal(e)\nBallot choices:\n - Éléanor MASSA\n\n",
                 "message": "Invalid plaintext ballot parsing"
             }
         ]
