@@ -474,7 +474,7 @@ void print_answer(
         throw runtime_error(out.str());
     }
 
-    // out << "ballot: " << endl << stringify(ballot) << endl;
+    //out << "ballot: " << endl << stringify(ballot) << endl;
 
     out << endl << "Q: " << question["title"].GetString() << endl;
     out << "Ballot choices:" << endl;

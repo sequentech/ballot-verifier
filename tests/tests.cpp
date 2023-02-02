@@ -397,7 +397,8 @@ TEST_F(ExampleDirsTest, EncryptAndAudit)
 {
     this->exampleDirs = std::vector<std::string>({
         "fixtures/example_1",
-        "fixtures/example_3"
+        "fixtures/example_3",
+        "fixtures/example_3_explicit_invalid"
     });
 
     for (string & examplePath: exampleDirs)
