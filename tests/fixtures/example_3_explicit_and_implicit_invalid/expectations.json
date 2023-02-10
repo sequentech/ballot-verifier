@@ -89,7 +89,7 @@
             },
             {
                 "type": "HasSubstr",
-                "data": "> please check that the showed options are the ones you chose:\n\nQ: Poste de maire(sse)\nBallot choices:\n - Chloe HUTCHISON\n - Gâcher mon vote [invalid]\n- INVALID vote (explicit)\n\n\nQ: Poste de conseiller(-ère) municipal(e)\nBallot choices:\n - Douglas SMITH\n\n",
+                "data": "> please check that the showed options are the ones you chose:\n\nQ: Poste de maire(sse)\nBallot choices:\n - Chloe HUTCHISON\n - Helen KURGANSKY\n - Jamie NICHOLLS\n - Gâcher mon vote [invalid]\n- INVALID vote (explicit)\n\n\nQ: Poste de conseiller(-ère) municipal(e)\nBallot choices:\n - Douglas SMITH\n\n",
                 "message": "Invalid plaintext ballot parsing"
             }
         ]
