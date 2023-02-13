@@ -24,19 +24,19 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2.3.5
-    - uses: cachix/install-nix-action@v14
+    - uses: actions/checkout@v3.0.2
+    - uses: cachix/install-nix-action@v17
       with:
-        install_url: https://github.com/numtide/nix-flakes-installer/releases/download/nix-2.5pre20211015_130284b/install
-        nix_path: nixpkgs=channel:nixos-21.05
+        install_url: https://github.com/numtide/nix-unstable-installer/releases/download/nix-2.10.0pre20220629_b7eb4ac/install
+        nix_path: nixpkgs=channel:nixos-22.05
         extra_nix_config: |
           experimental-features = nix-command flakes
 
     # not running this command in https://github.com/nektos/act
     # why? because it doesn't work for some reason
-    - name: Print nixpkgs version
-      if: ${{ !env.ACT }}
-      run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
+    #- name: Print nixpkgs version
+    #  if: ${{ !env.ACT }}
+    #  run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
 
     - name: Show flake
       run: nix --extra-experimental-features "nix-command flakes" flake show
