@@ -391,28 +391,25 @@ Document parseBallot(const Value & question, const string & plaintextString)
 
 bool isExplicitlyInvalidBallot(const vector<Value *> & answers)
 {
-    for (const Value * answer: answers)
-    {
-        if (BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag") &&
-            (*answer)["selected"].GetInt() > -1)
-        {
-            return true;
+    return std::any_of(
+        answers.cbegin(),
+        answers.cend(),
+        [](const Value* answer) {
+            return BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag")
+                && (*answer)["selected"].GetInt() > -1;
         }
-    }
-    return false;
+    );
 }
 
 int countSelectedAnswers(const vector<Value *> & answers)
 {
-    int count = 0;
-    for (const Value * answer: answers)
-    {
-        if ((*answer)["selected"].GetInt() > -1)
-        {
-            count++;
+    return std::count_if(
+        answers.cbegin(),
+        answers.cend(),
+        [](const Value* answer) {
+            return (*answer)["selected"].GetInt() > -1;
         }
-    }
-    return count;
+    );
 }
 
 bool isSortedQuestionType(const Document & ballot)
