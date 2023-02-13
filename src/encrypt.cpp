@@ -393,8 +393,8 @@ bool isExplicitlyInvalidBallot(const vector<Value *> & answers)
 {
     for (const Value * answer: answers)
     {
-        if (BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag") && 
-        (*answer)["selected"].GetInt() > -1)
+        if (BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag") &&
+            (*answer)["selected"].GetInt() > -1)
         {
             return true;
         }
@@ -451,16 +451,14 @@ void print_answer(
     if (!question.HasMember("min") || !question["min"].IsInt() ||
         question["min"].GetInt() < 0)
     {
-        out << "!!! Error [print-answer-min]: Invalid election format"
-            << endl;
+        out << "!!! Error [print-answer-min]: Invalid election format" << endl;
         throw runtime_error(out.str());
     }
 
     if (!question.HasMember("max") || !question["max"].IsInt() ||
         question["max"].GetInt() < question["min"].GetInt())
     {
-        out << "!!! Error [print-answer-max]: Invalid election format"
-            << endl;
+        out << "!!! Error [print-answer-max]: Invalid election format" << endl;
         throw runtime_error(out.str());
     }
 
@@ -488,7 +486,8 @@ void print_answer(
     int numSelectedAnswers = countSelectedAnswers(answers);
 
     if (numSelectedAnswers < question["min"].GetInt() ||
-        numSelectedAnswers > question["max"].GetInt()) {
+        numSelectedAnswers > question["max"].GetInt())
+    {
         isInvalid = true;
     }
 
@@ -499,11 +498,12 @@ void print_answer(
     for (const Value * answer: answers)
     {
         bool answerIsExplicitInvalid = false;
-        if ((*answer)["selected"].GetInt() == -1) {
+        if ((*answer)["selected"].GetInt() == -1)
+        {
             continue;
         }
 
-        if (BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag") && 
+        if (BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag") &&
             strlen((*answer)["text"].GetString()) > 0)
         {
             answerIsExplicitInvalid = true;
@@ -533,7 +533,8 @@ void print_answer(
 
     if (isInvalid)
     {
-        out << "- INVALID vote " << (hasExplicitInvalid? "(explicit)" : "(implicit)")<< endl;
+        out << "- INVALID vote "
+            << (hasExplicitInvalid ? "(explicit)" : "(implicit)") << endl;
     } else if (isBlank)
     {
         out << "- BLANK vote" << endl;

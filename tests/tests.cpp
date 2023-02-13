@@ -400,15 +400,14 @@ TEST_F(ExampleDirsTest, MockAudit)
 // NOLINTNEXTLINE(misc-unused-parameters, readability-named-parameter)
 TEST_F(ExampleDirsTest, EncryptAndAudit)
 {
-    this->exampleDirs = std::vector<std::string>({
-        "fixtures/example_1",
-        "fixtures/example_3",
-        "fixtures/example_3_explicit_and_implicit_invalid",
-        "fixtures/example_3_explicit_invalid",
-        "fixtures/example_3_implicit_too_many",
-        "fixtures/example_4_implicit_empty",
-        "fixtures/example_4_implicit_invented_answer"
-    });
+    this->exampleDirs = std::vector<std::string>(
+        {"fixtures/example_1",
+         "fixtures/example_3",
+         "fixtures/example_3_explicit_and_implicit_invalid",
+         "fixtures/example_3_explicit_invalid",
+         "fixtures/example_3_implicit_too_many",
+         "fixtures/example_4_implicit_empty",
+         "fixtures/example_4_implicit_invented_answer"});
 
     for (string & examplePath: exampleDirs)
     {
