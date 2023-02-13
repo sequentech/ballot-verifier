@@ -153,6 +153,7 @@ class ExampleDirsTest : public ::testing::Test
              "fixtures/example_3_explicit_invalid",
              "fixtures/example_3_implicit_too_many",
              "fixtures/example_4_implicit_empty",
+             "fixtures/example_4_implicit_invented_answer",
              "fixtures/example_1",
              "fixtures/example_2",
              "fixtures/example_1__invalid_ballot_json",
@@ -405,7 +406,8 @@ TEST_F(ExampleDirsTest, EncryptAndAudit)
         "fixtures/example_3_explicit_and_implicit_invalid",
         "fixtures/example_3_explicit_invalid",
         "fixtures/example_3_implicit_too_many",
-        "fixtures/example_4_implicit_empty"
+        "fixtures/example_4_implicit_empty",
+        "fixtures/example_4_implicit_invented_answer"
     });
 
     for (string & examplePath: exampleDirs)

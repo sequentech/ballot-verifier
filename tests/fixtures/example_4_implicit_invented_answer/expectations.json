@@ -1,15 +1,16 @@
 {
     "MockDownloadAudit": {
-        "type": "NoThrow",
-        "message": "Exception",
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "!!! Error [decoding-ballot]: Invalid Ballot: invalid number of choices, len(raw_ballot[\"choices\"]) = 5, len(valid_answers) + 1 = 4",
+        "message": "Output should throw",
         "expectations": [
             {
-                "type": "Not_HasSubstr",
+                "type": "HasSubstr",
                 "data": "!!! Error",
                 "message": "Contains an error"
             },
             {
-                "type": "HasSubstr",
+                "type": "Not_HasSubstr",
                 "data": "> Audit PASSED",
                 "message": "Audit did not pass"
             }
@@ -47,16 +48,17 @@
         ]
     },
     "MockAudit": {
-        "type": "NoThrow",
-        "message": "Exception",
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "!!! Error [decoding-ballot]: Invalid Ballot: invalid number of choices, len(raw_ballot[\"choices\"]) = 5, len(valid_answers) + 1 = 4",
+        "message": "Output should throw",
         "expectations": [
             {
-                "type": "Not_HasSubstr",
+                "type": "HasSubstr",
                 "data": "!!! Error",
                 "message": "Contains an error"
             },
             {
-                "type": "HasSubstr",
+                "type": "Not_HasSubstr",
                 "data": "> Audit PASSED",
                 "message": "Audit did not pass"
             }
@@ -74,23 +76,19 @@
         ]
     },
     "EncryptAndAudit::Audit": {
-        "type": "NoThrow",
+        "type": "ThrowsMessage_HasSubStr",
+        "data": "!!! Error [decoding-ballot]: Invalid Ballot: invalid number of choices, len(raw_ballot[\"choices\"]) = 5, len(valid_answers) + 1 = 4",
         "message": "Exception",
         "expectations": [
             {
-                "type": "Not_HasSubstr",
+                "type": "HasSubstr",
                 "data": "!!! Error",
                 "message": "Contains an error"
             },
             {
-                "type": "HasSubstr",
+                "type": "Not_HasSubstr",
                 "data": "> Audit PASSED",
                 "message": "Audit did not pass"
-            },
-            {
-                "type": "HasSubstr",
-                "data": "> please check that the showed options are the ones you chose:\n\nQ: Test question title\nBallot choices:\n- INVALID vote (implicit)\n\n",
-                "message": "Invalid plaintext ballot parsing"
             }
         ]
     }
