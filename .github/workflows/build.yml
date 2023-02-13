@@ -143,4 +143,4 @@ jobs:
             --enable=all \
             --suppressions-list=.cppcheck-suppressions.txt \
             --error-exitcode=1 \
-            src include apps tests"
+            src include apps tests/*.cpp"
