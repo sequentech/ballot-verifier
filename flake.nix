@@ -37,6 +37,19 @@
                 idnSupport = true;
                 sslSupport = true;
               });
+            
+          buildTools = [
+                pkgs.pkg-config
+                pkgs.cmake
+                pkgs.cmake-format
+                pkgs.rapidjson
+                pkgs.cryptopp
+                pkgs.ninja
+                pkgs.git
+                pkgs.cppcheck
+                pkgs.ack
+                pkgs.reuse
+            ];
 
         # resulting packages of the flake
         in rec {
@@ -47,17 +60,7 @@
             src = self;
             type = "git"; 
             submodules = "true";
-            nativeBuildInputs = [
-                pkgs.pkg-config
-                pkgs.cmake
-                pkgs.cmake-format
-                pkgs.rapidjson
-                pkgs.cryptopp
-                pkgs.ninja
-                pkgs.git
-                pkgs.cppcheck
-                pkgs.reuse
-            ];
+            nativeBuildInputs = buildTools;
             buildInputs = [
                 # the overlayed libraries
                 gmpCustom
@@ -77,9 +80,9 @@
           devShell = (
             pkgs.mkShell.override { stdenv = pkgs.clangStdenv; }
           ) { 
-            buildInputs = packages.ballot-verifier.nativeBuildInputs 
-              ++ packages.ballot-verifier.buildInputs
-              ++ [ pkgs.bash ]; 
+            packages = buildTools;
+            buildInputs = packages.ballot-verifier.buildInputs
+                ++ [ pkgs.bashInteractive pkgs.cmake ];
           };
         }
     );

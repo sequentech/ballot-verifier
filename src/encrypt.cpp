@@ -389,16 +389,21 @@ Document parseBallot(const Value & question, const string & plaintextString)
     return codec.decodeRawBallot(rawBallot);
 }
 
-bool isInvalidBallot(const Document & ballot)
+bool isExplicitlyInvalidBallot(const vector<Value *> & answers)
 {
-    for (const Value & answer: ballot["answers"].GetArray())
-    {
-        if (BallotVerifier::answerHasUrl(answer, "invalidVoteFlag"))
-        {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(
+        answers.cbegin(), answers.cend(), [](const Value * answer) {
+            return BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag") &&
+                   (*answer)["selected"].GetInt() > -1;
+        });
+}
+
+int countSelectedAnswers(const vector<Value *> & answers)
+{
+    return std::count_if(
+        answers.cbegin(), answers.cend(), [](const Value * answer) {
+            return (*answer)["selected"].GetInt() > -1;
+        });
 }
 
 bool isSortedQuestionType(const Document & ballot)
@@ -434,6 +439,20 @@ void print_answer(
         throw runtime_error(out.str());
     }
 
+    if (!question.HasMember("min") || !question["min"].IsInt() ||
+        question["min"].GetInt() < 0)
+    {
+        out << "!!! Error [print-answer-min]: Invalid election format" << endl;
+        throw runtime_error(out.str());
+    }
+
+    if (!question.HasMember("max") || !question["max"].IsInt() ||
+        question["max"].GetInt() < question["min"].GetInt())
+    {
+        out << "!!! Error [print-answer-max]: Invalid election format" << endl;
+        throw runtime_error(out.str());
+    }
+
     Document ballot;
     try
     {
@@ -444,26 +463,45 @@ void print_answer(
         throw runtime_error(out.str());
     }
 
+    // out << "ballot: " << endl << stringify(ballot) << endl;
+
     out << endl << "Q: " << question["title"].GetString() << endl;
     out << "Ballot choices:" << endl;
 
     vector<Value *> answers =
         sortedAnswersVector(ballot["answers"], "selected");
-    bool isInvalid = isInvalidBallot(ballot);
+
+    bool hasExplicitInvalid = isExplicitlyInvalidBallot(answers);
+    bool isInvalid = hasExplicitInvalid;
+
+    int numSelectedAnswers = countSelectedAnswers(answers);
+
+    if (numSelectedAnswers < question["min"].GetInt() ||
+        numSelectedAnswers > question["max"].GetInt())
+    {
+        isInvalid = true;
+    }
+
     bool isSortedQuestion = isSortedQuestionType(ballot);
     bool isBlank = true;
     size_t index = 1;
 
     for (const Value * answer: answers)
     {
-        if ((*answer)["selected"].GetInt() == -1 ||
-            BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag"))
+        bool answerIsExplicitInvalid = false;
+        if ((*answer)["selected"].GetInt() == -1)
         {
             continue;
         }
+
+        if (BallotVerifier::answerHasUrl(*answer, "invalidVoteFlag") &&
+            strlen((*answer)["text"].GetString()) > 0)
+        {
+            answerIsExplicitInvalid = true;
+        }
         isBlank = false;
 
-        if (isSortedQuestion)
+        if (isSortedQuestion && !answerIsExplicitInvalid)
         {
             out << index << ". " << (*answer)["text"].GetString();
             index++;
@@ -477,7 +515,7 @@ void print_answer(
             out << " (write-in)";
         }
 
-        if (isInvalid)
+        if (answerIsExplicitInvalid)
         {
             out << " [invalid]";
         }
@@ -486,7 +524,8 @@ void print_answer(
 
     if (isInvalid)
     {
-        out << "- INVALID vote" << endl;
+        out << "- INVALID vote "
+            << (hasExplicitInvalid ? "(explicit)" : "(implicit)") << endl;
     } else if (isBlank)
     {
         out << "- BLANK vote" << endl;
@@ -962,6 +1001,7 @@ void audit(
             << endl;
         throw runtime_error(out.str());
     }
+
     out << "> please check that the showed options are the ones you chose:"
         << endl;
     for (SizeType i = 0; i < choices.Size(); ++i)
