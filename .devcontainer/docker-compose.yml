@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2022 Felix Robles <felix@sequentech.io>
+# SPDX-FileCopyrightText: 2023 Eduardo Robles <edu@sequentech.io>
+# 
+# SPDX-License-Identifier: AGPL-3.0-only
+version: '3'
+services:
+  dev:
+    build:
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        PRELOAD_EXTENSIONS: arrterian.nix-env-selector
+        USER_UID: ${USER_UID:-1000}
+        USER_GID: ${USER_GID:-1000}
+    volumes:
+      - ..:/workspace:cached
+      - nix:/nix
+    security_opt:
+      - label:disable
+    network_mode: "bridge"
+
+volumes:
+  nix:
