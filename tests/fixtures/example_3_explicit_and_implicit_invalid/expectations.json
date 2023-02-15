@@ -1,0 +1,97 @@
+{
+    "MockDownloadAudit": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "MockDownload::Run": {
+        "type": "NoThrow",
+        "message": "Exception downloading",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Error downloading"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> writing to file",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "MockDownload::Compare": {
+        "type": "Equals",
+        "message": "Both config files should be equal"
+    },
+    "MockDownload::CompareOutput": {
+        "type": "NoThrow",
+        "message": "Output should not throw",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Error reading file"
+            }
+        ]
+    },
+    "MockAudit": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            }
+        ]
+    },
+    "EncryptAndAudit::Encrypt": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            }
+        ]
+    },
+    "EncryptAndAudit::Audit": {
+        "type": "NoThrow",
+        "message": "Exception",
+        "expectations": [
+            {
+                "type": "Not_HasSubstr",
+                "data": "!!! Error",
+                "message": "Contains an error"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> Audit PASSED",
+                "message": "Audit did not pass"
+            },
+            {
+                "type": "HasSubstr",
+                "data": "> please check that the showed options are the ones you chose:\n\nQ: Poste de maire(sse)\nBallot choices:\n - Chloe HUTCHISON\n - Helen KURGANSKY\n - Jamie NICHOLLS\n - Gâcher mon vote [invalid]\n- INVALID vote (explicit)\n\n\nQ: Poste de conseiller(-ère) municipal(e)\nBallot choices:\n - Douglas SMITH\n\n",
+                "message": "Invalid plaintext ballot parsing"
+            }
+        ]
+    }
+}

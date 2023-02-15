@@ -1,0 +1,184 @@
+[
+   {
+      "description":"",
+      "layout":"simultaneous-questions",
+      "max":1,
+      "min":0,
+      "num_winners":1,
+      "title":"Poste de maire(sse)",
+      "tally_type":"plurality-at-large",
+      "answer_total_votes_percentage":"over-total-valid-votes",
+      "answers":[
+         {
+            "id":0,
+            "category":"",
+            "details":"Independent",
+            "sort_order":0,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/pM7h0VOquh157bpAayRV0WWosU82MH2AWetD814PN5U/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy92M18w/NTk0NTkyLmpwZw.jpg"
+               }
+            ],
+            "text":"Chloe HUTCHISON",
+            "selected":0
+         },
+         {
+            "id":1,
+            "category":"",
+            "details":"Political Affiliation 1",
+            "sort_order":1,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/yRitGpgDlg0wdzcdnZkVwQKQyf-MhrrHSVmpapsWggc/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy92M18w/OTE0MjkyLmpwZw.jpg"
+               }
+            ],
+            "text":"Helen KURGANSKY",
+            "selected":0
+         },
+         {
+            "id":2,
+            "category":"",
+            "details":"Political Affiliation 2",
+            "sort_order":2,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/TroBlLyF67UbXHIwdXVm-K75lY03V5bRICU441frVE8/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy90cmFu/c3BhcmVudF92My92/M18wNzk0OTAyXzAx/MjI3NzlfMDExNzE5/Ni5wbmc.png"
+               }
+            ],
+            "text":"Jamie NICHOLLS",
+            "selected":0
+         },
+         {
+            "id":3,
+            "category":"",
+            "details":"",
+            "sort_order":3,
+            "urls":[
+               {
+                  "title":"invalidVoteFlag",
+                  "url":"true"
+               }
+            ],
+            "text":"Gâcher mon vote",
+            "selected":-1
+         }
+      ],
+      "extra_options":{
+         "shuffle_category_list":[
+            
+         ],
+         "show_points":false,
+         "answer_columns_size":12,
+         "answer_group_columns_size":12,
+         "invalid_vote_policy":"warn"
+      }
+   },
+   {
+      "description":"",
+      "layout":"simultaneous-questions",
+      "max":1,
+      "min":0,
+      "num_winners":1,
+      "title":"Poste de conseiller(-ère) municipal(e)",
+      "tally_type":"plurality-at-large",
+      "answer_total_votes_percentage":"over-total-valid-votes",
+      "answers":[
+         {
+            "id":0,
+            "category":"",
+            "details":"Independent",
+            "sort_order":0,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/bLde3kX8u1Fq0srXfyvFsMolmrBNkrKUXrwWQEvAwGE/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy90cmFu/c3BhcmVudF92My92/M18wNjc3MTkzLnBu/Zw.png"
+               }
+            ],
+            "text":"Douglas SMITH",
+            "selected":0
+         },
+         {
+            "id":1,
+            "category":"",
+            "details":"Independent",
+            "sort_order":1,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/pJClhSONHR4hqizodHcjm7GuoUzRfoq5zBgzCHZrCyY/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy92M18w/OTUzMzkyLmpwZw.jpg"
+               }
+            ],
+            "text":"Éléanor MASSA",
+            "selected":-1
+         },
+         {
+            "id":2,
+            "category":"",
+            "details":"Political Affiliation A",
+            "sort_order":2,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/fBR1ndxYdzO3k8VRd1kB141tw4dA6MUEHsg9QJXpxpQ/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy90cmFu/c3BhcmVudF92My92/M18wODEwOTk2LnBu/Zw.png"
+               }
+            ],
+            "text":"David LANGLOIS",
+            "selected":-1
+         },
+         {
+            "id":3,
+            "category":"",
+            "details":"Political Affiliation B",
+            "sort_order":3,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/T4qF2wlvGzYeMFl5Cf8HP47Db21cLRa6PWYvIdvYy3k/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy90cmFu/c3BhcmVudF92My92/M18wOTAyMTMxLnBu/Zw.png"
+               }
+            ],
+            "text":"Sean MURPHY",
+            "selected":-1
+         },
+         {
+            "id":4,
+            "category":"",
+            "details":"Political Affiliation C",
+            "sort_order":4,
+            "urls":[
+               {
+                  "title":"Image URL",
+                  "url":"https://images.generated.photos/GlyyQJMDMwRZ0zQrt7kiaQpimIWY3ma1ggAjVkTueqY/rs:fit:512:512/wm:0.95:sowe:18:18:0.33/czM6Ly9pY29uczgu/Z3Bob3Rvcy1wcm9k/LnBob3Rvcy92M18w/NDg2MzIzLmpwZw.jpg"
+               }
+            ],
+            "text":"Amanda MACDONALD",
+            "selected":-1
+         },
+         {
+            "id":5,
+            "category":"",
+            "details":"",
+            "sort_order":5,
+            "urls":[
+               {
+                  "title":"invalidVoteFlag",
+                  "url":"true"
+               }
+            ],
+            "text":"Gâcher mon vote",
+            "selected":-1
+         }
+      ],
+      "extra_options":{
+         "shuffle_category_list":[
+            
+         ],
+         "show_points":false,
+         "answer_columns_size":12,
+         "answer_group_columns_size":12,
+         "invalid_vote_policy":"warn"
+      }
+   }
+]

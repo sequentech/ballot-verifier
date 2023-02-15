@@ -1,0 +1,62 @@
+[
+   {
+      "description":"This is the description of this question. You can have multiple questions. You can add simple html like <strong>bold</strong> or <a href=\"https://sequentech.io\" rel=\"nofollow\">links to websites</a>.\n\n<br /><br />You need to use two br element for new paragraphs.",
+      "layout":"accordion",
+      "max":1,
+      "min":1,
+      "num_winners":1,
+      "title":"Test question title",
+      "tally_type":"plurality-at-large",
+      "answer_total_votes_percentage":"over-total-valid-votes",
+      "answers":[
+         {
+            "id":0,
+            "category":"",
+            "details":"This is an option with an simple example description.",
+            "sort_order":0,
+            "urls":[
+               
+            ],
+            "text":"Example option 1",
+            "selected":-1
+         },
+         {
+            "id":1,
+            "category":"",
+            "details":"An option can contain a description. You can add simple html like <strong>bold</strong> or <a href=\"https://sequentech.io\" rel=\"nofollow\">links to websites</a>. You can also set an image url below, but be sure it&#39;s HTTPS or else it won&#39;t load.\n\n<br /><br />You need to use two br element for new paragraphs.",
+            "sort_order":1,
+            "urls":[
+               {
+                  "title":"URL",
+                  "url":"https://sequentech.io"
+               },
+               {
+                  "title":"Image URL",
+                  "url":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/The_Fabs.JPG/220px-The_Fabs.JPG"
+               }
+            ],
+            "text":"Example option 2",
+            "selected":-1
+         },
+         {
+            "id":2,
+            "category":"",
+            "details":"",
+            "sort_order":2,
+            "urls":[
+               
+            ],
+            "text":"Example option 3",
+            "selected":-1
+         }
+      ],
+      "extra_options":{
+         "shuffle_categories":true,
+         "shuffle_all_options":true,
+         "shuffle_category_list":[
+            
+         ],
+         "show_points":false
+      }
+   }
+]
