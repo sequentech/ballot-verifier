@@ -4,7 +4,7 @@
 SPDXID: "SPDXRef-DOCUMENT"
 spdxVersion: "SPDX-2.2"
 creationInfo:
-  created: "2023-06-07T10:13:34Z"
+  created: "2023-06-12T15:04:32Z"
   creators:
   - "Organization: Sequent Tech Inc."
   - "Person: Eduardo Robles"
@@ -18,13 +18,13 @@ packages:
 - SPDXID: "SPDXRef-Package-ballot-verifier"
   summary: "Sequent cast-as-intended verifier"
   copyrightText: "Copyright 2014-2021 Sequent Tech Inc"
-  downloadLocation: "git+https://github.com/sequentech/ballot-verifier.git@8.0.0"
+  downloadLocation: "git+https://github.com/sequentech/ballot-verifier.git@8.0.1"
   filesAnalyzed: false
   homepage: "https://github.com/sequentech/ballot-verifier"
   licenseConcluded:  "NOASSERTION"
   licenseDeclared: "AGPL-3.0-only"
   name: "ballot-verifier"
-  versionInfo: "8.0.0"
+  versionInfo: "8.0.1"
 - SPDXID: "SPDXRef-Package-cmake"
   description: "Cross Platform Makefile Generator"
   copyrightText: "Copyright (c) 2000-2021 Kitware, Inc. and Contributors"
