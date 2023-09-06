@@ -413,5 +413,5 @@ The file `include/ballot-verifier/screen.h` includes the PNG found in
 [wxWidgets]: https://www.wxwidgets.org/
 [git]: https://github.com/sequentech/ballot-verifier/
 [GitHub]: https://github.com/sequentech/ballot-verifier/
-[Linux binary]: https://github.com/sequentech/ballot-verifier/releases/download/9.0.0/ballot-verifier-gui-linux
-[Mac OS X binary]: https://github.com/sequentech/ballot-verifier/releases/download/9.0.0/ballot-verifier-gui-mac
+[Linux binary]: https://github.com/sequentech/ballot-verifier/releases/download/9.1.0/ballot-verifier-gui-linux
+[Mac OS X binary]: https://github.com/sequentech/ballot-verifier/releases/download/9.1.0/ballot-verifier-gui-mac
